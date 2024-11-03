@@ -127,15 +127,17 @@ Add a target by writing a script that reads Orbit's generated blueprint file for
 
 What makes Orbit an agile package manager for HDLs? Here are some of its key features:
 
-- Orbit acts as the intermediary between your source code and back end EDA tools, automating the upkeep process to minimize technical debt as your codebase evolves over time
+- Orbit acts as the intermediary between your source code and backend EDA tools, automating the upkeep process and minimizing technical debt as your codebase evolves over time
 
-- Supports VHDL, Verilog, and SystemVerilog hardware description languages
+- Overcome namespace collisions, a problem inherent to VHDL and Verilog/SystemVerilog, with Orbit's novel algorithm that dynamically transforms conflicting design names called [_dynamic symbol transformation_](https://chaseruskin.github.io/orbit/topic/dst.html)
+
+- By performing dynamic symbol transformation, multiple versions of the same design unit (or more broadly, design units given the same identifier) are allowed in the same build under [two simple constraints](https://chaseruskin.github.io/orbit/topic/dst.html#limitations)
+
+- No longer worry about manually organizing a design unit's order of dependencies with Orbit's built-in ability to tokenize HDL source code and automatically identify valid references to other design units
 
 - Reproduce results across any environment with Orbit through its automatic handling of lockfiles and checksums
 
-- Overcome namespace collisions, a problem inherent to VHDL and Verilog/SystemVerilog, through a custom algorithm that dynamically transforms conflicting design names called [_dynamic symbol transformation_](https://chaseruskin.github.io/orbit/topic/dst.html)
-
-- Because of dynamic symbol transformation, multiple versions of the same design unit (or more broadly, design units given the same identifier) are allowed in the same build under [two simple constraints](https://chaseruskin.github.io/orbit/topic/dst.html#limitations)
+- Supports VHDL, Verilog, and SystemVerilog hardware description languages
 
 - Quickly navigate through HDL source code to read its inline documentation and review a design unit's implementation with Orbit's ability to jump to and display HDL code segments
 
@@ -143,13 +145,11 @@ What makes Orbit an agile package manager for HDLs? Here are some of its key fea
 
 - Explore your evolving codebase to identify the projects you need next with Orbit's ability to quickly search through known ip by filtering based on keywords, status, and name
 
-- Keep your source code independent of vendor tools and avoid vendor lock-in with Orbit's vendor-agnostic interface to back end EDA tools
+- Keep your source code independent of vendor tools and avoid vendor lock-in with Orbit's vendor-agnostic interface to backend EDA tools
 
 - Continue to use your preferred version control system (or none) due to Orbit's flexible approach to being version control system agnostic
 
 - Review high-level design unit circuit tree hierarchies at the HDL level or ip level
-
-- No longer worry about manually organizing a design unit's order of dependencies with Orbit's built-in ability to tokenize HDL source code and automatically identify valid references to other design units
 
 - Linux, MacOS, and Windows are fully supported with zero dependencies
 
