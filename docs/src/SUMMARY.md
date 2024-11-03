@@ -43,7 +43,7 @@
     - [JSON Output](./reference/json.md)
     - [Command Line](./reference/command_line.md)
 
-- [Commands](./commands/**commands**.md)
+- [Commands](./commands/commands.md)
     - [orbit new](./commands/new.md) 
     - [orbit init](./commands/init.md) 
     - [orbit view](./commands/view.md) 

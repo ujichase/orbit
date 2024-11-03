@@ -4,11 +4,11 @@ This technique is related to _name mangling_ in programming languages. _Name man
 
 ## Problem
 
-Before we begin, it is important to understand the problem we are trying to solve. An issue inherent to VHDL and many other languages is _namespace pollution_, which is when many programming language variables/identifiers/units/classes are defined at the global level. To learn more about namespace pollution, [here](https://stackoverflow.com/questions/8862665/what-does-it-mean-global-namespace-would-be-polluted/13352212) is a StackOverflow post that explains it in relation to Javascript.
+Before we begin, it is important to understand the problem we are trying to solve. An issue inherent to VHDL, Verilog, SystemVerilog, and many other languages is _namespace pollution_, which is when a large number of programming language variables/identifiers/units/classes are defined at the global level. To learn more about namespace pollution, [here](https://stackoverflow.com/questions/8862665/what-does-it-mean-global-namespace-would-be-polluted/13352212) is a StackOverflow post that explains it in relation to Javascript.
 
-Namespace pollution can lead to _namespace clashes_. As you define more primary design units at the same scope, you are more likely to have two things that accidently have the same name. This is at the core the problem we are going to solve, because VHDL compilers and synthesizers are not built to gracefully handle clashes and will error out when a primary design unit at the same scope has multiple definitions.
+Namespace pollution can lead to _namespace clashes_. As you define more primary design units at the same scope, you are more likely to have two things that accidently have the same name. This is at the core the problem we are going to solve, because HDL compilers and synthesizers are not built to gracefully handle clashes and will error out when a primary design unit at the same scope has multiple definitions.
 
-In VHDL, a common example of a namespace clash is when different files define an entity by the same name, which may have different behaviors. Namespace clashes may start to appear when a higher-level IP requires the same entity from an IP but as different versions throughout its dependency tree.
+In VHDL/Verilog, a common example of a namespace clash is when different files define an entity/module by the same name, which may have different behaviors. Namespace clashes may start to appear when a higher-level ip requires the same entity/module from an ip but as different versions throughout its dependency tree.
 
 ## Solution
 
@@ -33,73 +33,91 @@ Within the context of VHDL, let's consider a _symbol_ to be the identifier of a 
 - configuration
 - context
 
-> __Note:__ VHDL does support the concept of _libraries_, which can add 1 level of nested scope to a primary design unit, but for this example we will assume the primary design units are defined within the same library/scope.
+> __Note:__ VHDL does support the concept of _libraries_, which can add 1 level of nested scope to a primary design unit, but this implementation only pushes the namespace clashing problem back 1 level.
 
-In the following code, the symbol `and_gate` corresponds to an entity.
+Within the context of Verilog/SystemVerilog, let's consider a _symbol_ to be the identifier of a _design element_. A design element is a Verilog/SystemVerilog construct that exists at the global namespace. For Verilog, there is only two design elements (module and primitive), but for SystemVerilog, there are seven design elements:
+- module
+- program
+- interface
+- checker
+- package
+- primitive
+- configuration
 
-Filename: lab1/and_gate.vhd
-``` vhdl
-entity and_gate is
-  port(
-    a, b : in bit;
-    c : out bit
-  );
-end entity;
+In the following code, the symbol `nand_g` corresponds to a module.
+
+Filename: lab1/nand_g.v
+``` verilog
+module nand_g (
+  input wire a, 
+  input wire b,
+  output wire c
+);
 ```
 
-Remember that this identifier could appear again at the same namespace level as this exsiting entity in a different VHDL file.  
+Remember that this identifier could appear again at the same namespace level (since its global across all source code files), even if it has a different interface/implementation. 
 
-Now imagine you are integrating VHDL code from various existing ips. As you instantiate entities within larger entities, you realize there exists another entity named `and_gate` further down in the hierarchy, but this one has a different behavior and port interface than the previously defined `and_gate` circuit from the "lab1/" directory.
+Now imagine you are integrating HDL code from various existing ips. As you instantiate modules within larger modules, you realize there exists another module named `nand_g` in the hierarchy, but this one has a different behavior and port interface than the previously defined `nand_g` circuit from the "lab1/" directory.
 
-Filename: lab3/and_gate.vhd
-``` vhdl
-entity and_gate is
-  port(
-    a, b : in bit_vector(3 downto 0);
-    c : out bit_vector(3 downto 0)
-  );
-end entity;
+Filename: lab3/nand_g.v
+``` verilog
+module nand_g (
+  input wire[3:0] x,
+  input wire[3:0] y,
+  output wire[3:0] z
+);
 ```
 
-Since the current ip requires both code segments, then traditionally your EDA tool would complain to you and be unable to resolve which `and_gate` to be used where. It then falls on the developer to rename one of the entities where it is defined and everywhere it is referenced, which introduces additional overhead in time and possibilities for errors. This problem is solved with DST.
+Since the current ip requires both code segments, then traditionally your EDA tool would complain to you and be unable to resolve which `nand_g` to be used where. It then falls on the developer to rename one of the modules where it is defined and everywhere it is referenced, which introduces additional overhead in time and possibilities for errors. This problem is solved with DST.
 
-### Walkthrough
+### Setup
 
-We present an example project-level ip dependency tree.
-```
-final-project
-├─ lab3
-│  └─ lab2
-|     └─ lab1
-└─ lab2
-```
+Consider the following project-level ip dependency tree:
 
-Imagine the `final-project` ip has an entity called `top_level` which is the root of circuit hierarchy. From there, it reuses entities from the other ip.
+![](./../images/dst-graph1.svg)
 
-Let's look at the VHDL design tree hierarchy across the ips.
-```
-top_level (final-project)
-├─ and_gate (lab3)
-│  └─ adder (lab2)
-|     └─ and_gate (lab1)
-└─ mux (lab2)
-```
+The gray node (`final-project`) is the local ip you are currently working within, the green nodes (`lab2`, `lab3`) are the direct dependencies to the local ip, and the blue node (`lab1`) is an indirect dependency to the local ip.
 
-Notice lab1 and lab3 both have the `and_gate` entity, but their interfaces and functionality are different as previously mentioned. How can we allow both units in the hierarchy while resolving the namespace clash?
+Within each project, there exists one or more HDL source code files describing design units. 
+
+Imagine the `final-project` ip has a module called `half_add` which is the root of circuit hierarchy. From there, it reuses entities from the other ip.
+
+Consider then HDL-level dependency tree:
+
+![](./../images/dst-graph2.svg)
+
+Notice lab1 and lab3 both have the `nand_g` module, but their interfaces and functionality are different as previously mentioned. How can we allow both units in the hierarchy while resolving the namespace clash?
+
+### Transformation
 
 DST identifies namespace clashes within the current dependency graph and automatically resolve the conflicts to produce a clean unambiguous graph.
 
+![](./../images/dst-graph3.svg)
+
+The yellow nodes (`lab2`, `lab1`) are the ips that had their source code modified due to DST. Since the modified contents of these ips no longer matches their original contents, the modifications are stored as separate entries in the catalog's cache apart from their original entries.
+
+The red node (`nand_g.v`) is the HDL design element that must be dynamically renamed due to the namespace clash for `nand_g`. The identifier `nand_g` in lab1 was appended with the first 10 digits of the original ip's checksum (`fbe4720d0`). This transforms lab1's `nand_g` module into `nand_g_fbe4720d0`, which is unique and no longer clashes with `nand_g` in lab3.
+
+> __Note:__ DST specifically chose to _not_ rename the `nand_g` from lab3. If had decided to rename the `nand_g` from lab3, the user would be burdened with tracking and maintaining the new renamed unique identifier in the local ip (final-project). Since DST never renames identifiers in direct dependencies, DST is always abstracted away from the user and has zero overhead. While direct dependencies may be modified due to neigboring an ip that undergoes DST, direct dependencies are never chosen for DST.
+
+The orange nodes (`and_g.v`, `xor_g.v`) are the HDL design elements that reference/instantiate the design element that was marked for symbol transformation. Once the ip targeted for DST (lab1) resolves the namespace clash, we must update the references for this design element in all the upstream neighboring ips (lab2). Since their references are now broken due to `nand_g` being renamed to `nand_g_fbe4720d0`, the source code is analyzed and updated to fix the broken references of `nand_g` to `nand_g_fbe4720d0`.
+
+
+The final unambiguous HDL-level dependency graph is the following:
 ```
-top_level (final-project)
-├─ and_gate (lab3)
-│  └─ adder (lab2)*
-|     └─ and_gate_fbe4720d0 (lab1)*
-└─ mux (lab2)
+half_add (final-project)
+├─ nand_g (lab3)
+│  ├─ not_g (lab2)
+│  └─ and_g (lab2)*
+|     └─ nand_g_fbe4720d0 (lab1)*
+└─ xor_g (lab2)*
 ```
 
-Let's dive into what happened here. DST handled the namespace clash by _transforming_, or renaming, the entity related to lab1. The entity's identifier in lab1 was appended with the first 10 digits of the original lab1 ip's checksum. This transformation occurred at that ip's source code level (lab1), and in the source code for all dependents of that entity (lab2). Therefore, DST produced new dynamic variants of the lab1 and lab2 ips that properly reference and associate with `and_gate_fbe4720d0`.
+The `*` indicates the modules that had their source code modified to either rename the namespace collision or update its references to the new renamed identifier.
 
-DST specifically chose not to rename the `and_gate` from lab3, or else the user would have to be burdened with trying to track and maintain the new unique identifier in the currently developed IP (final-project). As a result, DST has no additional overhead to the user and is kept abstracted away by Orbit. Direct dependencies are never chosen for DST.
+### Summary 
+
+To recap, DST handled the namespace clash by _transforming_, or renaming, the module `nand_g` within lab1. The `nand_g` identifier was appended with the first 10 digits of the original lab1 ip's checksum (fbe4720d0) to make it `nand_g_fbe4720d0`. This transformation occurred at that ip's source code level (lab1), and modifications were made to the source code for all dependent neighbors of lab1, which was only lab2 in this example. The source code in lab2 had to be updated to rename the references that were originally `nand_g` to `nand_g_fbe4720d0`. Each ip that had source code modifications have their changes saved to their own entries in the catalog's cache, such that the original entries are still intact and available for future use.
 
 ## Emphasis
 
