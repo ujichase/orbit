@@ -8,6 +8,8 @@ Details:
 
 module datapath
 #(
+    parameter int TEMP = $clog2(24),
+    parameter int MAC = `NUM_BITS,
     parameter int WIDTH = 8
 )
 (

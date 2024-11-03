@@ -19,6 +19,7 @@ Add `- unreleased` along the next future version to prevent CI/CD from triggerin
 
 ### Fixes
 - fixes issue with `--force` on install not removing cache entries of the same ip (same uuid) and same version regardless of checksums
+- fixes issue with repeated `$` in printing verilog/systemverilog code to console
 
 ## 0.22.0
 

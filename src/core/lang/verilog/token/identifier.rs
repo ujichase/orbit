@@ -95,7 +95,7 @@ impl Hash for Identifier {
         match self {
             Self::Basic(id) => id.to_lowercase().hash(state),
             Self::Escaped(id) => id.hash(state),
-            Self::System(id) => format!("${}", id).hash(state),
+            Self::System(id) => format!("{}", id).hash(state),
             Self::Directive(id) => format!("`{}", id).hash(state),
         }
     }
@@ -154,7 +154,7 @@ impl Display for Identifier {
         match self {
             Self::Basic(id) => write!(f, "{}", id),
             Self::Escaped(id) => write!(f, "\\{}", id),
-            Self::System(id) => write!(f, "${}", id),
+            Self::System(id) => write!(f, "{}", id),
             Self::Directive(id) => write!(f, "`{}", id),
         }
     }
