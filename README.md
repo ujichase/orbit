@@ -10,7 +10,7 @@ Orbit is an agile package manager and extensible build tool for hardware descrip
 
 ![](./docs/src/images/architecture2.svg)
 
-See [Overview](https://chaseruskin.github.io/orbit/topic/overview.html) for more details describing Orbit's system architecture.
+Orbit's system introduces a layer of abstraction called __IPs__, which group related source code files (`.v`, `.sv`, `.vhd`) together within a common directory. See [Overview](https://chaseruskin.github.io/orbit/topic/overview.html) for more details describing Orbit's system architecture.
 
 ### Live at the cutting edge of hardware design
 
