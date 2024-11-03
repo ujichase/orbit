@@ -34,9 +34,9 @@ The string pattern for an ip's `source.tag` field is allowed to contain any of t
 
 The string pattern for a target's fileset configuration is allowed to contain any of the following keys:
 
-- `orbit.top`: The top-level design unit name.
-- `orbit.bench`: The testbench design unit name.
-- `orbit.dut`: The design-under-test design unit name.
+- `orbit.top.name`: The top-level design unit name.
+- `orbit.tb.name`: The testbench design unit name.
+- `orbit.dut.name`: The design-under-test design unit name.
 - `orbit.env.*`: Any environment variables loaded from configuration files.
 
 ### Protocol arguments
@@ -60,9 +60,9 @@ The argument list defined in a target's configuration is allowed to contain any 
 - `orbit.ip.version`: The version of the local ip.
 - `orbit.ip.checksum`: The truncated most recent checksum of the local ip.
 - `orbit.env.*`: Any environment variables loaded from configuration files.
-- `orbit.top`: The top-level design unit name.
-- `orbit.bench`: The testbench design unit name.
-- `orbit.dut`: The design-under-test design unit name.
+- `orbit.top.name`: The top-level design unit name.
+- `orbit.tb.name`: The testbench design unit name.
+- `orbit.dut.name`: The design-under-test design unit name.
 
 
 ## Example
