@@ -178,7 +178,7 @@
                     <main>
                         <h1 id="overview"><a class="header" href="#overview">Overview</a></h1>
 <p>Orbit is an agile package manager and extensible build tool for HDLs.</p>
-<p><img src="./../images/architecture.svg" alt="" /></p>
+<p><img src="./../images/architecture2.svg" alt="" /></p>
 <h2 id="key-concepts"><a class="header" href="#key-concepts">Key concepts</a></h2>
 <ul>
 <li>
@@ -194,7 +194,7 @@
 <p>An ip saves its world state by storing a <strong>Lockfile</strong>, called <code>Orbit.lock</code>, alongside the manifest. A lockfile lists all of the resolved ip dependencies required for the local ip and how to retrieve those ips if necessary again. Running <code>orbit lock</code> will build an ip-level graph to resolve the entire ip-level dependency tree and store this information in the lockfile.</p>
 </li>
 <li>
-<p>Although not explicitly tracked by Orbit, a <strong>Profile</strong> is a collection of <strong>Targets</strong>, <strong>Settings</strong>, and <strong>Protocols</strong>. All of these items are defined in an Orbit configuration file, called <code>config.toml</code>. Structuring your configurations with <strong>Profiles</strong> allows users to reuse and share their workflows across ips.</p>
+<p>Users customize their experience with Orbit using <strong>Configurations</strong>, which collections of <strong>Targets</strong>, <strong>Settings</strong>, and <strong>Protocols</strong>. All of these items are defined in an Orbit configuration file, called <code>config.toml</code>. Configurations allow users to reuse and share their workflows across teams and ips.</p>
 </li>
 <li>
 <p>To build (or test) a design within a local ip, Orbit runs a <strong>Build Process</strong>. The build process takes as input the local ip's <strong>Lockfile</strong>, <strong>Source Files</strong> (hdl code), <strong>Auxiliary Files</strong> (any other file types needed), and a specified <strong>Target</strong>. Running <code>orbit build</code> (or <code>orbit test</code>) will enter the build process.</p>
