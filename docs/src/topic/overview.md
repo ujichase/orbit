@@ -2,7 +2,7 @@
 
 Orbit is an agile package manager and extensible build tool for HDLs.
 
-![](./../images/architecture.svg)
+![](./../images/architecture2.svg)
 
 ## Key concepts
 
@@ -14,7 +14,7 @@ Orbit is an agile package manager and extensible build tool for HDLs.
 
 - An ip saves its world state by storing a __Lockfile__, called `Orbit.lock`, alongside the manifest. A lockfile lists all of the resolved ip dependencies required for the local ip and how to retrieve those ips if necessary again. Running `orbit lock` will build an ip-level graph to resolve the entire ip-level dependency tree and store this information in the lockfile.
 
-- Although not explicitly tracked by Orbit, a __Profile__ is a collection of __Targets__, __Settings__, and __Protocols__. All of these items are defined in an Orbit configuration file, called `config.toml`. Structuring your configurations with __Profiles__ allows users to reuse and share their workflows across ips.
+- Users customize their experience with Orbit using __Configurations__, which collections of __Targets__, __Settings__, and __Protocols__. All of these items are defined in an Orbit configuration file, called `config.toml`. Configurations allow users to reuse and share their workflows across teams and ips.
 
 - To build (or test) a design within a local ip, Orbit runs a __Build Process__. The build process takes as input the local ip's __Lockfile__, __Source Files__ (hdl code), __Auxiliary Files__ (any other file types needed), and a specified __Target__. Running `orbit build` (or `orbit test`) will enter the build process.
 

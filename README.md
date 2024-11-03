@@ -10,6 +10,8 @@ Orbit is an agile package manager and extensible build tool for hardware descrip
 
 ![](./docs/src/images/architecture2.svg)
 
+See [Overview](https://chaseruskin.github.io/orbit/topic/overview.html) for more details describing Orbit's system architecture.
+
 ### Live at the cutting edge of hardware design
 
 The boom of AI and emerging workloads have shown just how fast new advancements can be made in models and algorithms. Today's hardware is no longer good enough to meet the immediate demands of tomorrow's innovations; today's hardware must shift to a more agile development approach. It's time to build tomorrow's hardware, today. It's time to __live at the cutting edge of hardware design.__
@@ -63,7 +65,7 @@ version = "1.0.0"
 gates = "2.0.0"
 ```
 
-The "Orbit.lock" file is a detailed TOML file automatically maintained by Orbit that stores the complete list of resolved dependencies, including how to get them. This allows anyone to rebuild your project with the exact source code you had as well.
+The "Orbit.lock" file is a detailed TOML file automatically maintained by Orbit that stores the complete list of resolved dependencies, including how to get them. This allows anyone to rebuild your project with the exact source code you had as well, even if the source code is distributed across repositories.
 
 
 ## Low effort integration
@@ -220,7 +222,7 @@ See [LICENSE](./LICENSE).
 
 Orbit has yet to have its first sponsor! I initially got inspiration for this project during my first internship with NASA Glenn Research Center in 2021, and started working on this project in my free time throughout my undergraduate studies at the University of Florida. Since then, I have continued to work on this project whenever possible throughout my graduate studies without any direct funding. If you use Orbit, please consider sponsoring; any amount is very much appreciated.
 
-Being a sponsor not only keeps this project going, but enables you or your organization to have additional perks, such as prioritized issues and feature requests, being advertised in our documentation, and direct support for configuring Orbit for your specialized use case. See [SPONSORING](./SPONSORING.md).
+Being a sponsor not only keeps this project going, but enables you or your organization to have additional perks, such as prioritized issues and feature requests, being advertised in our documentation, and direct support for configuring Orbit for your specific use case. See [SPONSORING](./SPONSORING.md).
 
 ## Contributing
 
