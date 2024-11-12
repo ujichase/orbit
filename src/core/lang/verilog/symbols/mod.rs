@@ -704,6 +704,7 @@ impl VerilogSymbol {
                     | Keyword::Shortint
                     | Keyword::Int
                     | Keyword::Longint
+                    | Keyword::String
                     | Keyword::Shortreal => true,
                     _ => false,
                 },
