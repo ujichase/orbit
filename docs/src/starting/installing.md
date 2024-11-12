@@ -68,7 +68,7 @@ $ copy-item "./orbit-CARGO_CRATE_VERSION-x86_64-windows/*" -destination "$env:LO
 
 To install the latest version through Cargo:
 ```
-$ cargo install --git https://github.com/chaseruskin/orbit.git --tag CARGO_CRATE_VERSION
+$ cargo install --git https://github.com/chaseruskin/orbit.git --bin orbit --tag CARGO_CRATE_VERSION
 ```
 
 This will build the `orbit` binary and place it a path already set in the PATH environment variable.
