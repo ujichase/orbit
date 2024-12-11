@@ -220,9 +220,7 @@ See [LICENSE](./LICENSE).
 
 ## Sponsoring
 
-Orbit has yet to have its first sponsor! I initially got inspiration for this project during my first internship with NASA Glenn Research Center in 2021, and started working on this project in my free time throughout my undergraduate studies at the University of Florida. Since then, I have continued to work on this project whenever possible throughout my graduate studies without any direct funding. If you use Orbit, please consider sponsoring; any amount is very much appreciated.
-
-Being a sponsor not only keeps this project going, but enables you or your organization to have additional perks, such as prioritized issues and feature requests, being advertised in our documentation, and direct support for configuring Orbit for your specific use case. See [SPONSORING](./SPONSORING.md).
+If you find this tool useful, please consider sponsoring! I initially got inspiration for this project during my first internship with NASA Glenn Research Center in 2021, and started working on this project in my spare time throughout my undergraduate and graduate studies. Any donation amount is greatly appreciated.
 
 ## Contributing
 
