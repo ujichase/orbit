@@ -36,6 +36,14 @@ Prebuilt binaries are available for Linux, MacOS, and Windows with no dependenci
 
 For more information on getting started and how to use Orbit in your workflow, check out the [Book of Orbit](https://chaseruskin.github.io/orbit/).
 
+## The Missing Layer of Abstraction
+
+Orbit operates at the layer between your codebase (source code files) and your toolchains (custom EDA workflows). Without Orbit, codebases had to directly interface with EDA tools, often resulting in hard to maintain scripts and noninteroperable workflows across tools and projects.
+
+![](./docs/src/images/abstraction.svg)
+
+With Orbit, a key layer of abstraction is introduced to manage your codebase within your filesystem as well as interface with your required toolchains. The interface between Orbit and your codebase is linked through adding a simple manifest file to your projects. The interface between Orbit and your toolchains only requires users to write a lightweight script called a _target_ that wraps your existing EDA tools into a defined workflow.
+
 ## Simple and intuitive to use
 
 Orbit manages your project by turning it into a package (referred to as an ip) with the addition of two files: "Orbit.toml" and "Orbit.lock".
@@ -165,14 +173,6 @@ And these are only a few of Orbit's features! Download Orbit and read its docume
 
 Orbit has prebuilt binaries for MacOS, Windows, and Linux. See the [releases page](https://github.com/chaseruskin/orbit/releases) to download the latest version, or build from source using [Cargo](https://doc.rust-lang.org/cargo/getting-started/installation.html), Rust's default package manager. See [Installing](https://chaseruskin.github.io/orbit/starting/installing.html) for more details on getting Orbit up and running.
 
-## Examples
-
-A fictitious organization, "Hyperspace Labs", exists for the purpose of demonstrating and learning how to leverage Orbit in a real development setting. No identification with actual persons, places, buildings, and products is intended or should be inferred. 
-
-The projects and code for Hyperspace Labs are walked through in the [tutorials](https://chaseruskin.github.io/orbit/tutorials/tutorials.html) section.
-
-The final code repositories for Hyperspace Labs are found [here](https://github.com/orgs/hyperspace-labs/repositories). 
-
 ## Documentation
 
 Read the [Book of Orbit](https://chaseruskin.github.io/orbit/) for comprehensive documentation composed of tutorials, user guides, topic guides, references, and command manuals.
@@ -220,7 +220,7 @@ See [LICENSE](./LICENSE).
 
 ## Sponsoring
 
-If you find this tool useful, please consider sponsoring! I initially got inspiration for this project during my first internship with NASA Glenn Research Center in 2021, and started working on this project in my spare time throughout my undergraduate and graduate studies. Any donation amount is greatly appreciated.
+If you find this tool useful, please consider sponsoring! This project started got its inspiration from my first internship with NASA Glenn Research Center in 2021, and I have started working on this project in my spare time throughout my undergraduate and graduate studies since then. Any donation amount is greatly appreciated.
 
 ## Contributing
 
