@@ -1,9 +1,7 @@
 [ip]
 name = "top"
-uuid = "5xwxds2xlr94pgfnlu7q2d6pt"
 version = "0.1.0"
-
-# See more keys and their definitions at https://chaseruskin.github.io/orbit/reference/manifest.html
+uuid = "5xwxds2xlr94pgfnlu7q2d6pt"
 
 [dependencies]
 mid = "0.1.0"

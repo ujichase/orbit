@@ -17,15 +17,52 @@ on:
         required: true
 
 jobs:
+  build-orbit-ubuntu-2404:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+          
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push for latest
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./docker/standalone/ubuntu24/Dockerfile
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          build-args: REV=${{ github.sha }}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/orbit:latest-ubuntu-24.04
+          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/orbit:latest-ubuntu-24.04
+          cache-to: type=inline
+
+      - name: Build and push for specific version
+        if: ${{ inputs.is_release == '1' }}
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./docker/standalone/ubuntu24/Dockerfile
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/orbit:${{ inputs.version }}-ubuntu-24.04
+          build-args: REV=${{ github.sha }}
+          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/orbit:${{ inputs.version }}-ubuntu-24.04
+          cache-to: type=inline
+  
   build-orbit-ubuntu-2204:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 
         uses: actions/checkout@v4
 
-      - name: Modify entrypoint file permission to executable
-        run: chmod +x ./docker/standalone/ubuntu22/entrypoint.sh
-        
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -65,9 +102,6 @@ jobs:
     steps:
       - name: Checkout 
         uses: actions/checkout@v4
-
-      - name: Modify entrypoint file permission to executable
-        run: chmod +x ./docker/standalone/ubuntu18/entrypoint.sh
         
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -102,176 +136,3 @@ jobs:
           build-args: REV=${{ github.sha }}
           cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/orbit:${{ inputs.version }}-ubuntu-18.04
           cache-to: type=inline
-
-  build-ghdl-groovy-guitar:
-    needs: [build-orbit-ubuntu-2204]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout 
-        uses: actions/checkout@v4
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-          
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build and push for latest
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./docker/integrated/ghdl/Dockerfile
-          builder: ${{ steps.buildx.outputs.name }}
-          push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/groovy-guitar:latest
-          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/groovy-guitar:latest-buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/groovy-guitar:latest-buildcache,mode=max
-        
-      - name: Set current date as env variable
-        run: echo "NOW=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
-
-      - name: Build and push for stable release date
-        if: ${{ inputs.is_release == '1' }}
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./docker/integrated/ghdl/Dockerfile
-          builder: ${{ steps.buildx.outputs.name }}
-          push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/groovy-guitar:${{ env.NOW }}
-          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/groovy-guitar:${{ env.NOW }}-buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/groovy-guitar:${{ env.NOW }}-buildcache,mode=max
-
-  build-quartus-quiet-quartet:
-    needs: [build-orbit-ubuntu-1804]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout 
-        uses: actions/checkout@v4
-        
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-          
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build and push for latest
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./docker/integrated/quartus/Dockerfile
-          builder: ${{ steps.buildx.outputs.name }}
-          push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/quiet-quartet:latest
-          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/quiet-quartet:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/quiet-quartet:buildcache,mode=max
-
-      - name: Set current date as env variable
-        run: echo "NOW=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
-
-      - name: Build and push for stable release date
-        if: ${{ inputs.is_release == '1' }}
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./docker/integrated/quartus/Dockerfile
-          builder: ${{ steps.buildx.outputs.name }}
-          push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/quiet-quartet:${{ env.NOW }}
-          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/quiet-quartet:${{ env.NOW }}-buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/quiet-quartet:${{ env.NOW }}-buildcache,mode=max
-
-  build-modelsim-melodic-marimba:
-    needs: [build-orbit-ubuntu-1804]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout 
-        uses: actions/checkout@v4
-        
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-          
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build and push for latest
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./docker/integrated/modelsim/Dockerfile
-          builder: ${{ steps.buildx.outputs.name }}
-          push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/melodic-marimba:latest
-          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/melodic-marimba:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/melodic-marimba:buildcache,mode=max
-
-      - name: Set current date as env variable
-        run: echo "NOW=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
-
-      - name: Build and push for stable release date
-        if: ${{ inputs.is_release == '1' }}
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./docker/integrated/modelsim/Dockerfile
-          builder: ${{ steps.buildx.outputs.name }}
-          push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/melodic-marimba:${{ env.NOW }}
-          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/melodic-marimba:${{ env.NOW }}-buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/melodic-marimba:${{ env.NOW }}-buildcache,mode=max
-
-  build-modelsim-mythical-maraca:
-    needs: [build-orbit-ubuntu-1804]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Free space
-        run: |
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
-
-      - name: Checkout 
-        uses: actions/checkout@v4
-        
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-          
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build and push for latest
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./docker/integrated/riscv/Dockerfile
-          builder: ${{ steps.buildx.outputs.name }}
-          push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/mythical-maraca:latest
-          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/mythical-maraca:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/mythical-maraca:buildcache,mode=max
-
-      - name: Set current date as env variable
-        run: echo "NOW=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
-
-      - name: Build and push for stable release date
-        if: ${{ inputs.is_release == '1' }}
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./docker/integrated/riscv/Dockerfile
-          builder: ${{ steps.buildx.outputs.name }}
-          push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/mythical-maraca:${{ env.NOW }}
-          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/mythical-maraca:${{ env.NOW }}-buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/mythical-maraca:${{ env.NOW }}-buildcache,mode=max

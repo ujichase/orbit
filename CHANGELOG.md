@@ -15,6 +15,11 @@ Add `- unreleased` along the next future version to prevent CI/CD from triggerin
 
 # Changelog
 
+## 0.22.2 - unreleased
+
+### Changes
+- removes comment from new manifests and instead displays link to manifest reference page through command-line print statement
+
 ## 0.22.1
 
 ### Fixes

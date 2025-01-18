@@ -110,6 +110,8 @@ impl Init {
         // write the manifest
         let mut manifest = std::fs::File::create(&manifest_path)?;
         manifest.write_all(Manifest::write_empty_manifest(&ip, &lib_str).as_bytes())?;
+        // display the help message
+        println!("info: {}", Manifest::write_manifest_ref_help());
 
         // write the lockfile
         let local_ip = Ip::load(self.path.clone(), true)?;

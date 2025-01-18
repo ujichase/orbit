@@ -1,12 +1,12 @@
-# download base image ubuntu 18.04
-FROM ubuntu:18.04
+# download base image ubuntu 24.04
+FROM ubuntu:24.04
 
 # Specific commit to use when installing from git
 ARG REV
 
 # LABEL about the custom image
 LABEL maintainer="Chase Ruskin"
-LABEL description="Minimum runtime dependencies for Orbit on Ubuntu 18.04"
+LABEL description="Minimum runtime dependencies for Orbit on Ubuntu 24.04"
 
 RUN apt-get update && apt-get install -y \
     git \

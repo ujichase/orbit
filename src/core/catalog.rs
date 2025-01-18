@@ -85,7 +85,7 @@ impl<'a> Eq for VersionItem<'a> {}
 impl<'a> Hash for VersionItem<'a> {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.version.hash(state);
-        state.finish();
+        let _ = state.finish();
     }
 }
 

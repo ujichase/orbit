@@ -347,6 +347,10 @@ impl Manifest {
                 .is_some()
     }
 
+    pub fn write_manifest_ref_help() -> String {
+        String::from("see more `Orbit.toml` keys and their definitions at https://chaseruskin.github.io/orbit/reference/manifest.html")
+    }
+
     /// Composes a [String] to write to a clean manifest file.
     pub fn write_empty_manifest(name: &IpName, lib: &Option<String>) -> String {
         let uuid = Uuid::new();
@@ -355,10 +359,8 @@ impl Manifest {
                 format!(
                     r#"[ip]
 name = "{}"
-uuid = "{}"
 version = "0.1.0"
-
-# See more keys and their definitions at https://chaseruskin.github.io/orbit/reference/manifest.html
+uuid = "{}"
 
 [dependencies]
 "#,
@@ -369,11 +371,9 @@ version = "0.1.0"
                 format!(
                     r#"[ip]
 name = "{}"
-uuid = "{}"
 version = "0.1.0"
+uuid = "{}"
 library = "{}"
-
-# See more keys and their definitions at https://chaseruskin.github.io/orbit/reference/manifest.html
 
 [dependencies]
 "#,
