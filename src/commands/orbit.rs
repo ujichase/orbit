@@ -104,7 +104,8 @@ impl Command for Orbit {
             Ok(())
         // prioritize version information
         } else if self.version == true {
-            println!("orbit {}", REAL_VERSION);
+            let real_version = option_env!("GIT_DESC_VERSION").unwrap_or(VERSION);
+            println!("orbit {}", real_version);
             Ok(())
         // prioritize upgrade information
         } else if self.upgrade == true {
@@ -235,8 +236,6 @@ impl Subcommand<Context> for OrbitSubcommand {
 }
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
-
-const REAL_VERSION: &str = env!("GIT_DESC_VERSION");
 
 const DISCLAIMER: &str = r#"Copyright (C) 2022 - 2025  Chase Ruskin
 
