@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Fetch repository
         uses: actions/checkout@v4
+        with:
+          fetch-tags: 'true'
 
       - name: Setup python
         uses: actions/setup-python@v5
@@ -28,6 +30,16 @@ jobs:
       - name: Install python packages
         run: |
           pip install toml
+
+      - name: Encode as development version
+        if: ${{ inputs.is_release == '0' }}
+        run: |
+          echo "GIT_DESC_VERSION=$(git describe --tags)" >> $GITHUB_ENV
+
+      - name: Encode as release version
+        if: ${{ inputs.is_release == '1' }}
+        run: |
+          echo "GIT_DESC_VERSION=$(python ./tools/evalver.py --version)" >> $GITHUB_ENV
 
       - name: Configure Rust toolchain
         uses: dtolnay/rust-toolchain@master
@@ -42,16 +54,6 @@ jobs:
         run: |
           echo "target=$(cargo run --bin target-triple --quiet)" >> $GITHUB_ENV
           echo "version=$(python ./tools/evalver.py --version)" >> $GITHUB_ENV
-          
-      - name: Encode as development version
-        if: ${{ inputs.is_release == '0' }}
-        run: |
-          echo "GIT_DESC_VERSION=$(git describe --tags)" >> $GITHUB_ENV
-
-      - name: Encode as release version
-        if: ${{ inputs.is_release == '1' }}
-        run: |
-          echo "GIT_DESC_VERSION=$(python ./tools/evalver.py --version)" >> $GITHUB_ENV
 
       - name: Update application documentation
         run: python ./tools/mansync.py
