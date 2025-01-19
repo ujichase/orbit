@@ -36,7 +36,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./docker/standalone/ubuntu24/Dockerfile
+          file: ./docker/ubuntu24/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           build-args: REV=${{ github.sha }}
@@ -49,7 +49,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./docker/standalone/ubuntu24/Dockerfile
+          file: ./docker/ubuntu24/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/orbit:${{ inputs.version }}-ubuntu-24.04
@@ -76,7 +76,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./docker/standalone/ubuntu22/Dockerfile
+          file: ./docker/ubuntu22/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           build-args: REV=${{ github.sha }}
@@ -89,7 +89,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./docker/standalone/ubuntu22/Dockerfile
+          file: ./docker/ubuntu22/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/orbit:${{ inputs.version }}-ubuntu-22.04
@@ -116,7 +116,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./docker/standalone/ubuntu18/Dockerfile
+          file: ./docker/ubuntu18/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/orbit:latest-ubuntu-18.04
@@ -129,7 +129,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./docker/standalone/ubuntu18/Dockerfile
+          file: ./docker/ubuntu18/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/orbit:${{ inputs.version }}-ubuntu-18.04
