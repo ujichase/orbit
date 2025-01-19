@@ -1,6 +1,11 @@
 name: Build
 on:
   workflow_call:
+    inputs:
+      is_release:
+        description: 'Is this commit a version being released'
+        required: true
+        type: string
 
 env:
   project: orbit
@@ -37,6 +42,16 @@ jobs:
         run: |
           echo "target=$(cargo run --bin target-triple --quiet)" >> $GITHUB_ENV
           echo "version=$(python ./tools/evalver.py --version)" >> $GITHUB_ENV
+          
+      - name: Encode as development version
+        if: ${{ inputs.is_release == '0' }}
+        run: |
+          echo "GIT_DESC_VERSION=$(git describe --tags)" >> $GITHUB_ENV
+
+      - name: Encode as release version
+        if: ${{ inputs.is_release == '1' }}
+        run: |
+          echo "GIT_DESC_VERSION=$(python ./tools/evalver.py --version)" >> $GITHUB_ENV
 
       - name: Update application documentation
         run: python ./tools/mansync.py

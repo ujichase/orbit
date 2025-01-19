@@ -5,19 +5,22 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    uses: chaseruskin/orbit/.github/workflows/build.yml@trunk
-
   tools:
     uses: chaseruskin/orbit/.github/workflows/tools.yml@trunk
     
-  integrity:
-    uses: chaseruskin/orbit/.github/workflows/integrity.yml@trunk
-    needs: [tools, build]
-
   check-release:
     uses: chaseruskin/orbit/.github/workflows/check-release.yml@trunk
     needs: [tools]
+
+  build:
+    uses: chaseruskin/orbit/.github/workflows/build.yml@trunk
+    needs: [check-release]
+    with:
+      is_release: ${{ needs.check-release.outputs.ready }}
+
+  integrity:
+    uses: chaseruskin/orbit/.github/workflows/integrity.yml@trunk
+    needs: [tools, build]
 
   system-test:
     uses: chaseruskin/orbit/.github/workflows/system-test.yml@trunk

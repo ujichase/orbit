@@ -104,7 +104,7 @@ impl Command for Orbit {
             Ok(())
         // prioritize version information
         } else if self.version == true {
-            println!("orbit {}", VERSION);
+            println!("orbit {}", REAL_VERSION);
             Ok(())
         // prioritize upgrade information
         } else if self.upgrade == true {
@@ -236,7 +236,9 @@ impl Subcommand<Context> for OrbitSubcommand {
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
-const DISCLAIMER: &str = r#"Copyright (C) 2022 - 2025 Chase Ruskin
+const REAL_VERSION: &str = env!("GIT_DESC_VERSION");
+
+const DISCLAIMER: &str = r#"Copyright (C) 2022 - 2025  Chase Ruskin
 
 This program is free software, covered by the GNU General Public License. There 
 is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."#;
