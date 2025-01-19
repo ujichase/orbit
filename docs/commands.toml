@@ -711,6 +711,7 @@ synopsis = "orbit [options] [command]"
 
 options."--version" = "print version information and exit"
 options."--upgrade" = "check for the latest orbit binary"
+options."--license" = "print license information and exit"
 options."--sync" = "synchronize configured channels"
 options."--force" = "bypass interactive prompts"
 options."--color <when>" = "coloring: auto, always, never"

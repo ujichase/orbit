@@ -6,6 +6,7 @@ authors = ["Chase Ruskin <cruskin@umich.edu>"]
 keywords = ["hdl", "package-manager", "build-tool", "verilog", "vhdl"]
 repository = "https://github.com/chaseruskin/orbit"
 documentation = "https://chaseruskin.github.io/orbit"
+default-run = "orbit"
 edition = "2021"
 license = "GPL-3.0-or-later"
 

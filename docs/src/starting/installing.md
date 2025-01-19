@@ -83,3 +83,14 @@ $ orbit --version
 orbit CARGO_CRATE_VERSION
 ```
 This should print out your version of Orbit you installed. Congratulations! You are now ready to begin using Orbit.
+
+You can also review the license for Orbit:
+```
+$ orbit --license
+```
+```
+Copyright (C) 2022 - 2025 Chase Ruskin
+
+This program is free software, covered by the GNU General Public License. There 
+is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+```

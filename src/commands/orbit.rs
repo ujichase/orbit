@@ -1,5 +1,5 @@
 //
-//  Copyright (C) 2022-2024  Chase Ruskin
+//  Copyright (C) 2022-2025  Chase Ruskin
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -72,6 +72,7 @@ impl FromStr for ColorMode {
 pub struct Orbit {
     upgrade: bool,
     version: bool,
+    license: bool,
     force: bool,
     sync: bool,
     cmode: ColorMode,
@@ -84,6 +85,7 @@ impl Command for Orbit {
         Ok(Orbit {
             upgrade: cli.check(Arg::flag("upgrade"))?,
             version: cli.check(Arg::flag("version"))?,
+            license: cli.check(Arg::flag("license"))?,
             sync: cli.check(Arg::flag("sync"))?,
             force: cli.check(Arg::flag("force"))?,
             cmode: cli
@@ -96,8 +98,12 @@ impl Command for Orbit {
     fn execute(self) -> proc::Result {
         // synchronize the coloring mode
         self.cmode.sync();
+        // prioritize license information
+        if self.license == true {
+            println!("{}", DISCLAIMER);
+            Ok(())
         // prioritize version information
-        if self.version == true {
+        } else if self.version == true {
             println!("orbit {}", VERSION);
             Ok(())
         // prioritize upgrade information
@@ -229,7 +235,13 @@ impl Subcommand<Context> for OrbitSubcommand {
 }
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
-// @TODO check for additional data such as the commit being used
+
+const DISCLAIMER: &str = r#"Copyright (C) 2022 - 2025 Chase Ruskin
+
+This program is free software, covered by the GNU General Public License. There 
+is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."#;
+
+// TODO: check for additional data such as the commit being used
 
 use crate::core::version::Version;
 use crate::util::anyerror::Fault;
