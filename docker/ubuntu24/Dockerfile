@@ -3,6 +3,8 @@ FROM ubuntu:24.04
 
 # Specific commit to use when installing from git
 ARG REV
+# Specific build version
+ARG GIT_DESC_VERSION
 
 # LABEL about the custom image
 LABEL maintainer="Chase Ruskin"

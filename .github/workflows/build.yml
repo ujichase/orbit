@@ -63,12 +63,16 @@ jobs:
 
       - name: Build orbit binary
         run: cargo build --release --bin orbit
+        env:
+          GIT_DESC_VERSION: ${{ env.GIT_DESC_VERSION }}
 
       - name: Test
         run: cargo test
 
       - name: Build installer binary
         run: cargo build --release --bin install
+        env:
+          GIT_DESC_VERSION: ${{ env.GIT_DESC_VERSION }}
 
       - name: Package and compress binary executable
         run: python ./tools/pack.py ${{ env.version }}-${{ env.target }}

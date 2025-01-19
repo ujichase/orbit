@@ -119,7 +119,9 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/orbit:${{ inputs.version }}-ubuntu-22.04
-          build-args: REV=${{ github.sha }}
+          build-args: |
+            REV=${{ github.sha }}
+            GIT_DESC_VERSION=${{ env.GIT_DESC_VERSION }}
           cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/orbit:${{ inputs.version }}-ubuntu-22.04
           cache-to: type=inline
 
@@ -159,7 +161,9 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/orbit:latest-ubuntu-18.04
-          build-args: REV=${{ github.sha }}
+          build-args: |
+            REV=${{ github.sha }}
+            GIT_DESC_VERSION=${{ env.GIT_DESC_VERSION }}
           cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/orbit:latest-ubuntu-18.04
           cache-to: type=inline
 
@@ -172,6 +176,8 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/orbit:${{ inputs.version }}-ubuntu-18.04
-          build-args: REV=${{ github.sha }}
+          build-args: |
+            REV=${{ github.sha }}
+            GIT_DESC_VERSION=${{ env.GIT_DESC_VERSION }}
           cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/orbit:${{ inputs.version }}-ubuntu-18.04
           cache-to: type=inline
