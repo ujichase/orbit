@@ -72,7 +72,7 @@ jobs:
       - name: Install musl Toolchain
         if: ${{ matrix.target == 'aarch64-unknown-linux-musl' || matrix.target == 'x86_64-unknown-linux-musl' }}
         run: |
-          apt-get install musl-tools
+          sudo apt-get install musl-tools
   
       - name: Install ARM Toolchain
         if: ${{ matrix.target == 'arm-unknown-linux-musleabihf' || matrix.target == 'armv7-unknown-linux-musleabihf' }}
