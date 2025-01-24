@@ -32,4 +32,5 @@ jobs:
     - name: Upload checksums
       uses: actions/upload-artifact@v4
       with:
+        name: SHA256SUMS
         path: ./SHA256SUMS

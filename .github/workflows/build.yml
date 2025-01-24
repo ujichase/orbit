@@ -19,6 +19,7 @@ jobs:
         - x86_64-pc-windows-msvc
         - aarch64-pc-windows-msvc
         - x86_64-unknown-linux-musl
+        - x86_64-unknown-linux-gnu
         include:
         - target: aarch64-apple-darwin
           os: macos-latest
@@ -41,6 +42,9 @@ jobs:
           os: windows-latest
           target_rustflags: ''
         - target: x86_64-unknown-linux-musl
+          os: ubuntu-latest
+          target_rustflags: ''
+        - target: x86_64-unknown-linux-gnu
           os: ubuntu-latest
           target_rustflags: ''
     runs-on: ${{ matrix.os }}
