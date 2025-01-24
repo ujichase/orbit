@@ -171,33 +171,33 @@
 <ol>
 <li>Download the latest prebuilt package.</li>
 </ol>
-<pre><code>curl -LO https://github.com/chaseruskin/orbit/releases/download/0.22.1/orbit-0.22.1-x86_64-linux.zip
+<pre><code>curl -LO https://github.com/chaseruskin/orbit/releases/download/0.22.1/orbit-0.22.1-x86_64-unknown-linux-musl.tar.gz
 </code></pre>
 <ol start="2">
-<li>Unzip the prebuilt package.</li>
+<li>Extract the prebuilt package.</li>
 </ol>
-<pre><code>unzip orbit-0.22.1-x86_64-linux.zip
+<pre><code>tar -xf orbit-0.22.1-x86_64-unknown-linux-musl.tar.gz -C orbit-0.22.1
 </code></pre>
 <ol start="3">
 <li>Move the executable to a location already set in the PATH environment variable.</li>
 </ol>
-<pre><code>mv ./orbit-0.22.1-x86_64-linux/bin/orbit /usr/local/bin/orbit
+<pre><code>mv ./orbit-0.22.1/orbit /usr/local/bin/orbit
 </code></pre>
 <h3 id="macos"><a class="header" href="#macos">macOS</a></h3>
 <ol>
 <li>Download the latest prebuilt package.</li>
 </ol>
-<pre><code>curl -LO https://github.com/chaseruskin/orbit/releases/download/0.22.1/orbit-0.22.1-x86_64-macos.zip
+<pre><code>curl -LO https://github.com/chaseruskin/orbit/releases/download/0.22.1/orbit-0.22.1-x86_64-apple-darwin.tar.gz
 </code></pre>
 <ol start="2">
-<li>Unzip the prebuilt package.</li>
+<li>Extract the prebuilt package.</li>
 </ol>
-<pre><code>unzip orbit-0.22.1-x86_64-macos.zip
+<pre><code>tar -xf orbit-0.22.1-x86_64-apple-darwin.tar.gz -C orbit-0.22.1
 </code></pre>
 <ol start="3">
 <li>Move the executable to a location already set in the PATH environment variable.</li>
 </ol>
-<pre><code>mv ./orbit-0.22.1-x86_64-macos/bin/orbit /usr/local/bin/orbit
+<pre><code>mv ./orbit-0.22.1/orbit /usr/local/bin/orbit
 </code></pre>
 <h3 id="windows"><a class="header" href="#windows">Windows</a></h3>
 <ol>
@@ -208,7 +208,7 @@
 <p>Unzip the prebuilt package.</p>
 </li>
 </ol>
-<pre><code>$ expand-archive "./orbit-0.22.1-x86_64-windows.zip"
+<pre><code>$ expand-archive "./orbit-0.22.1-x86_64-windows.zip" -DestinationPath "orbit-0.22.1"
 </code></pre>
 <ol start="3">
 <li>Make a new directory to store this package.</li>
@@ -218,10 +218,10 @@
 <ol start="4">
 <li>Move the package to the new directory.</li>
 </ol>
-<pre><code>$ copy-item "./orbit-0.22.1-x86_64-windows/*" -destination "$env:LOCALAPPDATA/Programs/orbit" -recurse
+<pre><code>$ copy-item "./orbit-0.22.1/*" -destination "$env:LOCALAPPDATA/Programs/orbit" -recurse
 </code></pre>
 <ol start="5">
-<li>Edit the user-level PATH environment variable in <em><strong>Control Panel</strong></em> by adding <strong>%LOCALAPPDATA%\Programs\orbit\bin</strong>.</li>
+<li>Edit the user-level PATH environment variable in <em><strong>Control Panel</strong></em> by adding <strong>%LOCALAPPDATA%\Programs\orbit</strong>.</li>
 </ol>
 <h2 id="2-installing-with-cargo"><a class="header" href="#2-installing-with-cargo">2. Installing with Cargo</a></h2>
 <p>To install the latest version through Cargo:</p>
@@ -234,15 +234,15 @@
 </code></pre>
 <pre><code>orbit 0.22.1
 </code></pre>
-<p>This should print out your version of Orbit you installed. Congratulations! You are now ready to begin using Orbit.</p>
+<p>This should print out your version of Orbit you installed.</p>
 <p>You can also review the license for Orbit:</p>
 <pre><code>$ orbit --license
 </code></pre>
 <pre><code>Copyright (C) 2022 - 2025 Chase Ruskin
 
-This program is free software, covered by the GNU General Public License. There 
-is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is free software, covered by the GNU General Public License. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 </code></pre>
+<p>Congratulations! You are now ready to begin using Orbit.</p>
 
                     </main>
 
