@@ -51,6 +51,8 @@ const EXE_NAME: &str = "orbit.exe";
 #[cfg(not(target_os = "windows"))]
 const EXE_NAME: &str = "orbit";
 
+const EXE_DIR: &str = ""; // "bin/""
+
 /// unix installation steps (copies only the binary)
 fn unix() -> Result<(), Box<dyn std::error::Error>> {
     println!("{}", HEADER);
@@ -61,7 +63,7 @@ fn unix() -> Result<(), Box<dyn std::error::Error>> {
         let mut root = filesystem::get_exe_path()?;
         // remove file to get parent directory
         root.pop();
-        root.join("bin/".to_owned() + EXE_NAME)
+        root.join(EXE_DIR.to_owned() + EXE_NAME)
     };
 
     // verify this program was could find the executable
@@ -118,9 +120,9 @@ fn windows() -> Result<(), Box<dyn std::error::Error>> {
     };
 
     // verify this program was could find the executable
-    if contents.join("bin/".to_owned() + EXE_NAME).exists() == false {
+    if contents.join(EXE_DIR.to_owned() + EXE_NAME).exists() == false {
         return Err(InstallError::UndetectedExe(
-            contents.join("bin/".to_owned() + EXE_NAME),
+            contents.join(EXE_DIR.to_owned() + EXE_NAME),
         ))?;
     }
 
@@ -170,7 +172,7 @@ fn windows() -> Result<(), Box<dyn std::error::Error>> {
             println!(
                 "{} add {} to the user PATH variable to call `orbit` from the command-line",
                 "tip:".blue().bold(),
-                path.join("orbit/bin").display()
+                path.join("orbit".to_owned() + &{ if EXE_DIR.len() > 0 { format!("/{}", EXE_DIR) } else { String::new() } }).display()
             );
         }
         false => {
