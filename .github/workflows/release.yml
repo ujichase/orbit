@@ -16,8 +16,6 @@ jobs:
 
     - name: Download artifacts
       uses: actions/download-artifact@v4
-      with:
-        pattern: orbit-${{ inputs.version }}-*
 
     - name: Display filesystem contents
       run: ls -R
@@ -37,7 +35,7 @@ jobs:
     - name: Upload releases
       uses: ncipollo/release-action@v1
       with:
-        artifacts: '**/orbit-${{ inputs.version }}-*.zip,**/orbit-${{ inputs.version }}-checksums.txt'
+        artifacts: '**/orbit-${{ inputs.version }}-*.tar.gz,**/orbit-${{ inputs.version }}-*.zip,**/SHA256SUMS'
         bodyFile: ./RELEASE_NOTES.md
         token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ inputs.version }}

@@ -8,51 +8,7 @@ on:
         type: string
 
 jobs:
-  macos-intel-test:
-    runs-on: macos-13
-    defaults:
-      run:
-        shell: bash
-    steps:
-    - name: Fetch repository
-      uses: actions/checkout@v4
-
-    - name: Setup python
-      uses: actions/setup-python@v5
-      with:
-        python-version: 3.x
-
-    - name: Setup just
-      uses: extractions/setup-just@v2
-
-    - name: Download package
-      uses: actions/download-artifact@v4
-      with:
-        name: orbit-${{ inputs.version }}-x86_64-apple-darwin
-
-    - name: Download checksums
-      uses: actions/download-artifact@v4
-      with:
-        name: SHA256SUMS
-      
-    - name: Download sha256sum binary
-      run: brew install coreutils
-
-    - name: Verify contents
-      run: grep $(/usr/local/opt/coreutils/libexec/gnubin/sha256sum orbit-${{ inputs.version }}-x86_64-apple-darwin.tar.gz) SHA256SUMS
-
-    - name: Install Orbit
-      run: |
-        tar -xf ./orbit-${{ inputs.version }}-x86_64-apple-darwin.tar.gz
-        printf '\n\n' | ./install
-
-    - name: Test Orbit
-      run: orbit --version
-
-    - name: Run system tests
-      run: just run-sys-tests
-
-  macos-arm-test:
+  macos:
     runs-on: macos-latest
     defaults:
       run:
@@ -96,7 +52,7 @@ jobs:
     - name: Run system tests
       run: just run-sys-tests
 
-  linux-test:
+  ubuntu:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -124,7 +80,7 @@ jobs:
         name: SHA256SUMS
 
     - name: Verify contents
-      run: grep $(sha256sum orbit-${{ inputs.version }}-x86_64-linux.tar.gz) SHA256SUMS
+      run: grep $(sha256sum orbit-${{ inputs.version }}-x86_64-unknown-linux-musl.tar.gz) SHA256SUMS
 
     - name: Install Orbit
       run: |
@@ -137,7 +93,7 @@ jobs:
     - name: Run system tests
       run: just run-sys-tests
     
-  windows-test:
+  windows:
     runs-on: windows-latest
     defaults:
       run:
@@ -161,7 +117,7 @@ jobs:
 
     - name: Install Orbit
       run: |
-        unzip ./orbit-${{ inputs.version }}-x86_64-pc-windows-msvc.zip
+        unzip -o ./orbit-${{ inputs.version }}-x86_64-pc-windows-msvc.zip
         printf 'C:/users/runneradmin\n\n' | ./orbit-${{ inputs.version }}-x86_64-pc-windows-msvc.zip/install.exe 
 
     - name: Add Orbit to PATH
