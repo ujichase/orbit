@@ -124,7 +124,7 @@ jobs:
         name: SHA256SUMS
 
     - name: Verify contents
-      run: grep $(sha256sum orbit-${{ inputs.version }}-x86_64-linux.zip) SHA256SUMS
+      run: grep $(sha256sum orbit-${{ inputs.version }}-x86_64-linux.tar.gz) SHA256SUMS
 
     - name: Install Orbit
       run: |

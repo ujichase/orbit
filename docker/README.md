@@ -6,6 +6,5 @@ The images are stand-alone with `orbit` ready-to-use on a base operating system 
 
 Operating System | Tags
 -- | --
-ubuntu 18.04 | latest
 ubuntu 22.04 | latest
 ubuntu 24.04 | latest
