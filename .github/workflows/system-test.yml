@@ -44,7 +44,7 @@ jobs:
     - name: Install Orbit
       run: |
         tar -xf ./orbit-${{ inputs.version }}-x86_64-apple-darwin.tar.gz
-        printf '\n\n' | ./orbit-${{ inputs.version }}-x86_64-apple-darwin/install
+        printf '\n\n' | ./install
 
     - name: Test Orbit
       run: orbit --version
@@ -88,7 +88,7 @@ jobs:
     - name: Install Orbit
       run: |
         tar -xf ./orbit-${{ inputs.version }}-aarch64-apple-darwin.tar.gz
-        printf '\n\n' | ./orbit-${{ inputs.version }}-aarch64-apple-darwin/install
+        printf '\n\n' | ./install
 
     - name: Test Orbit
       run: orbit --version
@@ -129,7 +129,7 @@ jobs:
     - name: Install Orbit
       run: |
         tar -xf ./orbit-${{ inputs.version }}-x86_64-unknown-linux-musl.tar.gz
-        printf '\n\n' | ./orbit-${{ inputs.version }}-x86_64-unknown-linux-musl/install
+        printf '\n\n' | ./install
 
     - name: Test Orbit
       run: orbit --version
