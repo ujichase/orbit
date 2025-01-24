@@ -21,16 +21,15 @@ jobs:
       run: ls -R
 
     - name: Identify current version
-      run: echo "version=$(./tools/evalver.py --version)" >> $GITHUB_ENV
+      run: echo "VERSION=$(./tools/evalver.py --version)" >> $GITHUB_ENV
 
     - name: Compute checksums
-      run: echo "$(./tools/sum.py "./**/orbit-*.zip")" > ./orbit-${{ env.version }}-checksums.txt
+      run: echo "$(./tools/sum.py "./**/orbit-*.*")" > ./SHA256SUMS
 
     - name: Review checksums
-      run: cat ./orbit-${{ env.version }}-checksums.txt
+      run: cat ./SHA256SUMS
 
     - name: Upload checksums
       uses: actions/upload-artifact@v4
       with:
-        name: orbit-${{ env.version }}-checksums
-        path: ./orbit-${{ env.version }}-checksums.txt
+        path: ./SHA256SUMS

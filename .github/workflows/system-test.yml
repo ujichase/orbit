@@ -28,23 +28,23 @@ jobs:
     - name: Download package
       uses: actions/download-artifact@v4
       with:
-        name: orbit-${{ inputs.version }}-x86_64-macos
+        name: orbit-${{ inputs.version }}-x86_64-apple-darwin
 
     - name: Download checksums
       uses: actions/download-artifact@v4
       with:
-        name: orbit-${{ inputs.version }}-checksums
+        name: SHA256SUMS
       
     - name: Download sha256sum binary
       run: brew install coreutils
 
     - name: Verify contents
-      run: grep $(/usr/local/opt/coreutils/libexec/gnubin/sha256sum orbit-${{ inputs.version }}-x86_64-macos.zip) orbit-${{ inputs.version }}-checksums.txt
+      run: grep $(/usr/local/opt/coreutils/libexec/gnubin/sha256sum orbit-${{ inputs.version }}-x86_64-apple-darwin.tar.gz) SHA256SUMS
 
     - name: Install Orbit
       run: |
-        unzip ./orbit-${{ inputs.version }}-x86_64-macos.zip
-        printf '\n\n' | ./orbit-${{ inputs.version }}-x86_64-macos/install
+        tar -xf ./orbit-${{ inputs.version }}-x86_64-apple-darwin.tar.gz
+        printf '\n\n' | ./orbit-${{ inputs.version }}-x86_64-apple-darwin/install
 
     - name: Test Orbit
       run: orbit --version
@@ -72,23 +72,23 @@ jobs:
     - name: Download package
       uses: actions/download-artifact@v4
       with:
-        name: orbit-${{ inputs.version }}-aarch64-macos
+        name: orbit-${{ inputs.version }}-aarch64-apple-darwin
 
     - name: Download checksums
       uses: actions/download-artifact@v4
       with:
-        name: orbit-${{ inputs.version }}-checksums
+        name: SHA256SUMS
       
     - name: Download sha256sum binary
       run: brew install coreutils
 
     - name: Verify contents
-      run: grep $(sha256sum orbit-${{ inputs.version }}-aarch64-macos.zip) orbit-${{ inputs.version }}-checksums.txt
+      run: grep $(sha256sum orbit-${{ inputs.version }}-aarch64-apple-darwin.tar.gz) SHA256SUMS
 
     - name: Install Orbit
       run: |
-        unzip ./orbit-${{ inputs.version }}-aarch64-macos.zip
-        printf '\n\n' | ./orbit-${{ inputs.version }}-aarch64-macos/install
+        tar -xf ./orbit-${{ inputs.version }}-aarch64-apple-darwin.tar.gz
+        printf '\n\n' | ./orbit-${{ inputs.version }}-aarch64-apple-darwin/install
 
     - name: Test Orbit
       run: orbit --version
@@ -116,20 +116,20 @@ jobs:
     - name: Download package
       uses: actions/download-artifact@v4
       with:
-        name: orbit-${{ inputs.version }}-x86_64-linux
+        name: orbit-${{ inputs.version }}-x86_64-unknown-linux-musl.tar.gz
 
     - name: Download checksums
       uses: actions/download-artifact@v4
       with:
-        name: orbit-${{ inputs.version }}-checksums
+        name: SHA256SUMS
 
     - name: Verify contents
-      run: grep $(sha256sum orbit-${{ inputs.version }}-x86_64-linux.zip) orbit-${{ inputs.version }}-checksums.txt
+      run: grep $(sha256sum orbit-${{ inputs.version }}-x86_64-linux.zip) SHA256SUMS
 
     - name: Install Orbit
       run: |
-        unzip ./orbit-${{ inputs.version }}-x86_64-linux.zip
-        printf '\n\n' | ./orbit-${{ inputs.version }}-x86_64-linux/install
+        tar -xf ./orbit-${{ inputs.version }}-x86_64-unknown-linux-musl.tar.gz
+        printf '\n\n' | ./orbit-${{ inputs.version }}-x86_64-unknown-linux-musl/install
 
     - name: Test Orbit
       run: orbit --version
@@ -157,12 +157,12 @@ jobs:
     - name: Download package
       uses: actions/download-artifact@v4
       with:
-        name: orbit-${{ inputs.version }}-x86_64-windows
+        name: orbit-${{ inputs.version }}-x86_64-pc-windows-msvc.zip
 
     - name: Install Orbit
       run: |
-        unzip ./orbit-${{ inputs.version }}-x86_64-windows.zip
-        printf 'C:/users/runneradmin\n\n' | ./orbit-${{ inputs.version }}-x86_64-windows/install.exe 
+        unzip ./orbit-${{ inputs.version }}-x86_64-pc-windows-msvc.zip
+        printf 'C:/users/runneradmin\n\n' | ./orbit-${{ inputs.version }}-x86_64-pc-windows-msvc.zip/install.exe 
 
     - name: Add Orbit to PATH
       run: echo "C:/users/runneradmin/orbit/bin" >> $GITHUB_PATH

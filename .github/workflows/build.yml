@@ -1,20 +1,48 @@
 name: Build
 on:
   workflow_call:
-    inputs:
-      is_release:
-        description: 'Is this commit a version being released'
-        required: true
-        type: string
 
 env:
-  project: orbit
+  PROJ_NAME: orbit
+  RUSTFLAGS: --deny warnings
 
 jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-13, macos-latest]
+        target:
+        - aarch64-apple-darwin
+        - aarch64-unknown-linux-musl
+        - arm-unknown-linux-musleabihf
+        - armv7-unknown-linux-musleabihf
+        - x86_64-apple-darwin
+        - x86_64-pc-windows-msvc
+        - aarch64-pc-windows-msvc
+        - x86_64-unknown-linux-musl
+        include:
+        - target: aarch64-apple-darwin
+          os: macos-latest
+          target_rustflags: ''
+        - target: aarch64-unknown-linux-musl
+          os: ubuntu-latest
+          target_rustflags: '--codegen linker=aarch64-linux-gnu-gcc'
+        - target: arm-unknown-linux-musleabihf
+          os: ubuntu-latest
+          target_rustflags: '--codegen linker=arm-linux-gnueabihf-gcc'
+        - target: armv7-unknown-linux-musleabihf
+          os: ubuntu-latest
+          target_rustflags: '--codegen linker=arm-linux-gnueabihf-gcc'
+        - target: x86_64-apple-darwin
+          os: macos-latest
+          target_rustflags: ''
+        - target: x86_64-pc-windows-msvc
+          os: windows-latest
+        - target: aarch64-pc-windows-msvc
+          os: windows-latest
+          target_rustflags: ''
+        - target: x86_64-unknown-linux-musl
+          os: ubuntu-latest
+          target_rustflags: ''
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -35,16 +63,27 @@ jobs:
         run: |
           pip install toml
 
-      - name: Encode as development version
-        if: ${{ inputs.is_release == '0' }}
+      - name: Install AArch64 Toolchain
+        if: ${{ matrix.target == 'aarch64-unknown-linux-musl' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install gcc-aarch64-linux-gnu libc6-dev-i386
+  
+      - name: Install ARM Toolchain
+        if: ${{ matrix.target == 'arm-unknown-linux-musleabihf' || matrix.target == 'armv7-unknown-linux-musleabihf' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install gcc-arm-linux-gnueabihf
+  
+      - name: Install AArch64 Toolchain (Windows)
+        if: ${{ matrix.target == 'aarch64-pc-windows-msvc' }}
+        run: |
+          rustup target add aarch64-pc-windows-msvc
+
+      - name: Encode the build version
         run: |
           echo "GIT_DESC_VERSION=$(git describe --tags)" >> $GITHUB_ENV
-
-      - name: Encode as release version
-        if: ${{ inputs.is_release == '1' }}
-        run: |
-          echo "GIT_DESC_VERSION=$(python ./tools/evalver.py --version)" >> $GITHUB_ENV
-
+        
       - name: Configure Rust toolchain
         uses: dtolnay/rust-toolchain@master
         with:
@@ -53,32 +92,27 @@ jobs:
       - name: Enable Cargo caching
         uses: Swatinem/rust-cache@v2
 
-      - name: Identify target triple and current version
+      - name: Identify current version
         run: |
-          echo "target=$(cargo run --bin target-triple --quiet)" >> $GITHUB_ENV
-          echo "version=$(python ./tools/evalver.py --version)" >> $GITHUB_ENV
+          echo "VERSION=$(python ./tools/evalver.py --version)" >> $GITHUB_ENV
 
       - name: Update application documentation
         run: python ./tools/mansync.py
 
-      - name: Build orbit binary
-        run: cargo build --release --bin orbit
-        env:
-          GIT_DESC_VERSION: ${{ env.GIT_DESC_VERSION }}
-
       - name: Test
         run: cargo test
 
-      - name: Build installer binary
-        run: cargo build --release --bin install
+      - name: Package
+        id: package
         env:
+          TARGET: ${{ matrix.target }}
+          VERSION: ${{ env.VERSION }}
           GIT_DESC_VERSION: ${{ env.GIT_DESC_VERSION }}
-
-      - name: Package and compress binary executable
-        run: python ./tools/pack.py ${{ env.version }}-${{ env.target }}
+          OS: ${{ matrix.os }}
+          TARGET_RUSTFLAGS: ${{ matrix.target_rustflags }}
+        run: ./tools/package
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.project }}-${{ env.version }}-${{ env.target }}
-          path: ./${{ env.project }}-${{ env.version }}-${{ env.target }}.zip
+          path: ${{ steps.package.outputs.archive }}

@@ -14,9 +14,7 @@ jobs:
 
   build:
     uses: chaseruskin/orbit/.github/workflows/build.yml@trunk
-    needs: [check-release]
-    with:
-      is_release: ${{ needs.check-release.outputs.ready }}
+    needs: [tools]
 
   integrity:
     uses: chaseruskin/orbit/.github/workflows/integrity.yml@trunk
