@@ -79,7 +79,7 @@ jobs:
         if: ${{ matrix.target == 'arm-unknown-linux-musleabihf' || matrix.target == 'armv7-unknown-linux-musleabihf' }}
         run: |
           sudo apt-get update
-          sudo apt-get install gcc-arm-linux-gnueabihf arm-linux-musleabihf-gcc
+          sudo apt-get install gcc-arm-linux-gnueabihf musl-tools
   
       - name: Install AArch64 Toolchain (Windows)
         if: ${{ matrix.target == 'aarch64-pc-windows-msvc' }}
