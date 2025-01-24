@@ -26,12 +26,12 @@ jobs:
         - target: aarch64-unknown-linux-musl
           os: ubuntu-latest
           target_rustflags: '--codegen linker=aarch64-linux-gnu-gcc'
-        - target: arm-unknown-linux-musleabihf
-          os: ubuntu-latest
-          target_rustflags: '--codegen linker=arm-linux-gnueabihf-gcc'
-        - target: armv7-unknown-linux-musleabihf
-          os: ubuntu-latest
-          target_rustflags: '--codegen linker=arm-linux-gnueabihf-gcc'
+        # - target: arm-unknown-linux-musleabihf
+        #   os: ubuntu-latest
+        #   target_rustflags: '--codegen linker=arm-linux-gnueabihf-gcc'
+        # - target: armv7-unknown-linux-musleabihf
+        #   os: ubuntu-latest
+        #   target_rustflags: '--codegen linker=arm-linux-gnueabihf-gcc'
         - target: x86_64-apple-darwin
           os: macos-latest
           target_rustflags: ''
@@ -104,9 +104,6 @@ jobs:
 
       - name: Update application documentation
         run: python ./tools/mansync.py
-
-      - name: Test
-        run: cargo test
 
       - name: Package
         id: package

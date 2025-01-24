@@ -12,9 +12,12 @@ jobs:
     uses: chaseruskin/orbit/.github/workflows/check-release.yml@trunk
     needs: [tools]
 
+  test:
+    uses: chaseruskin/orbit/.github/workflows/test.yml@trunk
+
   build:
     uses: chaseruskin/orbit/.github/workflows/build.yml@trunk
-    needs: [tools]
+    needs: [tools, test]
 
   integrity:
     uses: chaseruskin/orbit/.github/workflows/integrity.yml@trunk
