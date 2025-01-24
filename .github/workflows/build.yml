@@ -12,7 +12,7 @@ jobs:
       matrix:
         target:
         - aarch64-apple-darwin
-        - aarch64-unknown-linux-musl
+        # - aarch64-unknown-linux-musl
         # - arm-unknown-linux-musleabihf
         # - armv7-unknown-linux-musleabihf
         - x86_64-apple-darwin
@@ -23,9 +23,9 @@ jobs:
         - target: aarch64-apple-darwin
           os: macos-latest
           target_rustflags: ''
-        - target: aarch64-unknown-linux-musl
-          os: ubuntu-latest
-          target_rustflags: '--codegen linker=aarch64-linux-gnu-gcc'
+        # - target: aarch64-unknown-linux-musl
+        #   os: ubuntu-latest
+        #   target_rustflags: '--codegen linker=aarch64-linux-gnu-gcc'
         # - target: arm-unknown-linux-musleabihf
         #   os: ubuntu-latest
         #   target_rustflags: '--codegen linker=arm-linux-gnueabihf-gcc'
