@@ -14,8 +14,6 @@ rc.bash
 install.sh
 install.ps1
 
-/tools/target-triple.exe
-
 .DS_Store
 
 /src/commands/template.txt

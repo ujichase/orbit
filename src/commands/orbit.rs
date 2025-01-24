@@ -105,7 +105,11 @@ impl Command for Orbit {
         // prioritize version information
         } else if self.version == true {
             let real_version = option_env!("GIT_DESC_VERSION").unwrap_or(VERSION);
-            println!("orbit {}", real_version);
+            let disp_version = match real_version.len() {
+                0 => format!("{} (build)", VERSION),
+                _ => format!("{}", real_version),
+            };
+            println!("orbit {}", disp_version);
             Ok(())
         // prioritize upgrade information
         } else if self.upgrade == true {

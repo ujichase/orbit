@@ -19,6 +19,12 @@ if [[ $TARGET == aarch64-unknown-linux-musl ]]; then
   export CC=aarch64-linux-gnu-gcc
 fi
 
+if [ $TARGET == armv7-unknown-linux-musleabihf ] || [ $TARGET == arm-unknown-linux-musleabihf ]; then
+    export CARGO_TARGET_ARM_UNKNOWN_LINUX_MUSLEABIHF_LINKER=arm-linux-gnueabihf-ld 
+    export REALGCC=arm-linux-gnueabihf-gcc-8 
+    export TARGET_CC=musl-gcc
+fi
+
 echo "Building orbit installer..."
 RUSTFLAGS="--deny warnings --codegen target-feature=+crt-static $TARGET_RUSTFLAGS" \
   cargo build --bin install --target $TARGET --release
