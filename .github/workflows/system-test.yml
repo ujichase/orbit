@@ -117,8 +117,8 @@ jobs:
 
     - name: Install Orbit
       run: |
-        unzip -o ./orbit-${{ inputs.version }}-x86_64-pc-windows-msvc.zip
-        printf 'C:/users/runneradmin\n\n' | ./install.exe 
+        unzip -o ./orbit-${{ inputs.version }}-x86_64-pc-windows-msvc.zip -d orbit
+        printf 'C:/users/runneradmin\n\n' | ./orbit/install.exe 
 
     - name: Add Orbit to PATH
       run: echo "C:/users/runneradmin/orbit" >> $GITHUB_PATH
