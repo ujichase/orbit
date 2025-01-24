@@ -21,7 +21,7 @@ fi
 
 if [ $TARGET == armv7-unknown-linux-musleabihf ] || [ $TARGET == arm-unknown-linux-musleabihf ]; then
     export CARGO_TARGET_ARM_UNKNOWN_LINUX_MUSLEABIHF_LINKER=arm-linux-gnueabihf-ld 
-    export REALGCC=arm-linux-gnueabihf-gcc-8 
+    export REALGCC=arm-linux-gnueabihf-gcc
     export TARGET_CC=musl-gcc
 fi
 
