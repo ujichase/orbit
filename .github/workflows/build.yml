@@ -120,4 +120,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
+          name: ${{ env.PROJ_NAME }}-${{ env.VERSION }}-${{ matrix.target }}
           path: ${{ steps.package.outputs.archive }}
