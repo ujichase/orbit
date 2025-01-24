@@ -172,7 +172,17 @@ fn windows() -> Result<(), Box<dyn std::error::Error>> {
             println!(
                 "{} add {} to the user PATH variable to call `orbit` from the command-line",
                 "tip:".blue().bold(),
-                path.join("orbit".to_owned() + &{ if EXE_DIR.len() > 0 { format!("/{}", EXE_DIR) } else { String::new() } }).display()
+                path.join(
+                    "orbit".to_owned()
+                        + &{
+                            if EXE_DIR.len() > 0 {
+                                format!("/{}", EXE_DIR)
+                            } else {
+                                String::new()
+                            }
+                        }
+                )
+                .display()
             );
         }
         false => {

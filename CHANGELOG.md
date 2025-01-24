@@ -15,9 +15,15 @@ Add `- unreleased` along the next future version to prevent CI/CD from triggerin
 
 # Changelog
 
-## 0.22.2 - unreleased
+## 0.22.2
+
+### Additions
+- adds `--license` flag to display Orbit's license overview
+- adds additional details to `--version` if it derives from a specific build that's not a tagged version
 
 ### Changes
+- adjusts upgrade process with new packaging structure
+- updates packaging for continuous integration and adds more targets
 - removes comment from new manifests and instead displays link to manifest reference page through command-line print statement
 
 ## 0.22.1

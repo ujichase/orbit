@@ -104,10 +104,12 @@ impl Command for Orbit {
             Ok(())
         // prioritize version information
         } else if self.version == true {
-            let real_version = option_env!("GIT_DESC_VERSION").unwrap_or(VERSION);
-            let disp_version = match real_version.len() {
-                0 => format!("{} (build)", VERSION),
-                _ => format!("{}", real_version),
+            let disp_version = match option_env!("GIT_DESC_VERSION") {
+                Some(build) => match build.len() {
+                    0 => format!("{} (unknown.build)", VERSION),
+                    _ => format!("{} ({})", VERSION, Self::format_build_tag(build)),
+                },
+                None => VERSION.to_owned(),
             };
             println!("orbit {}", disp_version);
             Ok(())
@@ -241,10 +243,12 @@ impl Subcommand<Context> for OrbitSubcommand {
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
-const DISCLAIMER: &str = r#"Copyright (C) 2022 - 2025  Chase Ruskin
+const REPOSITORY: &str = env!("CARGO_PKG_REPOSITORY");
 
-This program is free software, covered by the GNU General Public License. There 
-is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."#;
+const DISCLAIMER: &str = r#"Copyright (C) 2022-2025  Chase Ruskin
+
+Orbit is free software, covered by the GNU General Public License. There is NO 
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."#;
 
 // TODO: check for additional data such as the commit being used
 
@@ -253,23 +257,50 @@ use crate::util::anyerror::Fault;
 use crate::util::filesystem::get_exe_path;
 use crate::util::sha256;
 use curl::easy::{Easy, List};
+#[cfg(not(target_os = "windows"))]
+use flate2::read::GzDecoder;
 use std::env::consts;
 use std::fs;
 use std::io::Write;
 use std::path::Path;
 use std::str::FromStr;
+#[cfg(not(target_os = "windows"))]
+use tar::Archive;
 use tempfile;
+#[cfg(target_os = "windows")]
 use zip;
+#[cfg(target_os = "windows")]
 use zip::ZipArchive;
 
 use serde_json::Value;
 
 pub const RESPONSE_OKAY: u32 = 200;
 
+#[cfg(target_os = "windows")]
+const PKG_EXT: &str = "zip";
+#[cfg(not(target_os = "windows"))]
+const PKG_EXT: &str = "tar.gz";
+
 impl Orbit {
-    /// Returns current machine's target as `<arch>-<os>`.
-    fn target_triple() -> String {
-        format!("{}-{}", std::env::consts::ARCH, std::env::consts::OS)
+    /// Formats a build tag.
+    fn format_build_tag(s: &str) -> String {
+        match s.contains("-") {
+            true => {
+                let tmp = s.replacen("-", ".r", 1);
+                tmp.replacen("-", ".", 1)
+            }
+            false => s.to_owned(),
+        }
+    }
+
+    /// Returns the normal repository url.
+    fn get_url(repo: &str) -> String {
+        repo.to_owned()
+    }
+
+    /// Returns the GitHub API url.
+    fn get_api_url(repo: &str) -> String {
+        repo.replace("github.com", "api.github.com/repos")
     }
 
     /// Runs a process to check for an updated version of Orbit on GitHub to install.
@@ -305,12 +336,12 @@ impl Orbit {
         }
 
         // check the connection to grab latest html data
-        let api_url: &str = "https://api.github.com/repos/chaseruskin/orbit/releases/latest";
+        let api_url: String = Self::get_api_url(REPOSITORY) + "/releases/latest";
 
         let mut dst = Vec::new();
         {
             let mut easy = Easy::new();
-            easy.url(api_url).unwrap();
+            easy.url(&api_url).unwrap();
             easy.follow_location(false).unwrap();
             // create headers
             let mut list = List::new();
@@ -365,14 +396,11 @@ impl Orbit {
             ));
         }
 
-        let base_url: &str = "https://github.com/chaseruskin/orbit/releases";
+        let base_url: String = Self::get_url(REPOSITORY) + "/releases";
 
         // download the list of checksums
         println!("info: downloading update...");
-        let sum_url = format!(
-            "{0}/download/{1}/orbit-{1}-checksums.txt",
-            &base_url, &latest
-        );
+        let sum_url = format!("{0}/download/{1}/SHA256SUMS", &base_url, &latest);
 
         let mut dst = Vec::new();
         {
@@ -398,9 +426,13 @@ impl Orbit {
         let checksums: String = String::from_utf8(dst)?;
 
         // store user's target
-        let target = Orbit::target_triple();
+        let target: &str = if let Some(tar) = option_env!("TARGET") {
+            tar
+        } else {
+            return Err(Box::new(UpgradeError::UndefinedTarget))?;
+        };
 
-        let pkg = format!("orbit-{}-{}.zip", &latest, &target);
+        let pkg = format!("orbit-{}-{}.{}", &latest, &target, PKG_EXT);
         // search the checksums to check if the desired pkg is available for download
         let cert = checksums.split_terminator('\n').find_map(|p| {
             let (cert, key) = p.split_once(' ').expect("bad checksum file format");
@@ -413,7 +445,7 @@ impl Orbit {
         // verify there was a certificate/checksum for the requested pkg
         let cert = match cert {
             Some(c) => c,
-            None => return Err(Box::new(UpgradeError::UnsupportedTarget(target)))?,
+            None => return Err(Box::new(UpgradeError::UnsupportedTarget(target.to_owned())))?,
         };
 
         // download the zip pkg file
@@ -456,13 +488,24 @@ impl Orbit {
 
         // unzip the bytes and put file in temporary file
         println!("info: installing update...");
+
+        // assign the bytes to a temporary file
         let mut temp_file = tempfile::tempfile()?;
         temp_file.write_all(&body_bytes)?;
-        let mut zip_archive = ZipArchive::new(temp_file)?;
 
         // decompress zip file to a temporary directory
         let temp_dir = tempfile::tempdir()?;
-        zip_archive.extract(&temp_dir)?;
+        #[cfg(target_os = "windows")]
+        {
+            let mut zip_archive = ZipArchive::new(temp_file)?;
+            zip_archive.extract(&temp_dir)?;
+        }
+        #[cfg(not(target_os = "windows"))]
+        {
+            let tar = GzDecoder::new(temp_file);
+            let mut archive = Archive::new(tar);
+            archive.unpack(&temp_dir)?;
+        }
 
         let exe_ext = if consts::EXE_EXTENSION.is_empty() == true {
             ""
@@ -471,16 +514,13 @@ impl Orbit {
         };
 
         // verify the path to the new executable exists before renaming current binary
-        let temp_exe_path = temp_dir.path().join(&format!(
-            "orbit-{}-{}/bin/orbit{}",
-            &latest, &target, &exe_ext
-        ));
+        let temp_exe_path = temp_dir.path().join(&format!("orbit{}", &exe_ext));
         if Path::exists(&temp_exe_path) == false {
             return Err(Box::new(UpgradeError::MissingExe))?;
         }
 
         // rename the current binary with its version to become a 'stale binary'
-        let stale_exe_path = current_exe_dir.join(&format!("orbit-{}", VERSION));
+        let stale_exe_path = current_exe_dir.join(&format!("orbit-{}{}", VERSION, exe_ext));
         fs::rename(&exe_path, &stale_exe_path)?;
 
         // copy the executable from the temporary directory to the original location
@@ -496,6 +536,7 @@ impl Orbit {
 #[derive(Debug, PartialEq)]
 pub enum UpgradeError {
     UnsupportedTarget(String),
+    UndefinedTarget,
     FailedConnection(String, u32),
     FailedDownload(String, u32),
     NoReleasesFound,
@@ -508,6 +549,7 @@ impl std::error::Error for UpgradeError {}
 impl std::fmt::Display for UpgradeError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
         match self {
+            Self::UndefinedTarget => write!(f, "target triple is undefined"),
             Self::MissingExe => write!(f, "failed to find the binary in the downloaded package"),
             Self::BadChecksum(computed, ideal) => write!(
                 f,

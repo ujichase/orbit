@@ -15,33 +15,33 @@ There are multiple solutions to accomplish step 3. The following outlines one wa
 ### Linux
 1. Download the latest prebuilt package.
 ```
-curl -LO https://github.com/chaseruskin/orbit/releases/download/CARGO_CRATE_VERSION/orbit-CARGO_CRATE_VERSION-x86_64-linux.zip
+curl -LO https://github.com/chaseruskin/orbit/releases/download/CARGO_CRATE_VERSION/orbit-CARGO_CRATE_VERSION-x86_64-unknown-linux-musl.tar.gz
 ```
 
-2. Unzip the prebuilt package.
+2. Extract the prebuilt package.
 ```
-unzip orbit-CARGO_CRATE_VERSION-x86_64-linux.zip
+tar -xf orbit-CARGO_CRATE_VERSION-x86_64-unknown-linux-musl.tar.gz -C orbit-CARGO_CRATE_VERSION
 ```
 
 3. Move the executable to a location already set in the PATH environment variable. 
 ```
-mv ./orbit-CARGO_CRATE_VERSION-x86_64-linux/bin/orbit /usr/local/bin/orbit
+mv ./orbit-CARGO_CRATE_VERSION/orbit /usr/local/bin/orbit
 ```
 
 ### macOS
 1. Download the latest prebuilt package.
 ```
-curl -LO https://github.com/chaseruskin/orbit/releases/download/CARGO_CRATE_VERSION/orbit-CARGO_CRATE_VERSION-x86_64-macos.zip
+curl -LO https://github.com/chaseruskin/orbit/releases/download/CARGO_CRATE_VERSION/orbit-CARGO_CRATE_VERSION-x86_64-apple-darwin.tar.gz
 ```
 
-2. Unzip the prebuilt package.
+2. Extract the prebuilt package.
 ```
-unzip orbit-CARGO_CRATE_VERSION-x86_64-macos.zip
+tar -xf orbit-CARGO_CRATE_VERSION-x86_64-apple-darwin.tar.gz -C orbit-CARGO_CRATE_VERSION
 ```
 
 3. Move the executable to a location already set in the PATH environment variable. 
 ```
-mv ./orbit-CARGO_CRATE_VERSION-x86_64-macos/bin/orbit /usr/local/bin/orbit
+mv ./orbit-CARGO_CRATE_VERSION/orbit /usr/local/bin/orbit
 ```
 
 ### Windows
@@ -49,7 +49,7 @@ mv ./orbit-CARGO_CRATE_VERSION-x86_64-macos/bin/orbit /usr/local/bin/orbit
 
 2. Unzip the prebuilt package.
 ```
-$ expand-archive "./orbit-CARGO_CRATE_VERSION-x86_64-windows.zip"
+$ expand-archive "./orbit-CARGO_CRATE_VERSION-x86_64-windows.zip" -DestinationPath "orbit-CARGO_CRATE_VERSION"
 ```
 
 3. Make a new directory to store this package.
@@ -59,10 +59,10 @@ $ new-item -path "$env:LOCALAPPDATA/Programs/orbit" -itemtype directory
 
 4. Move the package to the new directory.
 ```
-$ copy-item "./orbit-CARGO_CRATE_VERSION-x86_64-windows/*" -destination "$env:LOCALAPPDATA/Programs/orbit" -recurse
+$ copy-item "./orbit-CARGO_CRATE_VERSION/*" -destination "$env:LOCALAPPDATA/Programs/orbit" -recurse
 ```
 
-5. Edit the user-level PATH environment variable in ___Control Panel___ by adding __%LOCALAPPDATA%\Programs\orbit\bin__.
+5. Edit the user-level PATH environment variable in ___Control Panel___ by adding __%LOCALAPPDATA%\Programs\orbit__.
 
 ## 2. Installing with Cargo
 
@@ -82,7 +82,7 @@ $ orbit --version
 ```
 orbit CARGO_CRATE_VERSION
 ```
-This should print out your version of Orbit you installed. Congratulations! You are now ready to begin using Orbit.
+This should print out your version of Orbit you installed. 
 
 You can also review the license for Orbit:
 ```
@@ -91,6 +91,7 @@ $ orbit --license
 ```
 Copyright (C) 2022 - 2025 Chase Ruskin
 
-This program is free software, covered by the GNU General Public License. There 
-is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is free software, covered by the GNU General Public License. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ```
+
+Congratulations! You are now ready to begin using Orbit.
