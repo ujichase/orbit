@@ -16,6 +16,15 @@ jobs:
 
     - name: Download artifacts
       uses: actions/download-artifact@v4
+      with:
+        name: SHA256SUMS
+        merge-multiple: true
+
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+      with:
+        pattern: orbit-${{ inputs.version }}-*
+        merge-multiple: true
 
     - name: Display filesystem contents
       run: ls -R
@@ -35,7 +44,7 @@ jobs:
     - name: Upload releases
       uses: ncipollo/release-action@v1
       with:
-        artifacts: '**/orbit-${{ inputs.version }}-*.tar.gz,**/orbit-${{ inputs.version }}-*.zip,**/SHA256SUMS'
+        artifacts: 'SHA256SUMS,orbit-${{ inputs.version }}-*.tar.gz,orbit-${{ inputs.version }}-*.zip'
         bodyFile: ./RELEASE_NOTES.md
         token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ inputs.version }}
