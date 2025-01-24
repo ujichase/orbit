@@ -261,6 +261,10 @@ use curl::easy::{Easy, List};
 use flate2::read::GzDecoder;
 use std::env::consts;
 use std::fs;
+#[cfg(not(target_os = "windows"))]
+use std::io::Seek;
+#[cfg(not(target_os = "windows"))]
+use std::io::SeekFrom;
 use std::io::Write;
 use std::path::Path;
 use std::str::FromStr;
@@ -399,7 +403,7 @@ impl Orbit {
         let base_url: String = Self::get_url(REPOSITORY) + "/releases";
 
         // download the list of checksums
-        println!("info: downloading update...");
+        println!("info: downloading checksums...");
         let sum_url = format!("{0}/download/{1}/SHA256SUMS", &base_url, &latest);
 
         let mut dst = Vec::new();
@@ -448,6 +452,8 @@ impl Orbit {
             None => return Err(Box::new(UpgradeError::UnsupportedTarget(target.to_owned())))?,
         };
 
+        println!("info: found supported target: {}", target);
+
         // download the zip pkg file
         let pkg_url = format!("{}/download/{}/{}", &base_url, &latest, &pkg);
         // let res = reqwest::get(&pkg_url).await?;
@@ -456,6 +462,7 @@ impl Orbit {
         // }
         // let body_bytes = res.bytes().await?;
 
+        println!("info: downloading update...");
         let mut body_bytes = Vec::new();
         {
             let mut easy = Easy::new();
@@ -502,6 +509,7 @@ impl Orbit {
         }
         #[cfg(not(target_os = "windows"))]
         {
+            temp_file.seek(SeekFrom::Start(0))?;
             let tar = GzDecoder::new(temp_file);
             let mut archive = Archive::new(tar);
             archive.unpack(&temp_dir)?;

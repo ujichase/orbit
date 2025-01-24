@@ -15,6 +15,11 @@ Add `- unreleased` along the next future version to prevent CI/CD from triggerin
 
 # Changelog
 
+## 0.22.3 - unreleased
+
+### Fixes
+- fixes upgrade issue when trying to extract newer .tar.gz for on macOS
+
 ## 0.22.2
 
 ### Additions
