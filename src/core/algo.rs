@@ -112,10 +112,7 @@ fn graph_ip<'a>(
                                                 dupe.get_name().to_string(),
                                                 relative_ip.get_man().get_ip().into_ip_spec(),
                                                 PathBuf::from(dupe.get_source_file()),
-                                                dupe.get_vhdl_symbol()
-                                                    .unwrap()
-                                                    .get_position()
-                                                    .clone(),
+                                                dupe.get_position().clone(),
                                             )),
                                         ))?;
                                     } else {
@@ -125,10 +122,7 @@ fn graph_ip<'a>(
                                                 dupe.get_name().to_string(),
                                                 relative_ip.get_man().get_ip().into_ip_spec(),
                                                 PathBuf::from(dupe.get_source_file()),
-                                                dupe.get_vhdl_symbol()
-                                                    .unwrap()
-                                                    .get_position()
-                                                    .clone(),
+                                                dupe.get_position().clone(),
                                             )),
                                         ))?;
                                     }
@@ -193,10 +187,7 @@ fn graph_ip<'a>(
                                                                 .get_ip()
                                                                 .into_ip_spec(),
                                                             PathBuf::from(dupe.get_source_file()),
-                                                            dupe.get_vhdl_symbol()
-                                                                .unwrap()
-                                                                .get_position()
-                                                                .clone(),
+                                                            dupe.get_position().clone(),
                                                         ),
                                                     ),
                                                 ))?;

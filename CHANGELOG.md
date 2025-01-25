@@ -19,6 +19,7 @@ Add `- unreleased` along the next future version to prevent CI/CD from triggerin
 
 ### Fixes
 - fixes upgrade issue when trying to extract newer .tar.gz for on macOS
+- fixes crash on trying to report position of duplicate identifier for non-VHDL source code
 
 ## 0.22.2
 
