@@ -18,8 +18,9 @@ Add `- unreleased` along the next future version to prevent CI/CD from triggerin
 ## 0.22.3 - unreleased
 
 ### Fixes
-- fixes upgrade issue when trying to extract newer .tar.gz for on macOS
+- fixes bug on false instantiations appearing in tree output in VHDL labelled signal assignments
 - fixes crash on trying to report position of duplicate identifier for non-VHDL source code
+- fixes upgrade issue when trying to extract newer .tar.gz for on macOS
 
 ## 0.22.2
 

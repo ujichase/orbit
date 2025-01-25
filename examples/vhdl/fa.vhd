@@ -30,4 +30,7 @@ begin
     --triggered when there are 2 or more input bits high
     carry_out <= (input1 and input2) or (input1 and carry_in) or (input2 and carry_in);
 
+
+    l_foo : foo(0) <= '0';
+
 end architecture;

@@ -791,8 +791,10 @@ impl VhdlSymbol {
             // take entity identifier
             deps.extend(Self::compose_name(&mut tokens).into_compound_identifiers(true));
             // take remaining possible references
-            Self::update_deps_from_statement(&mut deps, &mut tokens);
-            Some(deps)
+            match Self::update_deps_from_statement(&mut deps, &mut tokens) {
+                true => Some(deps),
+                false => None,
+            }
         } else {
             None
         }
@@ -824,7 +826,9 @@ impl VhdlSymbol {
     ///
     /// Assumes the token stream is built from a single statement. Assumes the first token in the stream is an
     /// indentifier that could be a dependency, if the first dependency detects is not a compound identifier with that matching suffix.
-    fn update_deps_from_statement<I>(deps: &mut RefSet, tokens: &mut Peekable<I>) -> ()
+    ///
+    /// Returns true if found no fault in the statement.
+    fn update_deps_from_statement<I>(deps: &mut RefSet, tokens: &mut Peekable<I>) -> bool
     where
         I: Iterator<Item = Token<VhdlToken>>,
     {
@@ -838,6 +842,7 @@ impl VhdlSymbol {
             }
         }
         deps.extend(Self::parse_statement(tokens).1);
+        true
     }
 
     /// Detects identifiers instantiated in the architecture statement sections.
@@ -845,6 +850,19 @@ impl VhdlSymbol {
     /// Assumes the next token to consume is instance name of the instantiation and
     /// the token to follow is the COLON ':' delimiter.
     fn parse_instantiation(stream: Vec<Token<VhdlToken>>) -> Option<RefSet> {
+        // println!("{:?}", stream);
+        // force certain delimiters to not exist
+        if stream
+            .iter()
+            .filter(|f| {
+                f.as_ref().check_delimiter(&Delimiter::SigAssign)
+                    || f.as_ref().check_delimiter(&Delimiter::VarAssign)
+            })
+            .count()
+            > 0
+        {
+            return None;
+        }
         let mut tokens = Self::into_terminated_stream(stream).into_iter().peekable();
         // force identifier (instance name)
         tokens.next()?.take().as_identifier()?;
@@ -855,7 +873,7 @@ impl VhdlSymbol {
         // check what is instantiated
         match tokens.peek()?.as_type() {
             VhdlToken::Identifier(_) => {
-                let mut deps = RefSet::new();
+                let mut deps: HashSet<CompoundIdentifier> = RefSet::new();
                 // take entity identifier
                 deps.extend(Self::compose_name(&mut tokens).into_compound_identifiers(true));
                 // make sure we valid continuing tokens
@@ -869,10 +887,15 @@ impl VhdlSymbol {
                     if p.as_type().check_delimiter(&Delimiter::VarAssign) == true {
                         return None;
                     }
+                    if p.as_type().check_delimiter(&Delimiter::SigAssign) == true {
+                        return None;
+                    }
                 }
                 // take remaining possible references
-                Self::update_deps_from_statement(&mut deps, &mut tokens);
-                Some(deps)
+                match Self::update_deps_from_statement(&mut deps, &mut tokens) {
+                    true => Some(deps),
+                    false => None,
+                }
             }
             VhdlToken::Keyword(kw) => {
                 if kw == &Keyword::Component
@@ -888,8 +911,10 @@ impl VhdlSymbol {
                                 Self::compose_name(&mut tokens).into_compound_identifiers(true),
                             );
                             // take remaining possible references
-                            Self::update_deps_from_statement(&mut deps, &mut tokens);
-                            Some(deps)
+                            match Self::update_deps_from_statement(&mut deps, &mut tokens) {
+                                true => Some(deps),
+                                false => None,
+                            }
                         }
                         _ => None,
                     }
