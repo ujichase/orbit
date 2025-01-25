@@ -31,6 +31,11 @@ DESCRIPTION
     taken from '<path>'. Using the '--name' option allows this field to be
     explicitly set.
     
+    The newly created manifest file is intended to be edited by the user. See more
+    'Orbit.toml' keys and their definitions at:
+    
+       https://chaseruskin.github.io/orbit/reference/manifest.html
+    
     For initializing an already existing project into an ip, see the 'init' 
     command.
 

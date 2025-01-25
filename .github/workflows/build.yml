@@ -1,6 +1,11 @@
 name: Build
 on:
   workflow_call:
+    inputs:
+      is_release:
+        description: 'Is this commit a version being released'
+        required: true
+        type: string
 
 env:
   PROJ_NAME: orbit
@@ -90,9 +95,19 @@ jobs:
         run: |
           rustup target add aarch64-pc-windows-msvc
 
+      - name: Identify current version
+        run: |
+          echo "VERSION=$(python ./tools/evalver.py --version)" >> $GITHUB_ENV
+
       - name: Encode the build version
+        if: ${{ inputs.is_release == '0' }}
         run: |
           echo "GIT_DESC_VERSION=$(git describe --tags)" >> $GITHUB_ENV
+
+      - name: Encode the release version
+        if: ${{ inputs.is_release == '1' }}
+        run: |
+          echo "GIT_DESC_VERSION=$(python ./tools/evalver.py --version)" >> $GITHUB_ENV
         
       - name: Configure Rust toolchain
         uses: dtolnay/rust-toolchain@master
@@ -101,10 +116,6 @@ jobs:
 
       - name: Enable Cargo caching
         uses: Swatinem/rust-cache@v2
-
-      - name: Identify current version
-        run: |
-          echo "VERSION=$(python ./tools/evalver.py --version)" >> $GITHUB_ENV
 
       - name: Update application documentation
         run: python ./tools/mansync.py

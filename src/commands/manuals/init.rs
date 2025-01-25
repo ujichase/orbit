@@ -36,6 +36,11 @@ DESCRIPTION
     options are ignored when this option is present. Keep in mind that an ip's uuid
     is not intended to change over the course of its lifetime.
     
+    The newly created manifest file is intended to be edited by the user. See more
+    'Orbit.toml' keys and their definitions at:
+    
+       https://chaseruskin.github.io/orbit/reference/manifest.html
+    
     To create a new ip from a non-existing directory, see the 'new' command.
 
 OPTIONS
