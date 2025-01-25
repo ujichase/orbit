@@ -4,8 +4,8 @@
 
 # Install the debug build in placement of old binary for local system testing
 install:
-    cargo build
-    cp ./target/debug/orbit "$HOME/.cargo/bin/orbit"
+    cargo build --release
+    cp ./target/release/orbit "$HOME/.cargo/bin/orbit"
 
 # Run partial section of tests by specifying the modules in MODS
 codev MODS:

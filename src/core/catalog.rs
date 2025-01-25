@@ -17,6 +17,7 @@
 
 use crate::core::uuid::Uuid;
 use crate::error::{Error, Hint};
+use crate::util::anyerror::CodeFault;
 use crate::util::{anyerror::Fault, sha256::Sha256Hash};
 use std::fmt::Display;
 use std::fs::read_dir;
@@ -384,7 +385,7 @@ impl<'a> Catalog<'a> {
         &self.mappings
     }
 
-    pub fn translate_name(&self, name: &PkgName) -> Result<Option<&IpLevel>, Fault> {
+    pub fn translate_name(&self, name: &PkgName) -> Result<Option<&IpLevel>, CodeFault> {
         if let Some(id) = name.get_uuid() {
             Ok(self.inner.get(id))
         } else {
@@ -392,13 +393,19 @@ impl<'a> Catalog<'a> {
                 match cands.len() {
                     0 => panic!("a mapping of name to uuid should already exist"),
                     1 => Ok(self.inner.get(cands.first().unwrap())),
-                    _ => Err(Error::IpNamespaceCollision(name.name.to_string()))?,
+                    _ => Err(CodeFault(
+                        None,
+                        Box::new(Error::IpNamespaceCollision(name.name.to_string())),
+                    ))?,
                 }
             } else {
                 // println!("{}", "here!");
-                Err(Error::IpNotFoundAnywhere(
-                    name.name.to_string(),
-                    Hint::CatalogList,
+                Err(CodeFault(
+                    None,
+                    Box::new(Error::IpNotFoundAnywhere(
+                        name.name.to_string(),
+                        Hint::CatalogList,
+                    )),
                 ))?
             }
         }

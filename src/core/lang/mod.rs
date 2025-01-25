@@ -30,7 +30,6 @@ use crate::error::Error;
 use crate::error::Hint;
 use crate::util::anyerror::AnyError;
 use crate::util::anyerror::CodeFault;
-use crate::util::anyerror::Fault;
 use crate::util::filesystem;
 use lexer::Position;
 use serde_derive::Deserialize;
@@ -55,7 +54,7 @@ type SystemVerilogPrimaryUnit = sv::primaryunit::PrimaryUnit;
 
 use super::visibility::{VipList, Visibility};
 
-pub fn read_to_string(source_file: &str) -> Result<String, Fault> {
+pub fn read_to_string(source_file: &str) -> Result<String, CodeFault> {
     let contents = match std::fs::read_to_string(&source_file) {
         Ok(dump) => dump,
         Err(e) => {
@@ -488,9 +487,7 @@ impl Display for LangIdentifier {
     }
 }
 
-pub fn collect_units(
-    files: &Vec<String>,
-) -> Result<HashMap<LangIdentifier, LangUnit>, Box<dyn std::error::Error>> {
+pub fn collect_units(files: &Vec<String>) -> Result<HashMap<LangIdentifier, LangUnit>, CodeFault> {
     // collect the VHDL units
     let vhdl_units = vhdl::primaryunit::collect_units(&files)?;
 
@@ -526,13 +523,16 @@ pub fn collect_units(
             );
             let location_2 =
                 filesystem::remove_base(&current_dir, &PathBuf::from(old_unit.get_source_file()));
-            return Err(Error::DuplicateIdentifiersCrossLang(
-                existing_unit.get_name().to_string(),
-                filesystem::into_std_str(location_1),
-                existing_unit.get_position().clone(),
-                filesystem::into_std_str(location_2),
-                old_unit.get_position().clone(),
-                Hint::ResolveDuplicateIds1,
+            return Err(CodeFault(
+                None,
+                Box::new(Error::DuplicateIdentifiersCrossLang(
+                    existing_unit.get_name().to_string(),
+                    filesystem::into_std_str(location_1),
+                    existing_unit.get_position().clone(),
+                    filesystem::into_std_str(location_2),
+                    old_unit.get_position().clone(),
+                    Hint::ResolveDuplicateIds1,
+                )),
             ))?;
         }
     }
@@ -553,13 +553,16 @@ pub fn collect_units(
             );
             let location_2 =
                 filesystem::remove_base(&current_dir, &PathBuf::from(old_unit.get_source_file()));
-            return Err(Error::DuplicateIdentifiersCrossLang(
-                existing_unit.get_name().to_string(),
-                filesystem::into_std_str(location_1),
-                existing_unit.get_position().clone(),
-                filesystem::into_std_str(location_2),
-                old_unit.get_position().clone(),
-                Hint::ResolveDuplicateIds1,
+            return Err(CodeFault(
+                None,
+                Box::new(Error::DuplicateIdentifiersCrossLang(
+                    existing_unit.get_name().to_string(),
+                    filesystem::into_std_str(location_1),
+                    existing_unit.get_position().clone(),
+                    filesystem::into_std_str(location_2),
+                    old_unit.get_position().clone(),
+                    Hint::ResolveDuplicateIds1,
+                )),
             ))?;
         }
     }

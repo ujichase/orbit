@@ -44,14 +44,16 @@ impl From<&str> for AnyError {
     }
 }
 
+pub type SegFault = Box<dyn Error + Send>;
+
 pub type Fault = Box<dyn Error>;
 
 #[derive(Debug, thiserror::Error)]
 /// Stores the (source code file, error message)
-pub struct CodeFault(pub Option<String>, pub Fault);
+pub struct CodeFault(pub Option<String>, pub SegFault);
 
-impl From<Fault> for CodeFault {
-    fn from(value: Fault) -> Self {
+impl From<SegFault> for CodeFault {
+    fn from(value: SegFault) -> Self {
         Self(None, value)
     }
 }

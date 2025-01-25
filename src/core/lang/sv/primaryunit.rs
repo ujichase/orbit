@@ -141,142 +141,151 @@ impl PartialEq for Unit {
 
 impl Eq for Unit {}
 
+fn analyze(source_file: &str) -> Result<HashMap<Identifier, PrimaryUnit>, CodeFault> {
+    if crate::core::fileset::is_systemverilog(&source_file) == false {
+        return Ok(HashMap::new());
+    }
+
+    // println!("parse verilog: {:?}", source_file);
+    // parse text into Verilog symbols
+    let contents = lang::read_to_string(&source_file)?;
+    let symbols = match SystemVerilogParser::read(&contents) {
+        Ok(s) => s.into_symbols(),
+        Err(e) => Err(CodeFault(Some(source_file.to_string()), Box::new(e)))?,
+    };
+    // transform into primary design units
+    let units: HashMap<Identifier, PrimaryUnit> = symbols
+        .into_iter()
+        .filter(|sym| sym.as_name().unwrap().is_nonuser_name() == false)
+        .filter_map(|sym: SystemVerilogSymbol| {
+            let name = sym.as_name();
+            match sym {
+                SystemVerilogSymbol::Module(_) => Some((
+                    name.unwrap().clone(),
+                    PrimaryUnit {
+                        shape: PrimaryShape::Module,
+                        unit: Unit {
+                            name: name.unwrap().clone(),
+                            symbol: Some(sym),
+                            source: source_file.to_string(),
+                        },
+                    },
+                )),
+                SystemVerilogSymbol::Config(_) => Some((
+                    name.unwrap().clone(),
+                    PrimaryUnit {
+                        shape: PrimaryShape::Config,
+                        unit: Unit {
+                            name: name.unwrap().clone(),
+                            symbol: Some(sym),
+                            source: source_file.to_string(),
+                        },
+                    },
+                )),
+                SystemVerilogSymbol::Package(_) => Some((
+                    name.unwrap().clone(),
+                    PrimaryUnit {
+                        shape: PrimaryShape::Package,
+                        unit: Unit {
+                            name: name.unwrap().clone(),
+                            symbol: Some(sym),
+                            source: source_file.to_string(),
+                        },
+                    },
+                )),
+                SystemVerilogSymbol::Interface(_) => Some((
+                    name.unwrap().clone(),
+                    PrimaryUnit {
+                        shape: PrimaryShape::Interface,
+                        unit: Unit {
+                            name: name.unwrap().clone(),
+                            symbol: Some(sym),
+                            source: source_file.to_string(),
+                        },
+                    },
+                )),
+                SystemVerilogSymbol::Class(_) => Some((
+                    name.unwrap().clone(),
+                    PrimaryUnit {
+                        shape: PrimaryShape::Class,
+                        unit: Unit {
+                            name: name.unwrap().clone(),
+                            symbol: Some(sym),
+                            source: source_file.to_string(),
+                        },
+                    },
+                )),
+                SystemVerilogSymbol::Primitive(_) => Some((
+                    name.unwrap().clone(),
+                    PrimaryUnit {
+                        shape: PrimaryShape::Primitive,
+                        unit: Unit {
+                            name: name.unwrap().clone(),
+                            symbol: Some(sym),
+                            source: source_file.to_string(),
+                        },
+                    },
+                )),
+                SystemVerilogSymbol::Checker(_) => Some((
+                    name.unwrap().clone(),
+                    PrimaryUnit {
+                        shape: PrimaryShape::Checker,
+                        unit: Unit {
+                            name: name.unwrap().clone(),
+                            symbol: Some(sym),
+                            source: source_file.to_string(),
+                        },
+                    },
+                )),
+                SystemVerilogSymbol::Program(_) => Some((
+                    name.unwrap().clone(),
+                    PrimaryUnit {
+                        shape: PrimaryShape::Program,
+                        unit: Unit {
+                            name: name.unwrap().clone(),
+                            symbol: Some(sym),
+                            source: source_file.to_string(),
+                        },
+                    },
+                )),
+            }
+        })
+        .collect();
+    Ok(units)
+}
+
 pub fn collect_units(files: &Vec<String>) -> Result<HashMap<Identifier, PrimaryUnit>, CodeFault> {
-    let mut result: HashMap<Identifier, PrimaryUnit> = HashMap::new();
+    let mut all_results: HashMap<Identifier, PrimaryUnit> = HashMap::new();
     // iterate through all source files
-    for source_file in files {
-        // only read the HDL files
-        if crate::core::fileset::is_systemverilog(&source_file) == true {
-            // println!("parsing sv file: {}", source_file);
-            // parse text into Verilog symbols
-            let contents = lang::read_to_string(&source_file)?;
-            let symbols = match SystemVerilogParser::read(&contents) {
-                Ok(s) => s.into_symbols(),
-                Err(e) => Err(CodeFault(Some(source_file.clone()), Box::new(e)))?,
-            };
+    let divided_results: Result<Vec<_>, _> = files
+        .iter()
+        .map(|source_file| analyze(source_file))
+        .collect();
 
-            // transform into primary design units
-            let units: HashMap<Identifier, PrimaryUnit> = symbols
-                .into_iter()
-                .filter(|sym| sym.as_name().unwrap().is_nonuser_name() == false)
-                .filter_map(|sym: SystemVerilogSymbol| {
-                    let name = sym.as_name();
-                    match sym {
-                        SystemVerilogSymbol::Module(_) => Some((
-                            name.unwrap().clone(),
-                            PrimaryUnit {
-                                shape: PrimaryShape::Module,
-                                unit: Unit {
-                                    name: name.unwrap().clone(),
-                                    symbol: Some(sym),
-                                    source: source_file.clone(),
-                                },
-                            },
-                        )),
-                        SystemVerilogSymbol::Config(_) => Some((
-                            name.unwrap().clone(),
-                            PrimaryUnit {
-                                shape: PrimaryShape::Config,
-                                unit: Unit {
-                                    name: name.unwrap().clone(),
-                                    symbol: Some(sym),
-                                    source: source_file.clone(),
-                                },
-                            },
-                        )),
-                        SystemVerilogSymbol::Package(_) => Some((
-                            name.unwrap().clone(),
-                            PrimaryUnit {
-                                shape: PrimaryShape::Package,
-                                unit: Unit {
-                                    name: name.unwrap().clone(),
-                                    symbol: Some(sym),
-                                    source: source_file.clone(),
-                                },
-                            },
-                        )),
-                        SystemVerilogSymbol::Interface(_) => Some((
-                            name.unwrap().clone(),
-                            PrimaryUnit {
-                                shape: PrimaryShape::Interface,
-                                unit: Unit {
-                                    name: name.unwrap().clone(),
-                                    symbol: Some(sym),
-                                    source: source_file.clone(),
-                                },
-                            },
-                        )),
-                        SystemVerilogSymbol::Class(_) => Some((
-                            name.unwrap().clone(),
-                            PrimaryUnit {
-                                shape: PrimaryShape::Class,
-                                unit: Unit {
-                                    name: name.unwrap().clone(),
-                                    symbol: Some(sym),
-                                    source: source_file.clone(),
-                                },
-                            },
-                        )),
-                        SystemVerilogSymbol::Primitive(_) => Some((
-                            name.unwrap().clone(),
-                            PrimaryUnit {
-                                shape: PrimaryShape::Primitive,
-                                unit: Unit {
-                                    name: name.unwrap().clone(),
-                                    symbol: Some(sym),
-                                    source: source_file.clone(),
-                                },
-                            },
-                        )),
-                        SystemVerilogSymbol::Checker(_) => Some((
-                            name.unwrap().clone(),
-                            PrimaryUnit {
-                                shape: PrimaryShape::Checker,
-                                unit: Unit {
-                                    name: name.unwrap().clone(),
-                                    symbol: Some(sym),
-                                    source: source_file.clone(),
-                                },
-                            },
-                        )),
-                        SystemVerilogSymbol::Program(_) => Some((
-                            name.unwrap().clone(),
-                            PrimaryUnit {
-                                shape: PrimaryShape::Program,
-                                unit: Unit {
-                                    name: name.unwrap().clone(),
-                                    symbol: Some(sym),
-                                    source: source_file.clone(),
-                                },
-                            },
-                        )),
-                    }
-                })
-                .collect();
-
+    for pri_unit in divided_results? {
+        for (_key, primary) in pri_unit {
+            let pri_src = PathBuf::from(primary.get_unit().get_source_file());
+            let pri_pos = primary
+                .get_unit()
+                .get_symbol()
+                .as_ref()
+                .unwrap()
+                .get_position()
+                .clone();
             // push to the global list (ensure there are zero duplicate names)
-            for (_key, primary) in units {
-                if let Some(dupe) = result.insert(primary.get_name().clone(), primary) {
-                    return Err(CodeFault(
-                        None,
-                        Box::new(HdlNamingError::DuplicateIdentifier(
-                            dupe.get_name().to_string(),
-                            PathBuf::from(source_file),
-                            result
-                                .get(dupe.get_name())
-                                .unwrap()
-                                .get_unit()
-                                .get_symbol()
-                                .unwrap()
-                                .get_position()
-                                .clone(),
-                            PathBuf::from(dupe.get_unit().get_source_file()),
-                            dupe.get_unit().get_symbol().unwrap().get_position().clone(),
-                        )),
-                    ))?;
-                }
+            if let Some(dupe) = all_results.insert(primary.get_name().clone(), primary) {
+                return Err(CodeFault(
+                    None,
+                    Box::new(HdlNamingError::DuplicateIdentifier(
+                        dupe.get_name().to_string(),
+                        PathBuf::from(dupe.get_unit().get_source_file()),
+                        dupe.get_unit().get_symbol().unwrap().get_position().clone(),
+                        pri_src,
+                        pri_pos,
+                    )),
+                ))?;
             }
         }
     }
-    Ok(result)
+    Ok(all_results)
 }

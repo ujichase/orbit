@@ -154,96 +154,116 @@ impl PartialEq for Unit {
 
 impl Eq for Unit {}
 
-pub fn collect_units(files: &Vec<String>) -> Result<HashMap<Identifier, PrimaryUnit>, CodeFault> {
-    let mut result: HashMap<Identifier, PrimaryUnit> = HashMap::new();
-    // iterate through all source files
-    for source_file in files {
-        // only read the HDL files
-        if crate::core::fileset::is_vhdl(&source_file) == true {
-            // parse text into VHDL symbols
-            // println!("parsing vhdl: {}", &source_file);
-            let contents = lang::read_to_string(&source_file)?;
-            let symbols = match VHDLParser::read(&contents) {
-                Ok(s) => s.into_symbols(),
-                Err(e) => Err(CodeFault(Some(source_file.clone()), Box::new(e)))?,
-            };
+// use rayon::prelude::*;
 
-            let (pri_nodes, sub_nodes): (Vec<VhdlSymbol>, Vec<VhdlSymbol>) =
-                symbols.into_iter().partition(|s| s.is_primary());
+fn analyze(source_file: &str) -> Result<HashMap<Identifier, PrimaryUnit>, CodeFault> {
+    if crate::core::fileset::is_vhdl(&source_file) == false {
+        return Ok(HashMap::new());
+    }
+    // parse text into VHDL symbols
+    // println!("parsing vhdl: {}", &source_file);
+    let contents = lang::read_to_string(&source_file)?;
+    let symbols = match VHDLParser::read(&contents) {
+        Ok(s) => s.into_symbols(),
+        Err(e) => Err(CodeFault(Some(source_file.to_string()), Box::new(e)))?,
+    };
 
-            // assemble primary nodes
-            let mut pri_units: HashMap<Identifier, PrimaryUnit> = pri_nodes
-                .into_iter()
-                .map(|sym| {
-                    let name = sym.get_name().unwrap().clone();
-                    let shape = match &sym {
-                        VhdlSymbol::Entity(_) => Some(PrimaryShape::Entity),
-                        VhdlSymbol::Package(_) => Some(PrimaryShape::Package),
-                        VhdlSymbol::Configuration(_) => Some(PrimaryShape::Configuration),
-                        VhdlSymbol::Context(_) => Some(PrimaryShape::Configuration),
-                        VhdlSymbol::Architecture(_) => {
-                            panic!("architectures cannot be here")
-                        }
-                        // package bodies are usually in same design file as package
-                        VhdlSymbol::PackageBody(_) => {
-                            panic!("package bodies cannot be here")
-                        }
-                    };
-                    match shape {
-                        Some(s) => (
-                            name.clone(),
-                            PrimaryUnit {
-                                shape: s,
-                                unit: Unit {
-                                    name: name,
-                                    symbol: Some(sym),
-                                    source: source_file.clone(),
-                                },
-                            },
-                        ),
-                        None => panic!("must be a primary design unit"),
-                    }
-                })
-                .collect();
+    let (pri_nodes, sub_nodes): (Vec<VhdlSymbol>, Vec<VhdlSymbol>) =
+        symbols.into_iter().partition(|s| s.is_primary());
 
-            // assemble secondary nodes
-            sub_nodes
-                .into_iter()
-                .map(|n| match n {
-                    VhdlSymbol::Architecture(arch) => SubUnit::from_arch(arch),
-                    VhdlSymbol::PackageBody(pkg_body) => SubUnit::from_body(pkg_body),
-                    _ => panic!("primary design units cannot be here"),
-                })
-                .for_each(|n| {
-                    if let Some(owner) = pri_units.get_mut(n.get_entity()) {
-                        owner.steal_refs(n.into_refs());
-                    }
-                });
-
-            for (_key, primary) in pri_units {
-                if let Some(dupe) = result.insert(primary.get_name().clone(), primary) {
-                    return Err(CodeFault(
-                        None,
-                        Box::new(HdlNamingError::DuplicateIdentifier(
-                            dupe.get_name().to_string(),
-                            PathBuf::from(source_file),
-                            result
-                                .get(dupe.get_name())
-                                .unwrap()
-                                .get_unit()
-                                .get_symbol()
-                                .unwrap()
-                                .get_position()
-                                .clone(),
-                            PathBuf::from(dupe.get_unit().get_source_file()),
-                            dupe.get_unit().get_symbol().unwrap().get_position().clone(),
-                        )),
-                    ))?;
+    // assemble primary nodes
+    let mut pri_units: HashMap<Identifier, PrimaryUnit> = pri_nodes
+        .into_iter()
+        .map(|sym| {
+            let name = sym.get_name().unwrap().clone();
+            let shape = match &sym {
+                VhdlSymbol::Entity(_) => Some(PrimaryShape::Entity),
+                VhdlSymbol::Package(_) => Some(PrimaryShape::Package),
+                VhdlSymbol::Configuration(_) => Some(PrimaryShape::Configuration),
+                VhdlSymbol::Context(_) => Some(PrimaryShape::Configuration),
+                VhdlSymbol::Architecture(_) => {
+                    panic!("architectures cannot be here")
                 }
+                // package bodies are usually in same design file as package
+                VhdlSymbol::PackageBody(_) => {
+                    panic!("package bodies cannot be here")
+                }
+            };
+            match shape {
+                Some(s) => (
+                    name.clone(),
+                    PrimaryUnit {
+                        shape: s,
+                        unit: Unit {
+                            name: name,
+                            symbol: Some(sym),
+                            source: source_file.to_string(),
+                        },
+                    },
+                ),
+                None => panic!("must be a primary design unit"),
+            }
+        })
+        .collect();
+
+    // assemble secondary nodes
+    sub_nodes
+        .into_iter()
+        .map(|n| match n {
+            VhdlSymbol::Architecture(arch) => SubUnit::from_arch(arch),
+            VhdlSymbol::PackageBody(pkg_body) => SubUnit::from_body(pkg_body),
+            _ => panic!("primary design units cannot be here"),
+        })
+        .for_each(|n| {
+            if let Some(owner) = pri_units.get_mut(n.get_entity()) {
+                owner.steal_refs(n.into_refs());
+            }
+        });
+
+    Ok(pri_units)
+}
+
+pub fn collect_units(files: &Vec<String>) -> Result<HashMap<Identifier, PrimaryUnit>, CodeFault> {
+    let mut all_result: HashMap<Identifier, PrimaryUnit> = HashMap::new();
+    // iterate through all source files
+    let divided_results: Result<Vec<_>, _> = files
+        .iter()
+        .map(|source_file| analyze(source_file))
+        .collect();
+
+    for pri_unit in divided_results? {
+        for (_key, primary) in pri_unit {
+            let pri_src = PathBuf::from(primary.get_unit().get_source_file());
+            let pri_pos = primary
+                .get_unit()
+                .get_symbol()
+                .as_ref()
+                .unwrap()
+                .get_position()
+                .clone();
+            if let Some(dupe) = all_result.insert(primary.get_name().clone(), primary) {
+                return Err(CodeFault(
+                    None,
+                    Box::new(HdlNamingError::DuplicateIdentifier(
+                        dupe.get_name().to_string(),
+                        PathBuf::from(dupe.get_unit().get_source_file()),
+                        all_result
+                            .get(dupe.get_name())
+                            .unwrap()
+                            .get_unit()
+                            .get_symbol()
+                            .unwrap()
+                            .get_position()
+                            .clone(),
+                        pri_src,
+                        pri_pos,
+                    )),
+                ))?;
             }
         }
     }
-    Ok(result)
+
+    Ok(all_result)
 }
 
 #[derive(Debug)]

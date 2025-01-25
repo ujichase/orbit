@@ -30,3 +30,5 @@ tests/playground/
 
 mansync/
 !tools/mansync/
+
+examples/large
