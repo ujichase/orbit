@@ -1708,6 +1708,7 @@ version = "1.0.0"
 <h2 id="libraries"><a class="header" href="#libraries">Libraries</a></h2>
 <p>An ip can optionally belong to a library. An ip's <em>library</em> is a higher-level scope that loosely groups together multiple ips. This library identification is used for grouping the HDL source code itself into their language-defined libraries as well.</p>
 <p>A library can be defined through the "library" field in the ip's manifest file. Its format follows the same rules as the ip's name. If no library is defined in the ip's manifest, then the default library is the ip's name.</p>
+<p>An ip is <em>not</em> allowed to have "work" explicitly set as its library in the ip's manifest. The "work" library is a reserved library within the context of VHDL used to reference other primary design units within that of the current library.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="versions"><a class="header" href="#versions">Versions</a></h1>
 <p>Code evolves over time, and versions provide a method for capturing a project's state at a given time stamp.</p>
 <p>Orbit uses the <em>semantic versioning</em> scheme for capturing project's state at given time periods. Semantic versioning uses 3 numeric values to signify different levels of change.</p>
