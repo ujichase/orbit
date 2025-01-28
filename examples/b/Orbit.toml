@@ -1,0 +1,8 @@
+[ip]
+name = "b"
+version = "0.1.0"
+uuid = "31g4wf2pe7o8e8h8xu4iwufeq"
+library = "work"
+
+[dependencies]
+a = "0.1.1"

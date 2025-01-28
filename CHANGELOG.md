@@ -17,6 +17,9 @@ Add `- unreleased` along the next future version to prevent CI/CD from triggerin
 
 ## 0.22.3 - unreleased
 
+### Changes
+- prohibits an ip from explicitly setting its library as "work" to save itself from potential VHDL issues
+
 ### Fixes
 - fixes bug on false instantiations appearing in tree output in VHDL labelled signal assignments
 - fixes crash on trying to report position of duplicate identifier for non-VHDL source code

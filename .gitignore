@@ -32,3 +32,5 @@ mansync/
 !tools/mansync/
 
 examples/large
+
+examples/*/target

@@ -89,3 +89,5 @@ To resolve namespace collisions at the ip level, Orbit uses UUIDs. When there ar
 An ip can optionally belong to a library. An ip's _library_ is a higher-level scope that loosely groups together multiple ips. This library identification is used for grouping the HDL source code itself into their language-defined libraries as well.
 
 A library can be defined through the "library" field in the ip's manifest file. Its format follows the same rules as the ip's name. If no library is defined in the ip's manifest, then the default library is the ip's name.
+
+An ip is _not_ allowed to have "work" explicitly set as its library in the ip's manifest. The "work" library is a reserved library within the context of VHDL used to reference other primary design units within that of the current library.

@@ -18,6 +18,7 @@
 #![allow(dead_code)]
 
 use crate::core::ip::IpSpec;
+use crate::core::lang::vhdl::token::Identifier;
 use crate::core::pkgid::PkgPart;
 use crate::core::source::Source;
 use crate::core::{source, version};
@@ -30,7 +31,7 @@ use std::path::PathBuf;
 use std::{collections::HashMap, str::FromStr};
 
 use super::ip::Ip;
-use super::lang::vhdl::token::identifier::Identifier;
+use super::lang::vhdl::token::identifier::Identifier as VhdlIdentifier;
 use super::lang::LangIdentifier;
 use super::uuid::Uuid;
 
@@ -479,6 +480,7 @@ pub struct Package {
     name: IpName,
     uuid: Uuid,
     version: IpVersion,
+    #[serde(deserialize_with = "validate_lib_name", default)]
     library: Option<IpName>,
     description: Option<String>,
     authors: Option<Vec<String>>,
@@ -604,6 +606,45 @@ pub fn find_file(path: &PathBuf, name: &str, is_exclusive: bool) -> Result<Vec<P
         }
     }
     Ok(result)
+}
+
+pub fn validate_lib_name<'de, D>(deserializer: D) -> Result<Option<IpName>, D::Error>
+where
+    D: de::Deserializer<'de>,
+{
+    // This is a Visitor that forwards string types to T's `FromStr` impl and
+    // forwards map types to T's `Deserialize` impl. The `PhantomData` is to
+    // keep the compiler from complaining about T being an unused generic type
+    // parameter. We need T in order to know the Value type for the Visitor
+    // impl.
+    struct LayerVisitor;
+
+    impl<'de> Visitor<'de> for LayerVisitor {
+        type Value = Option<IpName>;
+
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            formatter.write_str("string")
+        }
+
+        fn visit_str<E>(self, value: &str) -> Result<Option<IpName>, E>
+        where
+            E: de::Error,
+        {
+            let name = match IpName::from_str(value) {
+                Ok(n) => n,
+                Err(e) => return Err(de::Error::custom(e))?,
+            };
+            if name.as_ref().to_lowercase().as_str() == VhdlIdentifier::new_working().as_str() {
+                Err(de::Error::custom(
+                    "\"work\" is a reserved library name and cannot be set",
+                ))
+            } else {
+                Ok(Some(name))
+            }
+        }
+    }
+
+    deserializer.deserialize_any(LayerVisitor)
 }
 
 #[cfg(test)]

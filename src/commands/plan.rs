@@ -1029,7 +1029,7 @@ impl Plan {
                 continue;
             };
 
-            // NOTE: this is a very important and fragile loop
+            // NOTE: This is a very important and fragile loop
             for dep in &references {
                 let working = LangIdentifier::new_working();
                 // re-route the library prefix to the current unit's library
@@ -1038,18 +1038,32 @@ impl Plan {
                     dep.get_suffix().clone(),
                 );
                 // if the dep is using "work", match it with the identifier's library
-                let dep_adjusted = if let Some(lib) = dep.get_prefix() {
+                let (dep_adjusted, _lib_was_work) = if let Some(lib) = dep.get_prefix() {
                     match lib == &working {
-                        true => &dep_adjusted,
-                        false => dep,
+                        true => (&dep_adjusted, true),
+                        false => (dep, false),
                     }
                 } else {
-                    dep
+                    (dep, false)
                 };
                 // println!("{} {} ... {}", iden, dep, dep_adjusted);
                 // verify the dep exists
                 let _stat = graph_map.add_edge_by_key(dep_adjusted, &iden, ());
-                // println!("{:?} -> {:?} ... {:?}", dep_adjusted.to_string(), &iden.to_string(), stat);
+                // println!("{:?} -> {:?} ... {:?}", dep_adjusted.to_string(), &iden.to_string(), _stat);
+
+                // NOTE: This code section will allow a fallback in case of trying to explicitly use a library
+                // called "work" when the actual working library is not explicitly called "work" for an external
+                // reference. However, this is not intended behavior and the ip.library field should not allow a
+                // user to explicitly set the value to "work" for VHDL's sake.
+                // match stat {
+                //     EdgeStatus::MissingSource => {
+                //         // okay... maybe the actual library is called "work"
+                //         if lib_was_work == true {
+                //             let _next_stat = graph_map.add_edge_by_key(dep, &iden, ());
+                //         }
+                //     },
+                //     _ => ()
+                // }
             }
         }
         Ok(graph_map)
