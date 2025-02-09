@@ -620,7 +620,7 @@ fn install_ip_from_downloads(dep: &Ip, catalog: &Catalog, force: bool) -> Result
             return Err(e);
         }
         // load the IP
-        let unzipped_dep = match Ip::load(dir.clone(), false) {
+        let unzipped_dep = match Ip::load(dir.clone(), false, false) {
             Ok(x) => x,
             Err(e) => {
                 fs::remove_dir_all(dir)?;
@@ -1600,7 +1600,7 @@ impl Plan {
                 // display entire contents about the particular plugin
                 Some(tg) => println!("{}", tg),
                 // display quick overview of all plugins
-                None => println!(
+                None => print!(
                     "{}",
                     Target::list_targets(
                         &mut c
@@ -1622,7 +1622,7 @@ impl Plan {
         c.jump_to_working_ip()?;
 
         // store the working ip struct
-        let working_ip = Ip::load(c.get_ip_path().unwrap().clone(), true)?;
+        let working_ip = Ip::load(c.get_ip_path().unwrap().clone(), true, false)?;
 
         // assemble the catalog
         let mut catalog = Catalog::new()

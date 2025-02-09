@@ -222,7 +222,7 @@ impl Download {
         for entry in entries {
             // println!("{:?}", entry);
             // check if this is our IP
-            match Ip::load(entry.parent().unwrap().to_path_buf(), true) {
+            match Ip::load(entry.parent().unwrap().to_path_buf(), true, false) {
                 Ok(temp) => {
                     // println!("{}", temp.get_man().get_ip().into_ip_spec());
                     let manifest_version =
@@ -248,7 +248,7 @@ impl Download {
                             println!("info: found ip {}", found_ip_spec);
                         }
                         // verify the ip is okay
-                        Ip::load(temp.get_root().to_path_buf(), false)?;
+                        Ip::load(temp.get_root().to_path_buf(), false, false)?;
                         // zip the project to the downloads directory
                         let download_slot_name = DownloadSlot::new(
                             manifest_name,

@@ -140,7 +140,7 @@ impl New {
         println!("info: {}", Manifest::write_manifest_ref_help());
 
         // write the lockfile
-        let local_ip = Ip::load(self.path.clone(), true)?;
+        let local_ip = Ip::load(self.path.clone(), true, false)?;
         Lock::write_new_lockfile(&local_ip)?;
 
         Ok(())

@@ -62,7 +62,7 @@ impl Subcommand<Context> for View {
 
         let dev_ip: Option<Result<Ip, Fault>> = {
             match Context::find_ip_path(&current_dir().unwrap()) {
-                Some(dir) => Some(Ip::load(dir, true)),
+                Some(dir) => Some(Ip::load(dir, true, false)),
                 None => None,
             }
         };

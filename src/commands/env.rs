@@ -79,7 +79,7 @@ impl Subcommand<Context> for Env {
         // check if in an ip to add those variables
         if let Some(ip_path) = c.get_ip_path() {
             // check ip
-            if let Ok(ip) = Ip::load(ip_path.clone(), true) {
+            if let Ok(ip) = Ip::load(ip_path.clone(), true, false) {
                 env = env.from_ip(&ip)?;
             }
             // check the build directory

@@ -19,6 +19,7 @@ Add `- unreleased` along the next future version to prevent CI/CD from triggerin
 
 ### Features
 - ip compressed as zip archives (.zip) can be installed using the `install` command with its `--path` option
+- presents error when uuid is modified in manifest to add layer of protection from accidental modification (includes steps to keep old uuid or use new uuid)
 
 ### Changes
 - prohibits an ip from explicitly setting its library as "work" to save itself from potential VHDL issues

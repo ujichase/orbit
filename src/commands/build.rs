@@ -84,7 +84,7 @@ impl Subcommand<Context> for Build {
         if self.list == true {
             match target {
                 Some(t) => println!("{}", t.to_string()),
-                None => println!(
+                None => print!(
                     "{}",
                     Target::list_targets(
                         &mut c
@@ -107,7 +107,7 @@ impl Subcommand<Context> for Build {
         // verify running from an ip directory and enter ip's root directory
         c.jump_to_working_ip()?;
 
-        let working_ip = Ip::load(c.get_ip_path().unwrap().to_path_buf(), true)?;
+        let working_ip = Ip::load(c.get_ip_path().unwrap().to_path_buf(), true, false)?;
 
         // determine the build directory based on cli priority
         let default_target_dir = c.get_target_dir();

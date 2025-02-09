@@ -175,7 +175,7 @@ impl IpArchive {
             return Err(e);
         }
         // load the IP
-        let extracted_ip = match Ip::load(dir.clone(), false) {
+        let extracted_ip = match Ip::load(dir.clone(), false, false) {
             Ok(x) => x,
             Err(e) => {
                 fs::remove_dir_all(dir)?;

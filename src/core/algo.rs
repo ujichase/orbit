@@ -445,7 +445,7 @@ impl<'a> IpNode<'a> {
         .unwrap();
 
         // create the ip from the temporary dir
-        let temp_ip = Ip::load(temp_path, false).unwrap();
+        let temp_ip = Ip::load(temp_path, false, false).unwrap();
 
         // edit all vhdl files
         let files = temp_ip.gather_current_files();
@@ -506,7 +506,7 @@ fn install_dst(source_ip: &Ip, root: &PathBuf, mapping: &HashMap<LangIdentifier,
 
     // check if already exists and return early with manifest if exists
     if cache_path.exists() == true {
-        return Ip::load(cache_path, false).unwrap();
+        return Ip::load(cache_path, false, false).unwrap();
     }
 
     // copy the source ip to the new location
@@ -517,7 +517,7 @@ fn install_dst(source_ip: &Ip, root: &PathBuf, mapping: &HashMap<LangIdentifier,
         Some(source_ip.get_files_to_keep()),
     )
     .unwrap();
-    let cached_ip = Ip::load(cache_path, false).unwrap();
+    let cached_ip = Ip::load(cache_path, false, false).unwrap();
 
     // @todo: cache results of primary design unit list
     // cached_ip.stash_units();

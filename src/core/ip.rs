@@ -42,6 +42,7 @@ use crate::core::manifest::ORBIT_METADATA_FILE;
 use crate::core::manifest::ORBIT_SUM_FILE;
 use crate::core::uuid::Uuid;
 use crate::error::Error;
+use crate::error::Hint;
 use crate::util::sha256::Sha256Hash;
 use colored::Colorize;
 use std::collections::HashMap;
@@ -242,7 +243,7 @@ impl Ip {
     pub fn relate(root: PathBuf, base_path: &PathBuf) -> Result<Self, Fault> {
         // resolve the path if it is relative
         let resolved_root = filesystem::resolve_rel_path2(&base_path, &root);
-        let mut relative_ip = Ip::load(resolved_root, false)?;
+        let mut relative_ip = Ip::load(resolved_root, false, false)?;
         relative_ip.mapping = Mapping::Relative(root);
         // verify this ip has a lockfile
         let lock_path = relative_ip.get_root().join(IP_LOCK_FILE);
@@ -263,7 +264,11 @@ impl Ip {
     ///
     /// If `is_working_ip` is true, then it verifies there are no files created
     /// by the user that are reserved for orbit's internal usage.
-    pub fn load(root: PathBuf, is_working_ip: bool) -> Result<Self, Fault> {
+    pub fn load(
+        root: PathBuf,
+        is_working_ip: bool,
+        force_apply_new_uuid: bool,
+    ) -> Result<Self, Fault> {
         let man_path = root.join(IP_MANIFEST_FILE);
         if man_path.exists() == false || man_path.is_file() == false {
             return Err(Error::IpLoadFailed(LastError(
@@ -300,8 +305,19 @@ impl Ip {
 
         let uuid = man.get_ip().get_uuid().clone();
 
-        // println!("{:?}", lock);
-        // println!("{:?}", man.get_ip().into_ip_spec());
+        // verify the UUIDs between the manifest and lockfile are the same
+        if is_working_ip == true {
+            //  println!("manifest: {:?}", uuid);
+            if let Some(lf) = lock.get_self_entry(man.get_ip().get_name()) {
+                // println!("lockfile: {:?}", lf.get_uuid());
+                if lf.get_uuid() != &uuid && force_apply_new_uuid == false {
+                    return Err(Error::UuidModified(
+                        man.get_ip().get_name().clone(),
+                        Hint::ConfirmUuidChange(lf.get_uuid().encode()),
+                    ))?;
+                }
+            }
+        }
 
         Ok(Self {
             mapping: Mapping::Physical,
@@ -337,7 +353,7 @@ impl Ip {
         for mut entry in manifest::find_file(&path, &name, is_exclusive)? {
             // remove the manifest file to access the ip's root directory
             entry.pop();
-            result.push(Ip::load(entry, is_working)?);
+            result.push(Ip::load(entry, is_working, false)?);
         }
         Ok(result)
     }

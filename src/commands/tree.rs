@@ -68,7 +68,7 @@ impl Subcommand<Context> for Tree {
         c.jump_to_working_ip()?;
 
         // get the ip manifest
-        let ip = Ip::load(c.get_ip_path().unwrap().clone(), true)?;
+        let ip = Ip::load(c.get_ip_path().unwrap().clone(), true, false)?;
 
         // gather the catalog
         let catalog = Catalog::new().installations(c.get_cache_path())?;

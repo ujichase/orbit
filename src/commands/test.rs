@@ -86,7 +86,7 @@ impl Subcommand<Context> for Test {
                 // display entire contents about the particular plugin
                 Some(tar) => println!("{}", tar.to_string()),
                 // display quick overview of all plugins
-                None => println!(
+                None => print!(
                     "{}",
                     Target::list_targets(
                         &mut c
@@ -110,7 +110,7 @@ impl Subcommand<Context> for Test {
         c.jump_to_working_ip()?;
 
         // create the ip manifest
-        let ip = Ip::load(c.get_ip_path().unwrap().clone(), true)?;
+        let ip = Ip::load(c.get_ip_path().unwrap().clone(), true, false)?;
 
         // @todo: recreate the ip graph from the lockfile, then read each installation
         // see Install::install_from_lock_file

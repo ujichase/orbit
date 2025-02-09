@@ -167,6 +167,10 @@ pub enum Error {
         "ip namespace collision for \"{0}\": please disambiguate by providing the appropriate uuid"
     )]
     IpNamespaceCollision(String),
+    #[error(
+        "uuid for ip \"{0}\" has been modified which can result in unintended consequences{1}"
+    )]
+    UuidModified(PkgPart, Hint),
 }
 
 #[derive(Debug, PartialEq)]
@@ -222,6 +226,7 @@ pub enum Hint {
     RegenerateLockfile,
     ShowVersions,
     ShowConfigFiles,
+    ConfirmUuidChange(String),
 }
 
 impl Display for Hint {
@@ -268,6 +273,12 @@ impl Display for Hint {
             Self::PublishSyncRemote => {
                 "check that the local ip's contents matches the source's contents"
             }
+            Self::ConfirmUuidChange(uuid) => &format!(
+                "resolve this error by either
+    1) using `orbit lock --force` to keep the new uuid
+    2) copy the original uuid \"{0}\" back into the manifest to keep the old uuid",
+                uuid
+            ),
         };
         write!(
             f,

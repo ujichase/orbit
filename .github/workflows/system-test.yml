@@ -121,7 +121,7 @@ jobs:
         printf 'C:/users/runneradmin\n\n' | ./orbit/install.exe 
 
     - name: Add Orbit to PATH
-      run: echo "C:/users/runneradmin/orbit" >> $GITHUB_PATH
+      run: echo "C:/users/runneradmin/orbit/bin" >> $GITHUB_PATH
 
     - name: Test Orbit
       run: orbit --version

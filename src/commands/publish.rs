@@ -76,7 +76,7 @@ impl Subcommand<Context> for Publish {
         // verify running from an ip directory and enter ip's root directory
         c.jump_to_working_ip()?;
 
-        let local_ip = Ip::load(c.get_ip_path().unwrap().to_path_buf(), true)?;
+        let local_ip = Ip::load(c.get_ip_path().unwrap().to_path_buf(), true, false)?;
 
         // initialize environment
         let env = Environment::new()
@@ -249,7 +249,7 @@ impl Publish {
             fs::remove_dir_all(tmp_archive_staging_dir)?;
             return Err(e);
         }
-        let unzipped_ip = match Ip::load(tmp_archive_staging_dir.clone(), false) {
+        let unzipped_ip = match Ip::load(tmp_archive_staging_dir.clone(), false, false) {
             Ok(x) => x,
             Err(e) => {
                 fs::remove_dir_all(tmp_archive_staging_dir)?;

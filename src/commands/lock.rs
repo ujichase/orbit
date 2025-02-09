@@ -47,8 +47,10 @@ impl Subcommand<Context> for Lock {
         // check that user is in an IP directory
         c.jump_to_working_ip()?;
 
+        let force_apply_new_uuid = self.force;
+
         // store the working ip struct
-        let working_ip = Ip::load(c.get_ip_path().unwrap().clone(), true)?;
+        let working_ip = Ip::load(c.get_ip_path().unwrap().clone(), true, force_apply_new_uuid)?;
 
         // assemble the catalog
         let mut catalog = Catalog::new()

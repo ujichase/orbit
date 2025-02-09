@@ -167,7 +167,7 @@ impl Channel {
             .from_config(context.get_config())?;
         if let Some(path) = context.get_ip_path() {
             // read ip manifest for env variables
-            env = env.from_ip(&Ip::load(path.clone(), true)?)?;
+            env = env.from_ip(&Ip::load(path.clone(), true, false)?)?;
         }
         for c in channels {
             c.run_sync(&env)?;
