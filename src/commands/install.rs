@@ -66,7 +66,9 @@ use crate::util::filesystem;
 use crate::util::filesystem::Standardize;
 use std::env;
 use std::fs;
+use std::fs::File;
 use std::path::PathBuf;
+use zip::ZipArchive;
 
 use cliproc::{cli, proc, stage::*};
 use cliproc::{Arg, Cli, Help, Subcommand};
@@ -181,6 +183,27 @@ impl Subcommand<Context> for Install {
 
             // check if specifying an ip
             let search_dir = PathBuf::standardize(PathBuf::from(search_path));
+            // check if it is a zip file and get the directory to the unzipped contents if so
+            let temp_dir_for_zip = if let Some(ext) = search_dir.extension() {
+                if search_dir.is_file() == true && ext.eq_ignore_ascii_case("zip") {
+                    // decompress zip file to a temporary directory
+                    let temp_dir = tempfile::tempdir()?;
+                    let zip_file = File::open(&search_dir)?;
+                    let mut zip_archive = ZipArchive::new(zip_file)?;
+                    zip_archive.extract(&temp_dir)?;
+                    Some(temp_dir.into_path())
+                } else {
+                    None
+                }
+            } else {
+                None
+            };
+
+            let search_dir = match &temp_dir_for_zip {
+                Some(p) => p,
+                None => &search_dir,
+            };
+
             let search_path = search_dir.join(IP_MANIFEST_FILE);
 
             let target = match &self.ip {
@@ -196,25 +219,54 @@ impl Subcommand<Context> for Install {
                         {
                             ip
                         } else {
+                            if temp_dir_for_zip.is_none() {
+                                Err(Error::Custom(format!(
+                                    "could not find ip \"{}\" at path \"{}\"",
+                                    entry,
+                                    filesystem::into_std_str(search_dir.to_path_buf())
+                                )))?
+                            } else {
+                                std::fs::remove_dir_all(temp_dir_for_zip.clone().unwrap())?;
+                                Err(Error::Custom(format!(
+                                    "could not find ip \"{}\" in archive \"{}\"",
+                                    entry,
+                                    filesystem::into_std_str(search_dir.to_path_buf())
+                                )))?
+                            }
+                        }
+                    }
+                    false => {
+                        if temp_dir_for_zip.is_none() {
                             Err(Error::Custom(format!(
-                                "could not find ip \"{}\" at path \"{}\"",
-                                entry,
-                                filesystem::into_std_str(search_dir)
+                                "path \"{}\" does not contain an Orbit.toml file",
+                                filesystem::into_std_str(search_dir.to_path_buf())
+                            )))?
+                        } else {
+                            std::fs::remove_dir_all(temp_dir_for_zip.clone().unwrap())?;
+                            Err(Error::Custom(format!(
+                                "archive \"{}\" does not contain an Orbit.toml file",
+                                filesystem::into_std_str(search_dir.to_path_buf())
                             )))?
                         }
                     }
-                    false => Err(Error::Custom(format!(
-                        "path \"{}\" does not contain an Orbit.toml file",
-                        filesystem::into_std_str(search_dir)
-                    )))?,
                 },
                 // make sure there is only 1 ip to load
                 None => match search_path.exists() {
                     true => Ip::load(search_dir.to_path_buf(), true)?,
-                    false => Err(Error::Custom(format!(
-                        "path \"{}\" does not contain an Orbit.toml file",
-                        filesystem::into_std_str(search_dir)
-                    )))?,
+                    false => {
+                        if temp_dir_for_zip.is_none() {
+                            Err(Error::Custom(format!(
+                                "path \"{}\" does not contain an Orbit.toml file",
+                                filesystem::into_std_str(search_dir.to_path_buf())
+                            )))?
+                        } else {
+                            std::fs::remove_dir_all(temp_dir_for_zip.clone().unwrap())?;
+                            Err(Error::Custom(format!(
+                                "archive \"{}\" does not contain an Orbit.toml file",
+                                filesystem::into_std_str(search_dir.to_path_buf())
+                            )))?
+                        }
+                    }
                 },
             };
             // move the ip to the downloads folder if not already there

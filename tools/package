@@ -42,13 +42,17 @@ fi
 echo "Copying release files..."
 mkdir dist
 cp -r \
-  $EXECUTABLE \
   $INSTALLER \
   Cargo.lock \
   Cargo.toml \
   LICENSE \
   docs/pack/README.txt \
   $DIST
+
+mkdir dist/bin
+cp \
+  $EXECUTABLE \
+  $DIST/bin
 
 cd $DIST
 echo "Creating release archive..."
@@ -60,7 +64,7 @@ case $OS in
     ;;
   windows-latest)
     ARCHIVE=orbit-$VERSION-$TARGET.zip
-    7z a $ARCHIVE *
+    7z a -r $ARCHIVE *
     echo "archive=`pwd -W`/$ARCHIVE" >> $GITHUB_OUTPUT
     ;;
 esac

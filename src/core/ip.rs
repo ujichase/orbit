@@ -259,6 +259,10 @@ impl Ip {
         Ok(relative_ip)
     }
 
+    /// Load an [Ip] instance from the `root` path.
+    ///
+    /// If `is_working_ip` is true, then it verifies there are no files created
+    /// by the user that are reserved for orbit's internal usage.
     pub fn load(root: PathBuf, is_working_ip: bool) -> Result<Self, Fault> {
         let man_path = root.join(IP_MANIFEST_FILE);
         if man_path.exists() == false || man_path.is_file() == false {

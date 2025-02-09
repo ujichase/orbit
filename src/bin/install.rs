@@ -51,7 +51,7 @@ const EXE_NAME: &str = "orbit.exe";
 #[cfg(not(target_os = "windows"))]
 const EXE_NAME: &str = "orbit";
 
-const EXE_DIR: &str = ""; // "bin/""
+const EXE_DIR: &str = "bin/";
 
 /// unix installation steps (copies only the binary)
 fn unix() -> Result<(), Box<dyn std::error::Error>> {

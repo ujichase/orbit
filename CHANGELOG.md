@@ -17,8 +17,12 @@ Add `- unreleased` along the next future version to prevent CI/CD from triggerin
 
 ## 0.22.3 - unreleased
 
+### Features
+- ip compressed as zip archives (.zip) can be installed using the `install` command with its `--path` option
+
 ### Changes
 - prohibits an ip from explicitly setting its library as "work" to save itself from potential VHDL issues
+- adjusts internal packaging to have orbit binary placed inside dedicated bin/ directory
 
 ### Fixes
 - fixes bug on false instantiations appearing in tree output in VHDL labelled signal assignments

@@ -578,7 +578,11 @@ omitted from installation. To also install these dependencies, use `--all`.
 
 If a protocol is recognized using `--protocol`, then an optional tag can also 
 be supplied to help the protocol with providing any additional information it
-may require. 
+may require.
+
+The `--path` command can accept a file system path that is either 1) the root 
+directory that contains the manifest file or 2) a zip archive file that when 
+uncompressed, has the manifest file at the root directoy.
 
 To remove ip from the catalog, see the `remove` command.
 """

@@ -521,8 +521,12 @@ impl Orbit {
             ".exe"
         };
 
+        const EXE_DIR_FROM_PACKAGE: &str = "bin/";
+
         // verify the path to the new executable exists before renaming current binary
-        let temp_exe_path = temp_dir.path().join(&format!("orbit{}", &exe_ext));
+        let temp_exe_path = temp_dir
+            .path()
+            .join(&format!("{}orbit{}", EXE_DIR_FROM_PACKAGE, &exe_ext));
         if Path::exists(&temp_exe_path) == false {
             return Err(Box::new(UpgradeError::MissingExe))?;
         }
