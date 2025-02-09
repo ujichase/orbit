@@ -15,7 +15,7 @@ Add `- unreleased` along the next future version to prevent CI/CD from triggerin
 
 # Changelog
 
-## 0.22.3 - unreleased
+## 0.23.0 - unreleased
 
 ### Features
 - ip compressed as zip archives (.zip) can be installed using the `install` command with its `--path` option
@@ -26,6 +26,7 @@ Add `- unreleased` along the next future version to prevent CI/CD from triggerin
 - adjusts internal packaging to have orbit binary placed inside dedicated bin/ directory
 
 ### Fixes
+- fixes bug where multiple ips of same name under same url would not error if a uuid was not provided
 - fixes bug on false instantiations appearing in tree output in VHDL labelled signal assignments
 - fixes crash on trying to report position of duplicate identifier for non-VHDL source code
 - fixes upgrade issue when trying to extract newer .tar.gz for on macOS

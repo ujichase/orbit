@@ -201,24 +201,9 @@ impl Download {
 
         let entries = manifest::find_file(&queue, IP_MANIFEST_FILE, false)?;
 
-        // verify we only found one manifest
-        if spec.is_none() == true {
-            match entries.len() {
-                1 => (),
-                0 => {
-                    // could not find the IP
-                    return Err(AnyError(format!("failed to find a manifest for any ip")))?;
-                }
-                _ => {
-                    return Err(Box::new(Error::DownloadFoundManyIps(
-                        entries.len(),
-                        Hint::SpecifyIpSpecForDownload,
-                    )))
-                }
-            }
-        }
+        let mut matching_ips = Vec::new();
 
-        // find the IP
+        // find the IP (make sure there is only 1!)
         for entry in entries {
             // println!("{:?}", entry);
             // check if this is our IP
@@ -228,46 +213,81 @@ impl Download {
                     let manifest_version =
                         temp.get_man().get_ip().get_version().to_partial_version();
 
-                    let manifest_name = temp.get_man().get_ip().get_name();
-                    // move to downloads
-                    let detected_it = if let Some(provided) = spec {
-                        manifest_name == provided.get_name()
-                            && manifest_version.in_domain(
-                                provided
-                                    .get_version()
-                                    .as_specific()
-                                    .unwrap_or(&manifest_version),
-                            )
-                    } else {
-                        true
-                    };
-
-                    if detected_it == true {
-                        let found_ip_spec = temp.get_man().get_ip().into_ip_spec();
-                        if verbose == true {
-                            println!("info: found ip {}", found_ip_spec);
+                    // move to downloads only if we match the name
+                    if let Some(prov) = spec {
+                        let mut is_match = true;
+                        // make sure the uuid's match (if available)
+                        if let Some(uuid) = prov.as_uuid() {
+                            if uuid != temp.get_man().get_ip().get_uuid() {
+                                is_match = false;
+                            }
                         }
-                        // verify the ip is okay
-                        Ip::load(temp.get_root().to_path_buf(), false, false)?;
-                        // zip the project to the downloads directory
-                        let download_slot_name = DownloadSlot::new(
-                            manifest_name,
-                            temp.get_uuid(),
-                            temp.get_man().get_ip().get_version(),
-                        );
-                        let full_download_path = downloads.join(&download_slot_name.as_ref());
-                        let bytes = IpArchive::write(&temp, &full_download_path)?;
-                        return Ok((found_ip_spec, bytes));
-                    }
+                        // make sure the names match
+                        if prov.get_name() != temp.get_man().get_ip().get_name() {
+                            is_match = false;
+                        }
+                        // make sure the version falls under right domain
+                        if manifest_version.in_domain(
+                            prov.get_version()
+                                .as_specific()
+                                .unwrap_or(&manifest_version),
+                        ) == false
+                        {
+                            is_match = false;
+                        }
+
+                        if is_match == true {
+                            matching_ips.push(temp);
+                        }
+                    } else {
+                        // we take all manifests if no name was given
+                        matching_ips.push(temp);
+                    };
                 }
                 Err(_) => {}
             }
         }
-        // could not find the IP
-        Err(AnyError(format!(
-            "failed to find a manifest for ip {}",
-            spec.unwrap()
-        )))?
+
+        match matching_ips.len() {
+            0 => {
+                // could not find the IP
+                Err(AnyError(format!(
+                    "failed to find a manifest for ip \"{}\"",
+                    spec.unwrap()
+                )))?
+            }
+            1 => {
+                let temp = matching_ips.get(0).unwrap();
+                let manifest_name = temp.get_man().get_ip().get_name();
+                let found_ip_spec = temp.get_man().get_ip().into_ip_spec();
+                if verbose == true {
+                    println!("info: found ip {}", found_ip_spec);
+                }
+                // verify the ip is okay
+                Ip::load(temp.get_root().to_path_buf(), false, false)?;
+                // zip the project to the downloads directory
+                let download_slot_name = DownloadSlot::new(
+                    manifest_name,
+                    temp.get_uuid(),
+                    temp.get_man().get_ip().get_version(),
+                );
+                let full_download_path = downloads.join(&download_slot_name.as_ref());
+                let bytes = IpArchive::write(&temp, &full_download_path)?;
+                return Ok((found_ip_spec, bytes));
+            }
+            _ => {
+                let mut candidate_list = String::new();
+                matching_ips.iter().for_each(|i| {
+                    candidate_list
+                        .push_str(&format!("\n    {:?}", i.get_man().get_ip().into_ip_spec()));
+                });
+                Err(Box::new(Error::DownloadFoundManyIps(
+                    matching_ips.len(),
+                    candidate_list,
+                    Hint::SpecifyIpSpecForDownload,
+                )))
+            }
+        }
     }
 
     pub fn download_all(

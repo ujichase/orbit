@@ -119,8 +119,8 @@ pub enum Error {
     EntryNotQueued(IpSpec),
     #[error("lockfile entry \"{0}\" is not queued for installation (unknown ip)")]
     EntryUnknownIp(IpSpec),
-    #[error("cannot disambiguate between {0} ips downloaded{1}")]
-    DownloadFoundManyIps(usize, Hint),
+    #[error("found {0} ips downloaded as candidates: {1}{2}")]
+    DownloadFoundManyIps(usize, String, Hint),
     #[error("lockfile is missing or out of date{0}")]
     PublishMissingLockfile(Hint),
     #[error("the ip manifest's source field is required to publish, but is undefined")]
