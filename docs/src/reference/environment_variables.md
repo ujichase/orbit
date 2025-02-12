@@ -28,9 +28,15 @@ Orbit also sets environment variables during runtime such that any subprocesses 
 
 - `ORBIT_TOP_NAME` - The top level design's identifier for the latest build process, only if the build process was a build.
 
+- `ORBIT_TOP_FILE` - The file system path that contains the top level design for the latest build process, only if the build process was a build.
+
 - `ORBIT_TB_NAME` - The testbench's identifier for the latest build process, only if the build process was a test.
 
+- `ORBIT_TB_FILE` - The file system path that contains the testbench for the latest build process, only if the build process was a test.
+
 - `ORBIT_DUT_NAME` - The design under test's identifier for the latest build process, only if the build process was a test.
+
+- `ORBIT_DUT_FILE` - The file system path that contains the design under test for the latest build process, only if the build process was a test.
 
 - `ORBIT_BLUEPRINT` - The file name for the blueprint created from the planning stage of the latest build process. The file name includes the file's extension.
 

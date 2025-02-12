@@ -18,6 +18,7 @@ Add `- unreleased` along the next future version to prevent CI/CD from triggerin
 ## 0.23.0 - unreleased
 
 ### Features
+- adds three new environment variables `ORBIT_TOP_FILE`, `ORBIT_TB_FILE`, and `ORBIT_DUT_FILE` that are set during the execution phase of a build/test
 - ip compressed as zip archives (.zip) can be installed using the `install` command with its `--path` option
 - presents error when uuid is modified in manifest to add layer of protection from accidental modification (includes steps to keep old uuid or use new uuid)
 

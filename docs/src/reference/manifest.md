@@ -110,6 +110,8 @@ source = "https://github.com/chaseruskin/orbit/archive/refs/tags/1.0.0.zip"
 source = { url = "https://github.com/chaseruskin/orbit.git", protocol = "git", tag = "1.0.0" }
 ```
 
+The source field's "url" and "tag" support [_string swapping_](./../topic/swapping.md).
+
 ### The `channels` field
 
 ``` toml

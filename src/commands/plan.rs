@@ -117,6 +117,8 @@ impl Plan {
                         &target_path,
                         &String::new(),
                         &String::new(),
+                        &String::new(),
+                        &String::new(),
                         target,
                         require_bench,
                     )?;
@@ -319,6 +321,32 @@ impl Plan {
             None => String::new(),
         };
 
+        // grab the files that contain the top-level/dut node
+        let top_file = match top {
+            Some(i) => {
+                let n = global_graph.get_node_by_index(i).unwrap();
+                n.as_ref()
+                    .get_associated_files()
+                    .first()
+                    .unwrap()
+                    .get_file()
+            }
+            None => "",
+        };
+
+        // grab the file that contains the tb node
+        let bench_file = match bench {
+            Some(i) => {
+                let n = global_graph.get_node_by_index(i).unwrap();
+                n.as_ref()
+                    .get_associated_files()
+                    .first()
+                    .unwrap()
+                    .get_file()
+            }
+            None => "",
+        };
+
         // print information (maybe also print the plugin saved to .env too?)
         match top_name.is_empty() {
             false => match require_bench {
@@ -426,7 +454,9 @@ impl Plan {
             &blueprint,
             &target_path,
             &top_name,
+            &top_file,
             &bench_name,
+            &bench_file,
             target,
             require_bench,
         )?;
@@ -1540,7 +1570,9 @@ impl Plan {
         blueprint: &Blueprint,
         target_path: &PathBuf,
         top_name: &str,
+        top_file: &str,
         bench_name: &str,
+        bench_file: &str,
         target: &Target,
         require_bench: bool,
     ) -> Result<PathBuf, Fault> {
@@ -1569,11 +1601,24 @@ impl Plan {
                     ""
                 }),
             EnvVar::new()
+                .key(environment::ORBIT_TOP_FILE)
+                .value(if require_bench == false {
+                    &top_file
+                } else {
+                    ""
+                }),
+            EnvVar::new()
                 .key(environment::ORBIT_DUT_NAME)
                 .value(if require_bench == true { &top_name } else { "" }),
             EnvVar::new()
+                .key(environment::ORBIT_DUT_FILE)
+                .value(if require_bench == true { &top_file } else { "" }),
+            EnvVar::new()
                 .key(environment::ORBIT_TB_NAME)
                 .value(&bench_name),
+            EnvVar::new()
+                .key(environment::ORBIT_TB_FILE)
+                .value(&bench_file),
         ]);
         // conditionally set the plugin used to plan
         envs.insert(
