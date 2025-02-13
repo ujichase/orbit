@@ -27,6 +27,7 @@ use crate::util::anyerror::Fault;
 use crate::util::environment::Environment;
 use cliproc::{cli, proc, stage::*};
 use cliproc::{Arg, Cli, Help, Subcommand};
+use colored::Colorize;
 
 #[derive(Debug, PartialEq)]
 pub struct Lock {
@@ -103,12 +104,19 @@ impl Lock {
         Ok(())
     }
 
-    pub fn write_new_lockfile(local_ip: &Ip) -> Result<(), Fault> {
+    /// Writes a lockfile for a newly created ip (one that either was made with `new` or `init`).
+    pub fn write_new_lockfile(local_ip: &Ip, warn: bool) -> Result<(), Fault> {
         // build entire ip graph and resolve with dynamic symbol transformation
         let catalog = Catalog::new();
         let ip_graph = match algo::compute_final_ip_graph(&local_ip, &catalog) {
             Ok(g) => g,
-            Err(e) => return Err(e)?,
+            Err(e) => match warn {
+                true => {
+                    println!("{}: {}", "warning".yellow(), e.1);
+                    algo::minimal_graph_map(local_ip)
+                }
+                false => return Err(e)?,
+            },
         };
         Plan::write_lockfile(&local_ip, &ip_graph, true, false, &catalog)?;
         Ok(())

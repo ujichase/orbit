@@ -15,12 +15,29 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#![allow(dead_code)]
+#[macro_export]
+macro_rules! info {
+    ($($arg:tt)*) => {{
+        use colored::Colorize;
+        print!("{}: ", "info".blue());
+        println!($($arg)*);
+    }};
+}
 
-mod commands;
-mod core;
-pub mod error;
-pub mod log;
-pub mod util;
+#[macro_export]
+macro_rules! warn {
+    ($($arg:tt)*) => {{
+        use colored::Colorize;
+        print!("{}: ", "warning".yellow());
+        println!($($arg)*);
+    }};
+}
 
-pub use crate::commands::orbit::Orbit;
+#[macro_export]
+macro_rules! hint {
+    ($($arg:tt)*) => {{
+        use colored::Colorize;
+        print!("{}: ", "hint".green());
+        println!($($arg)*);
+    }};
+}

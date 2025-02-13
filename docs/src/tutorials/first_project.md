@@ -17,6 +17,7 @@ $ orbit new gates
 A directory called "gates" should now exist and look like the following tree structure:
 ```
 gates/
+├─ Orbit.lock
 └─ Orbit.toml
 ```
 

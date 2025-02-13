@@ -24,6 +24,7 @@ use crate::core::manifest::{Manifest, IP_MANIFEST_FILE};
 use crate::core::pkgid::PkgPart;
 use crate::error::{Error, Hint, LastError};
 use crate::util::filesystem::Standardize;
+use crate::*;
 use std::borrow::Cow;
 use std::io::Write;
 use std::path::PathBuf;
@@ -136,12 +137,28 @@ impl New {
         // create the manifest
         let mut manifest = std::fs::File::create(&manifest_path)?;
         manifest.write_all(Manifest::write_empty_manifest(&ip, &lib_str).as_bytes())?;
-        // display the help message
-        println!("info: {}", Manifest::write_manifest_ref_help());
+
+        // println!(
+        //     "info: manifest created at: {:?}",
+        //     filesystem::into_std_str(filesystem::full_normal(&manifest_path))
+        // );
 
         // write the lockfile
         let local_ip = Ip::load(self.path.clone(), true, false)?;
-        Lock::write_new_lockfile(&local_ip)?;
+        Lock::write_new_lockfile(&local_ip, true)?;
+
+        // println!(
+        //     "info: lockfile created at: {:?}",
+        //     filesystem::into_std_str(filesystem::full_normal(&local_ip.get_root().join(IP_LOCK_FILE)))
+        // );
+
+        info!(
+            "created new ip \"{}\"",
+            local_ip.get_man().get_ip().get_name()
+        );
+
+        // display the help message
+        info!("{}", Manifest::write_manifest_ref_help());
 
         Ok(())
     }

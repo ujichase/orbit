@@ -359,6 +359,18 @@ pub fn build_ip_file_list<'a>(
     files
 }
 
+/// Create a minimal graph map that consists of just this local ip node.
+///
+/// Useful for initializing or creating new ip and having to make the lockfile.
+pub fn minimal_graph_map<'a>(local_ip: &'a Ip) -> GraphMap<IpSpec, IpNode<'a>, ()> {
+    let mut g = GraphMap::new();
+    g.add_node(
+        local_ip.get_man().get_ip().into_ip_spec(),
+        IpNode::new_keep(local_ip, LangIdentifier::new_working()),
+    );
+    g
+}
+
 #[derive(Debug, PartialEq)]
 pub struct IpNode<'a> {
     dyn_state: DynState,

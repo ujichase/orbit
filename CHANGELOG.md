@@ -15,7 +15,7 @@ Add `- unreleased` along the next future version to prevent CI/CD from triggerin
 
 # Changelog
 
-## 0.23.0 - unreleased
+## 0.23.0
 
 ### Features
 - adds three new environment variables `ORBIT_TOP_FILE`, `ORBIT_TB_FILE`, and `ORBIT_DUT_FILE` that are set during the execution phase of a build/test
@@ -28,6 +28,7 @@ Add `- unreleased` along the next future version to prevent CI/CD from triggerin
 - adjusts internal packaging to have orbit binary placed inside dedicated bin/ directory
 
 ### Fixes
+- correctly initializes lockfile during init and issues warning instead of error if newly initialized project fails ip graph building phase
 - fixes bug where multiple ips of same name under same url would not error if a uuid was not provided
 - fixes bug on false instantiations appearing in tree output in VHDL labelled signal assignments
 - fixes crash on trying to report position of duplicate identifier for non-VHDL source code

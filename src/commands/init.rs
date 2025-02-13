@@ -29,6 +29,7 @@ use crate::error::{Error, LastError};
 use crate::util::anyerror::AnyError;
 use crate::util::filesystem;
 use crate::util::filesystem::Standardize;
+use crate::*;
 use std::io::Write;
 use std::path::PathBuf;
 
@@ -110,12 +111,19 @@ impl Init {
         // write the manifest
         let mut manifest = std::fs::File::create(&manifest_path)?;
         manifest.write_all(Manifest::write_empty_manifest(&ip, &lib_str).as_bytes())?;
-        // display the help message
-        println!("info: {}", Manifest::write_manifest_ref_help());
 
         // write the lockfile
         let local_ip = Ip::load(self.path.clone(), true, false)?;
-        Lock::write_new_lockfile(&local_ip)?;
+        Lock::write_new_lockfile(&local_ip, true)?;
+
+        info!(
+            "initialized ip \"{}\"",
+            local_ip.get_man().get_ip().get_name()
+        );
+
+        // display the help message
+        info!("{}", Manifest::write_manifest_ref_help());
+
         Ok(())
     }
 }
