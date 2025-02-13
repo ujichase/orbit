@@ -12,7 +12,7 @@ To make an ip accessible by another project, it must first be installed to your 
 
 ## Referencing
 
-`orbit view`, `orbit get`
+`orbit info`, `orbit get`
 
 Once an ip is installed to your ip catalog, the design units of that ip are available to be referenced in the current design.
 

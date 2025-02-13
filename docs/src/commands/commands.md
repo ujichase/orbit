@@ -16,7 +16,7 @@ The commands are listed below in their group and in a typical order of usage for
 
 ## Management
 - [orbit search](./search.md)
-- [orbit view](./view.md)
+- [orbit info](./info.md)
 - [orbit install](./install.md)
 - [orbit publish](./publish.md)
 - [orbit download](./download.md)

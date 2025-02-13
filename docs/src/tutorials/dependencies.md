@@ -49,7 +49,7 @@ Your memory is a little foggy on what gates actually did, and what entities were
 Let's remember what entities we have at our disposal.
 
 ```
-$ orbit view gates --units
+$ orbit info gates --units
 ```
 ``` 
 and_gate                            entity        public 

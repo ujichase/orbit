@@ -23,6 +23,7 @@ Add `- unreleased` along the next future version to prevent CI/CD from triggerin
 - presents error when uuid is modified in manifest to add layer of protection from accidental modification (includes steps to keep old uuid or use new uuid)
 
 ### Changes
+- renames `orbit view` command to `orbit info`
 - prohibits an ip from explicitly setting its library as "work" to save itself from potential VHDL issues
 - adjusts internal packaging to have orbit binary placed inside dedicated bin/ directory
 

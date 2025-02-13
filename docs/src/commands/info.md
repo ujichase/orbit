@@ -1,13 +1,13 @@
-# __orbit view__
+# __orbit info__
 
 ## __NAME__
 
-view - display metadata of an ip
+info - display information about an ip
 
 ## __SYNOPSIS__
 
 ```
-orbit view [options] [<ip>]
+orbit info [options] [<ip>]
 ```
 
 ## __DESCRIPTION__
@@ -41,9 +41,9 @@ To display the known versions for an ip, use the `--versions` option.
 ## __EXAMPLES__
 
 ```
-orbit view --units
-orbit view gates:1.0.0 -u --all
-orbit view gates --versions
-orbit view gates:1 -v
+orbit info --units
+orbit info gates:1.0.0 -u --all
+orbit info gates --versions
+orbit info gates:1 -v
 ```
 

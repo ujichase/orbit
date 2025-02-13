@@ -2,6 +2,9 @@
 # Details:
 #   A series of commands to run at convenience.
 
+_default:
+    just --list
+
 # Install the debug build in placement of old binary for local system testing
 install:
     cargo build --release

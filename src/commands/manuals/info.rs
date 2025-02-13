@@ -17,10 +17,10 @@
 
 // This manual page was automatically generated from the mangen.py tool.
 pub const MANUAL: &str = r#"NAME
-    view - display metadata of an ip
+    info - display information about an ip
 
 SYNOPSIS
-    orbit view [options] [<ip>]
+    orbit info [options] [<ip>]
 
 DESCRIPTION
     Displays various bits of information about a particular ip. If no ip is
@@ -49,8 +49,8 @@ OPTIONS
         Include any private or hidden results
 
 EXAMPLES
-    orbit view --units
-    orbit view gates:1.0.0 -u --all
-    orbit view gates --versions
-    orbit view gates:1 -v
+    orbit info --units
+    orbit info gates:1.0.0 -u --all
+    orbit info gates --versions
+    orbit info gates:1 -v
 "#;

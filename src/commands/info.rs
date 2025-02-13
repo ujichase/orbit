@@ -15,7 +15,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-use crate::commands::helps::view;
+use crate::commands::helps::info;
 use crate::core::catalog::Catalog;
 use crate::core::context::Context;
 use crate::core::ip::{Ip, PartialIpSpec};
@@ -32,7 +32,7 @@ use cliproc::{cli, proc, stage::*};
 use cliproc::{Arg, Cli, Help, Subcommand};
 
 #[derive(Debug, PartialEq)]
-pub struct View {
+pub struct Info {
     // TODO: narrow the displayed version list with a range?
     versions: bool,
     units: bool,
@@ -42,10 +42,10 @@ pub struct View {
     // TODO: view readme?
 }
 
-impl Subcommand<Context> for View {
+impl Subcommand<Context> for Info {
     fn interpret<'c>(cli: &'c mut Cli<Memory>) -> cli::Result<Self> {
-        cli.help(Help::with(view::HELP))?;
-        Ok(View {
+        cli.help(Help::with(info::HELP))?;
+        Ok(Info {
             all: cli.check(Arg::flag("all").switch('a'))?,
             versions: cli.check(Arg::flag("versions").switch('v'))?,
             units: cli.check(Arg::flag("units").switch('u'))?,
@@ -183,7 +183,7 @@ impl Subcommand<Context> for View {
     }
 }
 
-impl View {
+impl Info {
     /// Creates a string for to display the primary design units for the particular ip.
     fn format_units_table(table: Vec<LangUnit>, all: bool, is_local_ip: bool) -> String {
         let mut result = String::new();

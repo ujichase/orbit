@@ -25,6 +25,7 @@ mod download;
 mod env;
 mod get;
 mod help;
+mod info;
 mod init;
 mod install;
 mod new;
@@ -35,7 +36,6 @@ mod remove;
 mod search;
 mod test;
 mod tree;
-mod view;
 
 // informational content for help about commands
 mod helps;

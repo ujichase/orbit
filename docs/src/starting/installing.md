@@ -25,7 +25,7 @@ tar -xf orbit-CARGO_CRATE_VERSION-x86_64-unknown-linux-musl.tar.gz -C orbit-CARG
 
 3. Move the executable to a location already set in the PATH environment variable. 
 ```
-mv ./orbit-CARGO_CRATE_VERSION/orbit /usr/local/bin/orbit
+mv ./orbit-CARGO_CRATE_VERSION/bin/orbit /usr/local/bin/orbit
 ```
 
 ### macOS
@@ -41,7 +41,7 @@ tar -xf orbit-CARGO_CRATE_VERSION-x86_64-apple-darwin.tar.gz -C orbit-CARGO_CRAT
 
 3. Move the executable to a location already set in the PATH environment variable. 
 ```
-mv ./orbit-CARGO_CRATE_VERSION/orbit /usr/local/bin/orbit
+mv ./orbit-CARGO_CRATE_VERSION/bin/orbit /usr/local/bin/orbit
 ```
 
 ### Windows
@@ -62,7 +62,7 @@ $ new-item -path "$env:LOCALAPPDATA/Programs/orbit" -itemtype directory
 $ copy-item "./orbit-CARGO_CRATE_VERSION/*" -destination "$env:LOCALAPPDATA/Programs/orbit" -recurse
 ```
 
-5. Edit the user-level PATH environment variable in ___Control Panel___ by adding __%LOCALAPPDATA%\Programs\orbit__.
+5. Edit the user-level PATH environment variable in ___Control Panel___ by adding __%LOCALAPPDATA%\Programs\orbit\bin__.
 
 ## 2. Installing with Cargo
 

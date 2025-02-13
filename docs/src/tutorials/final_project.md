@@ -17,7 +17,7 @@ For the rest of this tutorial, we will be working relative to the project direct
 
 For this final project, we will need circuits described in both the gate ip and half-add ip. Let's quickly recall if version 1.0.0 of gates has the OR gate we will need.
 ```
-$ orbit view gates:1.0.0 --units
+$ orbit info gates:1.0.0 --units
 ```
 ```
 and_gate                            entity        public 

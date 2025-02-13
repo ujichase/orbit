@@ -16,10 +16,10 @@
 //
 
 // Automatically generated from the mansync.py script.
-pub const HELP: &str = r#"Display metadata of an ip.
+pub const HELP: &str = r#"Display information about an ip.
 
 Usage:
-    orbit view [options] [<ip>]
+    orbit info [options] [<ip>]
 
 Options:
     <ip>                  ip specification
@@ -27,4 +27,4 @@ Options:
     --units, -u           display the HDL design elements defined for this ip
     --all, -a             include any private or hidden results
 
-Use 'orbit help view' to read more about the command."#;
+Use 'orbit help info' to read more about the command."#;

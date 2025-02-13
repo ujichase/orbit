@@ -81,7 +81,7 @@ end architecture;
 
 Showing the list of possible design units for the current project should now include the OR gate entity.
 ```
-$ orbit view --units
+$ orbit info --units
 ```
 ```
 and_gate                            entity        public

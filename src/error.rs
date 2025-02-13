@@ -233,7 +233,7 @@ impl Display for Hint {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mixed_prompt = match self {
             Self::ShowAvailableUnitsExternal(spec) => Some(format!(
-                "use `orbit view {0} --units` to display available units",
+                "use `orbit info {0} --units` to display available units",
                 spec
             )),
             _ => None,
@@ -247,7 +247,7 @@ impl Display for Hint {
             }
             Self::ResolveDuplicateIds1 => HINT_1,
             Self::ResolveDuplicateIds2 => HINT_2,
-            Self::ShowAvailableUnitsLocal => "use `orbit view --units` to display available units",
+            Self::ShowAvailableUnitsLocal => "use `orbit info --units` to display available units",
             Self::ShowAvailableUnitsExternal(_) => mixed_prompt.as_ref().unwrap(),
             Self::DutSpecify => "use the \"--dut\" option to specify the design under test",
             Self::WantsTestbench => {
@@ -266,7 +266,7 @@ impl Display for Hint {
             Self::MakeLock => "use `orbit lock` to generate the latest lockfile for this ip",
             Self::PublishWithReady => "use the \"--ready\" flag to publish the ip to its channels",
             Self::RegenerateLockfile => "verify the ip's lockfile exists and is up to date",
-            Self::ShowVersions => "use `orbit view <ip> --versions` to see all known versions",
+            Self::ShowVersions => "use `orbit info <ip> --versions` to see all known versions",
             Self::ShowConfigFiles => {
                 "use `orbit config --list` to see the list of current configuration files"
             }

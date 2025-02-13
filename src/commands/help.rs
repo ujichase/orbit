@@ -46,7 +46,7 @@ impl Subcommand<()> for Help {
 enum Topic {
     New,
     Init,
-    View,
+    Info,
     Read,
     Get,
     Tree,
@@ -64,7 +64,7 @@ enum Topic {
 impl Topic {
     fn list_all() -> String {
         let list = [
-            "new", "init", "view", "read", "get", "tree", "lock", "test", "build", "publish",
+            "new", "init", "info", "read", "get", "tree", "lock", "test", "build", "publish",
             "search", "install", "env", "config", "remove",
         ];
         list.into_iter().fold(String::new(), |mut acc, x| {
@@ -80,7 +80,7 @@ impl std::str::FromStr for Topic {
         Ok(match s {
             "new" => Self::New,
             "init" => Self::Init,
-            "view" => Self::View,
+            "info" => Self::Info,
             "read" => Self::Read,
             "get" => Self::Get,
             "tree" => Self::Tree,
@@ -105,7 +105,7 @@ impl Topic {
         match &self {
             New => manuals::new::MANUAL,
             Init => manuals::init::MANUAL,
-            View => manuals::view::MANUAL,
+            Info => manuals::info::MANUAL,
             Read => manuals::read::MANUAL,
             Get => manuals::get::MANUAL,
             Tree => manuals::tree::MANUAL,

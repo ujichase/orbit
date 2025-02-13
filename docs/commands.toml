@@ -75,12 +75,12 @@ orbit init --uuid
 """
 
 # ------------------------------------------------------------------------------   
-# view           
+# info           
 # ------------------------------------------------------------------------------
-[view]
-name = "view"
-summary = "display metadata of an ip"
-synopsis = "orbit view [options] [<ip>]"
+[info]
+name = "info"
+summary = "display information about an ip"
+synopsis = "orbit info [options] [<ip>]"
 description = """
 Displays various bits of information about a particular ip. If no ip is
 provided, then it displays information related to the local ip.
@@ -101,10 +101,10 @@ options."--units, -u" = "Display the HDL design elements defined for this ip"
 options."--all, -a" = "Include any private or hidden results"
 
 examples = """
-orbit view --units
-orbit view gates:1.0.0 -u --all
-orbit view gates --versions
-orbit view gates:1 -v
+orbit info --units
+orbit info gates:1.0.0 -u --all
+orbit info gates --versions
+orbit info gates:1 -v
 """
 
 # ------------------------------------------------------------------------------

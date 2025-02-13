@@ -24,7 +24,7 @@ Usage:
 Commands:
     new                   create a new ip
     init                  initialize an ip from an existing project
-    view                  display metadata of an ip
+    info                  display information about an ip
     read                  lookup hdl source code
     get                   fetch an hdl unit for code integration
     tree                  show the dependency graph
