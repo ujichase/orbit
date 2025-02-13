@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram name="Page-1" id="IcoCdJqZrx8V3Vge2kLJ">
-        <mxGraphModel dx="830" dy="1550" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+        <mxGraphModel dx="628" dy="1550" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -339,7 +339,7 @@
                 <mxCell id="27" value="&lt;b&gt;$ &lt;u&gt;orbit search&lt;/u&gt;&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="352.5" y="420" width="120" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="28" value="&lt;b&gt;$ &lt;u&gt;orbit view&lt;/u&gt;&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                <mxCell id="28" value="&lt;b&gt;$ &lt;u&gt;orbit info&lt;/u&gt;&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="352.5" y="580" width="120" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="29" value="&lt;b&gt;$ &lt;u&gt;orbit read&lt;/u&gt;&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
