@@ -41,38 +41,43 @@ OLD_HEADER = '''//
 
 '''
 
-source_files = glob.glob('./src/**/*.rs', recursive=True)
-print('info: found', len(source_files), 'source files')
+def main():
+    source_files = glob.glob('./src/**/*.rs', recursive=True)
+    print('info: found', len(source_files), 'source files')
 
-latest = 0
-updating = 0
-missing = 0
+    latest = 0
+    updating = 0
+    missing = 0
 
-for source in source_files:
-    data = ''
-    with open(source, 'r') as fd:
-        data = fd.read()
-        # check if it starts with the latest header
-        if data.startswith(NEW_HEADER) == True:
-            latest += 1
-            # print('info: source', source, 'already has latest header')
-            continue
-        # replace old header with new header
-        elif data.startswith(OLD_HEADER) == True:
-            updating += 1
-            # print('info: source', source, 'is updating to latest header')
-            data = data.replace(OLD_HEADER, NEW_HEADER)
-        # write the new header at the beginning
-        else:
-            missing += 1
-            # print('info: source', source, 'is missing latest header')
-            data = NEW_HEADER + data
+    for source in source_files:
+        data = ''
+        with open(source, 'r') as fd:
+            data = fd.read()
+            # check if it starts with the latest header
+            if data.startswith(NEW_HEADER) == True:
+                latest += 1
+                # print('info: source', source, 'already has latest header')
+                continue
+            # replace old header with new header
+            elif data.startswith(OLD_HEADER) == True:
+                updating += 1
+                # print('info: source', source, 'is updating to latest header')
+                data = data.replace(OLD_HEADER, NEW_HEADER)
+            # write the new header at the beginning
+            else:
+                missing += 1
+                # print('info: source', source, 'is missing latest header')
+                data = NEW_HEADER + data
+            pass
+        # save the changes to the files
+        with open(source, 'w') as fd:
+            fd.write(data)
         pass
-    # save the changes to the files
-    with open(source, 'w') as fd:
-        fd.write(data)
-    pass
 
-print('info: kept', latest, 'with latest license header')
-print('info: updated', updating, 'to latest license header')
-print('info: fixed', missing, 'with latest license header')
+    print('info: kept', latest, 'with latest license header')
+    print('info: updated', updating, 'to latest license header')
+    print('info: fixed', missing, 'with latest license header')
+
+
+if __name__ == "__main__":
+    main()
