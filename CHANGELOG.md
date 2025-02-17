@@ -15,6 +15,11 @@ Add `- unreleased` along the next future version to prevent CI/CD from triggerin
 
 # Changelog
 
+## 0.23.1 - unreleased
+
+### Fixes
+- adds nicer errors for cases when current directory or user's home directory cannot be found
+
 ## 0.23.0
 
 ### Features

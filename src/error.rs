@@ -171,6 +171,14 @@ pub enum Error {
         "uuid for ip \"{0}\" has been modified which can result in unintended consequences{1}"
     )]
     UuidModified(PkgPart, Hint),
+    #[error("failed to get current working directory (does it still exist?)")]
+    FailedToGetCurDir,
+    #[error(
+        "failed to detect user's home directory; please set the ORBIT_HOME environment variable"
+    )]
+    FailedToGetHomeDir,
+    #[error("directory {0:?} does not exist for ORBIT_HOME")]
+    OrbitHomeDoesNotExist(PathBuf),
 }
 
 #[derive(Debug, PartialEq)]

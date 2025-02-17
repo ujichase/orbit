@@ -85,13 +85,13 @@ impl Context {
 
     /// Sets the home directory. By default this is `$HOME/.orbit`. If set by `var`,
     /// it must be an existing directory.
-    pub fn home(mut self, key: &str) -> Result<Context, ContextError> {
+    pub fn home(mut self, key: &str) -> Result<Context, Error> {
         self.home_path = if let Ok(s) = env::var(key) {
             std::path::PathBuf::from(s)
         } else {
             let hp = match home::home_dir() {
                 Some(p) => p.join(".orbit"),
-                None => return Err(ContextError(format!("failed to detect user's home directory; please set the ORBIT_HOME environment variable")))
+                None => return Err(Error::FailedToGetHomeDir),
             };
             // create the directory if does not exist
             if path::Path::exists(&hp) == false {
@@ -101,10 +101,7 @@ impl Context {
         };
         // do not allow a non-existent directory to be set for the home
         if path::Path::exists(&self.home_path) == false {
-            return Err(ContextError(format!(
-                "directory {} does not exist for ORBIT_HOME",
-                self.home_path.display()
-            )));
+            return Err(Error::OrbitHomeDoesNotExist(self.home_path.clone()));
         }
         // verify the environment variable is set
         env::set_var(key, &self.home_path);
@@ -306,10 +303,11 @@ impl Context {
 
     /// Determines if the directory is within a current IP and sets the proper
     /// runtime environment variable.
-    pub fn current_ip_dir(mut self, s: &str) -> Result<Context, ContextError> {
-        self.ip_path = match Context::find_ip_path(
-            &std::env::current_dir().expect("failed to get current directory"),
-        ) {
+    pub fn current_ip_dir(mut self, s: &str) -> Result<Context, Error> {
+        self.ip_path = match Context::find_ip_path(match &std::env::current_dir() {
+            Ok(r) => r,
+            Err(_) => return Err(Error::FailedToGetCurDir),
+        }) {
             Some(cwd) => {
                 env::set_var(s, &cwd);
                 Some(cwd)
@@ -381,7 +379,7 @@ impl Context {
     }
 
     /// Sets the IP's build directory and the corresponding environment variable.
-    pub fn build_dir(self, s: &str) -> Result<Context, ContextError> {
+    pub fn build_dir(self, s: &str) -> Result<Context, Error> {
         env::set_var(s, &self.get_target_dir());
         Ok(self)
     }
@@ -439,17 +437,6 @@ impl Context {
             None => &default_fmt,
         };
         sv_fmt.clone()
-    }
-}
-
-#[derive(Debug)]
-pub struct ContextError(String);
-
-impl std::error::Error for ContextError {}
-
-impl std::fmt::Display for ContextError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.0)
     }
 }
 
