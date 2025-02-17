@@ -2,6 +2,7 @@
 name = "mixed"
 version = "0.1.0"
 exclude = ["b.v"]
+uuid = "41ujql1ton65j0ya66w9y3i5k"
 # See more keys and their definitions at https://chaseruskin.github.io/orbit/reference/manifest.html
 
 [dependencies]

@@ -12,6 +12,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 library work;
+use work.const_pkg.all;
 
 entity adder is
     port(
@@ -27,7 +28,7 @@ end entity;
 architecture struct of adder is
 
     --internal signal to propagate carry bit through each full adder
-    signal carry_i : std_logic_vector(6 downto 0) := (others => '0');
+    signal carry_i : std_logic_vector(6 downto 0) := (others => not FOO);
 begin
     --first bit being carried in to adder
     carry_i(0) <= carry_in;

@@ -23,8 +23,8 @@ Usage:
 
 Options:
     <unit>...             uppermost hdl unit of the dependency tree
-    --format <fmt>        determine how to display nodes ('long', 'short')
+    --edges, -e <kind>    the kind of dependencies to display (unit, ip, all)
+    --format <fmt>        determine how to display nodes (long, short)
     --ascii               limit the textual tree characters to the 128 ASCII set
-    --ip                  switch to the ip dependency graph
 
 Use 'orbit help tree' to read more about the command."#;

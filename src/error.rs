@@ -179,6 +179,8 @@ pub enum Error {
     FailedToGetHomeDir,
     #[error("directory {0:?} does not exist for ORBIT_HOME")]
     OrbitHomeDoesNotExist(PathBuf),
+    #[error("edge kinds are: \"unit\", \"ip\", \"all\"")]
+    EdgeKindInvalid(String),
 }
 
 #[derive(Debug, PartialEq)]

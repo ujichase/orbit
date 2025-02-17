@@ -64,6 +64,16 @@ impl HdlSymbol {
         }
     }
 
+    /// Returns a cloned version of the ref set for the given HDL symbol.
+    pub fn copy_refs(&self) -> Option<RefSet> {
+        match &self {
+            Self::Verilog(v) => Some(v.get_refs().clone()),
+            Self::Vhdl(v) => Some(v.get_refs().clone()),
+            Self::SystemVerilog(v) => Some(v.get_refs().clone()),
+            Self::BlackBox(_) => None,
+        }
+    }
+
     pub fn as_module(&self) -> Option<&Module> {
         match &self {
             Self::Verilog(v) => v.as_module(),

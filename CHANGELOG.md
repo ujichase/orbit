@@ -17,6 +17,12 @@ Add `- unreleased` along the next future version to prevent CI/CD from triggerin
 
 ## 0.23.1 - unreleased
 
+### Features
+- adds ability to view entire hdl reference dependency graph using `--edges` option for `orbit tree` command (`--edges all`)
+
+### Changes
+- viewing the ip-level dependency graph with `orbit tree` is now under the `--edges` option (`--edges ip`)
+
 ### Fixes
 - adds nicer errors for cases when current directory or user's home directory cannot be found
 

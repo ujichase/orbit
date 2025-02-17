@@ -37,9 +37,30 @@ use crate::util::anyerror::Fault;
 use crate::util::graph::EdgeStatus;
 use crate::util::graphmap::GraphMap;
 use std::collections::HashMap;
+use std::str::FromStr;
 
 use cliproc::{cli, proc, stage::*};
 use cliproc::{Arg, Cli, Help, Subcommand};
+
+#[derive(Debug, PartialEq)]
+pub enum Kind {
+    Unit,
+    Ip,
+    All,
+}
+
+impl FromStr for Kind {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "unit" => Ok(Kind::Unit),
+            "ip" => Ok(Kind::Ip),
+            "all" => Ok(Kind::All),
+            _ => Err(Error::EdgeKindInvalid(s.to_string())),
+        }
+    }
+}
 
 #[derive(Debug, PartialEq)]
 pub struct Tree {
@@ -47,7 +68,7 @@ pub struct Tree {
     // compress: bool,
     format: Option<IdentifierFormat>,
     ascii: bool,
-    ip: bool,
+    edges: Kind,
 }
 
 impl Subcommand<Context> for Tree {
@@ -57,7 +78,9 @@ impl Subcommand<Context> for Tree {
             // TODO: implement compression logic
             // compress: cli.check(Arg::flag("compress"))?,
             ascii: cli.check(Arg::flag("ascii"))?,
-            ip: cli.check(Arg::flag("ip"))?,
+            edges: cli
+                .get(Arg::option("edges").switch('e').value("kind"))?
+                .unwrap_or(Kind::Unit),
             format: cli.get(Arg::option("format").value("fmt"))?,
             roots: cli.get_all(Arg::positional("unit"))?,
         })
@@ -79,14 +102,20 @@ impl Subcommand<Context> for Tree {
 
 impl Tree {
     fn run(&self, target: Ip, catalog: Catalog) -> Result<(), Fault> {
-        match &self.ip {
-            true => self.run_ip_graph(target, catalog),
-            false => self.run_hdl_graph(target, catalog),
+        // Determine how to display the dependencies for the project
+        match &self.edges {
+            Kind::Unit => self.run_hdl_graph(target, catalog, true),
+            Kind::Ip => self.run_ip_graph(target, catalog),
+            Kind::All => self.run_hdl_graph(target, catalog, false),
         }
     }
 
     /// Construct and print the graph at an HDL-entity level.
-    fn run_hdl_graph(&self, target: Ip, catalog: Catalog) -> Result<(), Fault> {
+    ///
+    /// If `only_modules` is true, then the tree will only report back entity/module instantiations
+    /// within other entity/modules. If false, then any type of primary design unit reference will
+    /// be included.
+    fn run_hdl_graph(&self, target: Ip, catalog: Catalog, only_modules: bool) -> Result<(), Fault> {
         let working_lib = target.get_hdl_library();
 
         // build graph again but with entire set of all files available from all depdendencies
@@ -94,7 +123,7 @@ impl Tree {
         let files = algo::build_ip_file_list(&ip_graph, &target);
 
         // build the complete graph (using entities as the nodes)
-        let global_graph = Self::build_graph(&files)?;
+        let global_graph = Self::build_graph(&files, only_modules)?;
 
         let roots = match &self.roots {
             Some(user_roots) => {
@@ -156,6 +185,7 @@ impl Tree {
                     .as_ref()
                     .get_symbol()
                     .is_component()
+                    || only_modules == false
             })
             .for_each(|n| {
                 let tree = global_graph.get_graph().treeview(*n);
@@ -226,6 +256,7 @@ impl Tree {
     /// Constructs a graph of the design heirarchy with entity nodes.
     fn build_graph<'a>(
         files: &'a Vec<IpFileNode>,
+        only_modules: bool,
     ) -> Result<GraphMap<CompoundIdentifier, HdlNode<'a>, ()>, Fault> {
         // entity identifier, HashNode (hash-node holds entity structs)
         let mut graph_map = GraphMap::<CompoundIdentifier, HdlNode, ()>::new();
@@ -257,7 +288,7 @@ impl Tree {
         // differs from planning below
 
         // add edges according to verilog
-        Plan::connect_edges_from_verilog(&mut graph_map, &mut component_pairs, true);
+        Plan::connect_edges_from_verilog(&mut graph_map, &mut component_pairs, only_modules);
 
         // go through all subunits and make the connections
         let mut sub_nodes_iter = sub_nodes.into_iter();
@@ -270,12 +301,28 @@ impl Tree {
             // note: this also occurs in `plan.rs`
             let entity_node = match graph_map.get_node_by_key_mut(&node_name) {
                 Some(en) => en,
-                // @todo: issue error because the entity (owner) is not declared
+                // @TODO: issue error because the entity (owner) is not declared
                 None => continue,
             };
             entity_node.as_ref_mut().add_file(node.get_file());
+            // grab the list of the primary design unit's references to be used when getting "all" dependencies
+            let pri_node = entity_node.as_ref().get_symbol().copy_refs();
+
             // create edges by ordered edge list (for entities)
-            for dep in node.get_sub().get_edge_list_entities() {
+            let edges = match only_modules {
+                true => node.get_sub().get_edge_list_entities(),
+                false => {
+                    // add the primary design unit's references as well
+                    let mut edges = Vec::new();
+                    if let Some(set) = &pri_node {
+                        edges.extend(set);
+                    }
+                    edges.extend(node.get_sub().get_edge_list().clone());
+                    edges
+                }
+            };
+
+            for dep in edges {
                 // need to locate the key with a suffix matching `dep` if it was a component instantiation
                 if dep.get_prefix().is_none() {
                     if let Some(lib) = component_pairs.get(dep.get_suffix()) {
@@ -315,7 +362,22 @@ impl Tree {
                     }
                 // the dependency has a prefix (a library) with it
                 } else {
-                    graph_map.add_edge_by_key(dep, &node_name, ());
+                    let local_lib_id = CompoundIdentifier::new(
+                        LangIdentifier::Vhdl(hdl_lib.clone()),
+                        dep.get_suffix().clone(),
+                    );
+                    // if the prefix is "work", replace it with the current unit's hdl library
+                    let resolved_dep_id = match dep.get_prefix().unwrap() {
+                        LangIdentifier::Vhdl(i) => {
+                            if i == &VhdlIdentifier::new_working() {
+                                &local_lib_id
+                            } else {
+                                dep
+                            }
+                        }
+                        _ => dep,
+                    };
+                    graph_map.add_edge_by_key(&resolved_dep_id, &node_name, ());
                 };
             }
         }

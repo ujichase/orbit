@@ -10,7 +10,7 @@ cd ..
 cd top
 orbit lock --force
 # verify the ip dependency graph only has 1 aka version
-STDOUT=$(orbit tree --ip)
+STDOUT=$(orbit tree -e ip)
 
 cd ..
 

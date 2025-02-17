@@ -20,12 +20,18 @@ local ip. If there is ambiguity in determining what node can be the root, then
 all root nodes and their respective trees will be displayed. To only display
 the tree of a particular node, use the `<unit>` option.
 
-There are two trees available to view: hdl and ip. By default, the hdl
-dependency graph is displayed. The hdl graph shows the composition of usable 
-entities/modules. To generate this graph, it analyzes each VHDL architecture 
-and ignores Verilog compiler directives. If an unidentified entity is 
-instantiated, it will appear as a leaf in the graph and will be considered as 
-a "black box" denoted by the "?" character next to its position in the tree.
+The tree can display different kinds of dependencies relative to the current
+ip using the `--edges` option. By default, this command uses "unit". By
+specifying edges as "ip", it will return the ip-level dependency tree. When
+using "unit" or "all", the hdl dependency graph will be displayed. The hdl
+graph shown with "unit" displays the composition of usable entities/modules. 
+To generate this graph, it analyzes each VHDL architecture and ignores Verilog 
+compiler directives. If an unidentified entity is instantiated, it will appear 
+as a leaf in the graph and will be considered as a "black box" denoted by 
+the "?" character next to its position in the tree. The hdl graph shown with
+"all" displays the composition of the design including all primary design unit
+references. Any references (excluding entity instantiations) that are not 
+found will not appear in the dependency graph for the "all" option.
 
 Using the `--format` option can alter how much information is displayed for
 each hdl design unit in the tree composition. By default, only the design
@@ -42,20 +48,20 @@ option.
 `<unit>...`  
       Uppermost hdl unit of the dependency tree
 
+`--edges, -e <kind>`  
+      The kind of dependencies to display (unit, ip, all)
+
 `--format <fmt>`  
-      Determine how to display nodes ('long', 'short')
+      Determine how to display nodes (long, short)
 
 `--ascii`  
       Limit the textual tree characters to the 128 ascii set
-
-`--ip`  
-      Switch to the ip dependency graph
 
 ## __EXAMPLES__
 
 ```
 orbit tree
 orbit tree top --format long
-orbit tree --ip --ascii
+orbit tree -e ip --ascii
 ```
 
