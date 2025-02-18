@@ -15,7 +15,7 @@ Add `- unreleased` along the next future version to prevent CI/CD from triggerin
 
 # Changelog
 
-## 0.23.1 - unreleased
+## 0.23.1
 
 ### Features
 - adds ability to view entire hdl reference dependency graph using `--edges` option for `orbit tree` command (`--edges all`)
