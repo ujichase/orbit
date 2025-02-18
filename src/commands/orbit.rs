@@ -452,9 +452,9 @@ impl Orbit {
             #[cfg(target_env = "gnu")]
             let _target_env = Some("gnu");
             #[cfg(target_env = "msvc")]
-            let _target_env = "msvc";
+            let _target_env = Some("msvc");
             #[cfg(target_env = "musl")]
-            let _target_env = "musl";
+            let _target_env = Some("musl");
             #[cfg(target_vendor = "apple")]
             let _target_env = Some("darwin");
 
