@@ -16,6 +16,7 @@
 //
 
 use cliproc::{cli, proc, stage::Memory, Arg, Cli, Help, Subcommand};
+use colored::Colorize;
 
 use crate::commands::helps::test;
 use crate::core::blueprint::Scheme;
@@ -82,6 +83,8 @@ impl Subcommand<Context> for Test {
 
         // display plugin list and exit
         if self.list == true {
+            // try to get the default target
+            let def_target = c.select_target(&None, true, false).unwrap_or(None);
             match target {
                 // display entire contents about the particular plugin
                 Some(tar) => println!("{}", tar.to_string()),
@@ -94,7 +97,8 @@ impl Subcommand<Context> for Test {
                             .get_targets()
                             .values()
                             .into_iter()
-                            .collect::<Vec<&&Target>>()
+                            .collect::<Vec<&&Target>>(),
+                        def_target,
                     )
                 ),
             }
@@ -188,6 +192,7 @@ impl Test {
         let target = target.clone().replace_vars_in_args(&swap_table);
 
         // run the command from the output path
+        println!("info: executing target {}", target.get_name().green());
         match target.execute(
             &self.command,
             &self.args,

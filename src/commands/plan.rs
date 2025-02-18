@@ -1683,7 +1683,8 @@ impl Plan {
                             .get_targets()
                             .values()
                             .into_iter()
-                            .collect::<Vec<&&Target>>()
+                            .collect::<Vec<&&Target>>(),
+                        None,
                     )
                 ),
             }

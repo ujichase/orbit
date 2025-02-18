@@ -35,6 +35,7 @@ use crate::util::environment::ORBIT_BLUEPRINT;
 use crate::util::environment::ORBIT_OUT_DIR;
 use crate::util::environment::ORBIT_TARGET;
 use crate::util::environment::ORBIT_TARGET_DIR;
+use colored::Colorize;
 
 use cliproc::{cli, proc, stage::*};
 use cliproc::{Arg, Cli, Help, Subcommand};
@@ -82,6 +83,8 @@ impl Subcommand<Context> for Build {
         let target = c.select_target(&self.target, self.list == false, true)?;
         // display target list and exit
         if self.list == true {
+            // try to get the default target
+            let def_target = c.select_target(&None, true, true).unwrap_or(None);
             match target {
                 Some(t) => println!("{}", t.to_string()),
                 None => print!(
@@ -92,7 +95,8 @@ impl Subcommand<Context> for Build {
                             .get_targets()
                             .values()
                             .into_iter()
-                            .collect::<Vec<&&Target>>()
+                            .collect::<Vec<&&Target>>(),
+                        def_target,
                     )
                 ),
             }
@@ -157,6 +161,7 @@ impl Subcommand<Context> for Build {
         let target = target.clone().replace_vars_in_args(&swap_table);
 
         // run the command from the output path
+        println!("info: executing target {}", target.get_name().green());
         match target.execute(
             &self.command,
             &self.args,

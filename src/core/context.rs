@@ -384,6 +384,8 @@ impl Context {
         Ok(self)
     }
 
+    /// If a target is required, then it will try to fetch the default target
+    /// defined from the user's configuration (if `target` is also `None`).
     pub fn select_target(
         &self,
         target: &Option<String>,

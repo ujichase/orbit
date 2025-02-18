@@ -19,6 +19,7 @@ Add `- unreleased` along the next future version to prevent CI/CD from triggerin
 
 ### Features
 - adds ability to view entire hdl reference dependency graph using `--edges` option for `orbit tree` command (`--edges all`)
+- marks which target is default (if any) for given context for both `orbit build` and `orbit test` when listing targets with `--list`
 
 ### Changes
 - viewing the ip-level dependency graph with `orbit tree` is now under the `--edges` option (`--edges ip`)

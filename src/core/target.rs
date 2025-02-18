@@ -20,6 +20,7 @@ use crate::core::fileset::Style;
 use crate::error::Error;
 use crate::util::anyerror::Fault;
 use crate::util::filesystem;
+use colored::Colorize;
 use serde_derive::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -102,22 +103,31 @@ impl Target {
     }
 
     /// Displays a plugin's information in a single line for quick glance.
-    pub fn quick_info(&self) -> String {
+    pub fn quick_info(&self, is_default: bool) -> String {
         format!(
-            "{:<16}{}",
-            self.name,
-            self.description.as_ref().unwrap_or(&String::new())
+            "{:<30}{}",
+            format!(
+                "{}{}",
+                self.name,
+                if is_default {
+                    " [default]".blue()
+                } else {
+                    "".blue()
+                }
+            ),
+            self.description.as_ref().unwrap_or(&String::new()).green(),
         )
     }
 
     /// Creates a string to display a list of plugins.
     ///
     /// The string lists the plugins in alphabetical order by `alias`.
-    pub fn list_targets(targets: &mut [&&Target]) -> String {
+    pub fn list_targets(targets: &mut [&&Target], def_target: Option<&Target>) -> String {
         let mut list = String::new();
         targets.sort_by(|a, b| a.name.cmp(&b.name));
         for t in targets {
-            list += &format!("{}\n", t.quick_info());
+            let is_default = def_target.is_some() && def_target.unwrap().get_name() == t.get_name();
+            list += &format!("{}\n", t.quick_info(is_default));
         }
         list
     }
