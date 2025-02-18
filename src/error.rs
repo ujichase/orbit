@@ -164,9 +164,9 @@ pub enum Error {
     #[error("invalid character \"{0}\" does not belong to alphabet (a-z0-9)")]
     UuidInvalidChar(char),
     #[error(
-        "ip namespace collision for \"{0}\": please disambiguate by providing the appropriate uuid"
+        "ip namespace collision for \"{0}\": please disambiguate by providing the appropriate uuid:\n\n{1}{2}"
     )]
-    IpNamespaceCollision(String),
+    IpNamespaceCollision(String, String, Hint),
     #[error(
         "uuid for ip \"{0}\" has been modified which can result in unintended consequences{1}"
     )]
@@ -237,6 +237,7 @@ pub enum Hint {
     ShowVersions,
     ShowConfigFiles,
     ConfirmUuidChange(String),
+    SolveNamespaceCollision,
 }
 
 impl Display for Hint {
@@ -265,6 +266,9 @@ impl Display for Hint {
             }
             Self::WantsTop => {
                 "use `orbit build` and its \"--top\" option to select top-level designs"
+            }
+            Self::SolveNamespaceCollision => {
+                "use `orbit info` for each candidate to help determine your intended ip"
             }
             Self::TopSpecify => "use the \"--top\" option to specify the top-level design",
             Self::BenchSpecify => "use the \"--tb\" option to specify the testbench",

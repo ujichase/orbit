@@ -417,6 +417,9 @@ library = "{}"
 
     /// Returns the list of dependencies found under "dependencies" and
     /// "dev-dependencies".
+    ///
+    /// The first part is the name of the dependency, while the second part is
+    /// the metadata about that dependency (version, uuid, etc.).
     pub fn get_deps_list(&self, include_dev: bool, ordered: bool) -> Vec<(&PkgPart, &Dependency)> {
         let mut result = Vec::with_capacity(
             self.dependencies.len()

@@ -25,6 +25,7 @@ Add `- unreleased` along the next future version to prevent CI/CD from triggerin
 - viewing the ip-level dependency graph with `orbit tree` is now under the `--edges` option (`--edges ip`)
 
 ### Fixes
+- existing ip now leverage synced lockfile to automatically resolve ip namespace collision problem when a uuid is omitted from the manifest when a new ip with same name is introduced to the catalog after the fact
 - adds nicer errors for cases when current directory or user's home directory cannot be found
 
 ## 0.23.0

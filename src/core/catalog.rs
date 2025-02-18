@@ -393,10 +393,28 @@ impl<'a> Catalog<'a> {
                 match cands.len() {
                     0 => panic!("a mapping of name to uuid should already exist"),
                     1 => Ok(self.inner.get(cands.first().unwrap())),
-                    _ => Err(CodeFault(
-                        None,
-                        Box::new(Error::IpNamespaceCollision(name.name.to_string())),
-                    ))?,
+                    _ => {
+                        let mut conflicts = String::new();
+                        cands.iter().enumerate().for_each(|(i, c)| {
+                            conflicts.push_str(&format!(
+                                "  candidate {}: {}+{}",
+                                i + 1,
+                                name.name,
+                                c.encode()
+                            ));
+                            if i + 1 < cands.len() {
+                                conflicts.push('\n');
+                            }
+                        });
+                        Err(CodeFault(
+                            None,
+                            Box::new(Error::IpNamespaceCollision(
+                                name.name.to_string(),
+                                conflicts,
+                                Hint::SolveNamespaceCollision,
+                            )),
+                        ))?
+                    }
                 }
             } else {
                 // println!("{}", "here!");

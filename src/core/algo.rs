@@ -77,6 +77,9 @@ fn graph_ip<'a>(
     );
     let mut processing = vec![(t, root)];
 
+    // check if we can use the lockfile (is synced with user's manifest)
+    let able_to_use_lockfile = root.can_use_lock(catalog);
+
     // add root's identifiers and parse files according to the correct language settings
     let mut unit_map = root.collect_units(true, false)?;
 
@@ -156,8 +159,16 @@ fn graph_ip<'a>(
                     }
                 }
                 false => {
-                    // TODO: need to resolve the uuid for this package... maybe create lockfile by merging lockfiles of direct deps?
-                    match catalog.translate_name(&PkgName::new(pkgid, dependency.as_uuid()))? {
+                    // try to pull uuid from lockfile if it is okay to do so and the manifest is missing the uuid
+                    let uuid = match able_to_use_lockfile {
+                        true => match root.get_lock().get(pkgid, dependency.get_version()) {
+                            Some(entry) => Some(entry.get_uuid()),
+                            None => dependency.as_uuid(),
+                        },
+                        false => dependency.as_uuid(),
+                    };
+                    // resolve the uuid for this package... try to use existing lockfile from above code segment
+                    match catalog.translate_name(&PkgName::new(pkgid, uuid))? {
                         Some(status) => {
                             // find this IP to read its dependencies
                             match status.get_install(&AnyVersion::Specific(
