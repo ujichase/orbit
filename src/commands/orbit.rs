@@ -430,10 +430,44 @@ impl Orbit {
         let checksums: String = String::from_utf8(dst)?;
 
         // store user's target
-        let target: &str = if let Some(tar) = option_env!("TARGET") {
-            tar
+        let target: String = if let Some(tar) = option_env!("TARGET") {
+            tar.to_string()
         } else {
-            return Err(Box::new(UpgradeError::UndefinedTarget))?;
+            // try to extract the target architecture
+            let _target_arch: Option<&str> = None;
+            #[cfg(target_arch = "x86_64")]
+            let _target_arch = Some("x86_64");
+            #[cfg(target_arch = "aarch64")]
+            let _target_arch = Some("aarch64");
+            // try to extract the target vendor
+            let _target_vendor: Option<&str> = None;
+            #[cfg(target_vendor = "apple")]
+            let _target_vendor = Some("apple");
+            #[cfg(target_vendor = "pc")]
+            let _target_vendor = Some("pc");
+            #[cfg(target_vendor = "unknown")]
+            let _target_vendor = Some("unknown");
+            // try to extract the target environment
+            let _target_env: Option<&str> = None;
+            #[cfg(target_env = "gnu")]
+            let _target_env = Some("gnu");
+            #[cfg(target_env = "msvc")]
+            let _target_env = "msvc";
+            #[cfg(target_env = "musl")]
+            let _target_env = "musl";
+            #[cfg(target_vendor = "apple")]
+            let _target_env = Some("darwin");
+
+            if _target_arch.is_some() && _target_vendor.is_some() && _target_env.is_some() {
+                format!(
+                    "{}-{}-{}",
+                    _target_arch.unwrap(),
+                    _target_vendor.unwrap(),
+                    _target_env.unwrap()
+                )
+            } else {
+                return Err(Box::new(UpgradeError::UndefinedTarget));
+            }
         };
 
         let pkg = format!("orbit-{}-{}.{}", &latest, &target, PKG_EXT);
