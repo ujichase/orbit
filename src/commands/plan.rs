@@ -899,30 +899,53 @@ impl Plan {
                                     f.as_ref().get_library(),
                                     sym.get_name(),
                                     sym.as_module().unwrap().get_edge_list_entities(),
+                                    sym.as_module().unwrap().get_edge_list_entities(),
                                 ))
                             } else {
                                 None
                             }
                         }
-                        false => Some((
-                            f.as_ref().get_library(),
-                            sym.get_name(),
-                            sym.get_refs()
-                                .unwrap_or(&HashSet::new())
-                                .into_iter()
-                                .map(|c| c.clone())
-                                .collect(),
-                        )),
+                        false => {
+                            if let Some(m) = sym.as_module() {
+                                Some((
+                                    f.as_ref().get_library(),
+                                    sym.get_name(),
+                                    m.get_edge_list_entities(),
+                                    sym.get_refs()
+                                        .unwrap_or(&HashSet::new())
+                                        .into_iter()
+                                        .map(|c| c.clone())
+                                        .collect(),
+                                ))
+                            } else {
+                                Some((
+                                    f.as_ref().get_library(),
+                                    sym.get_name(),
+                                    Vec::new(),
+                                    sym.get_refs()
+                                        .unwrap_or(&HashSet::new())
+                                        .into_iter()
+                                        .map(|c| c.clone())
+                                        .collect(),
+                                ))
+                            }
+                        }
                     }
                 } else {
                     None
                 }
             })
-            .collect::<Vec<(LangIdentifier, LangIdentifier, Vec<CompoundIdentifier>)>>()
+            // collects as (library, name, entity edges, ref edges)
+            .collect::<Vec<(
+                LangIdentifier,
+                LangIdentifier,
+                Vec<CompoundIdentifier>,
+                Vec<CompoundIdentifier>,
+            )>>()
             .into_iter();
 
         // go through the filtered nodes and connect to other design elements/units that exist
-        while let Some((lib, name, deps)) = module_nodes_iter.next() {
+        while let Some((lib, name, mods, deps)) = module_nodes_iter.next() {
             let node_name = CompoundIdentifier::new(lib, name);
             // create edges by ordered edge list (for entities)
             let mut deps = deps.into_iter();
@@ -935,34 +958,41 @@ impl Plan {
                             &node_name,
                             (),
                         );
-                        match b {
-                            // create black box entity
-                            EdgeStatus::MissingSource => {
-                                let dep_name =
-                                    CompoundIdentifier::new(lib.clone(), dep.get_suffix().clone());
+                        // create black box only if this dependency appeared as an module instantiation
+                        if mods.contains(dep) {
+                            match b {
+                                // create black box entity
+                                EdgeStatus::MissingSource => {
+                                    let dep_name = CompoundIdentifier::new(
+                                        lib.clone(),
+                                        dep.get_suffix().clone(),
+                                    );
 
+                                    graph_map.add_node(
+                                        dep_name.clone(),
+                                        HdlNode::black_box(HdlSymbol::BlackBox(
+                                            dep.get_suffix().to_string(),
+                                        )),
+                                    );
+                                    graph_map.add_edge_by_key(&dep_name, &node_name, ());
+                                }
+                                _ => (),
+                            }
+                        }
+                    // this entity does not exist or was not logged
+                    } else {
+                        if mods.contains(dep) {
+                            // create new node for black box entity
+                            if graph_map.has_node_by_key(dep) == false {
                                 graph_map.add_node(
-                                    dep_name.clone(),
+                                    dep.clone(),
                                     HdlNode::black_box(HdlSymbol::BlackBox(
                                         dep.get_suffix().to_string(),
                                     )),
                                 );
-                                graph_map.add_edge_by_key(&dep_name, &node_name, ());
                             }
-                            _ => (),
+                            graph_map.add_edge_by_key(&dep, &node_name, ());
                         }
-                    // this entity does not exist or was not logged
-                    } else {
-                        // create new node for black box entity
-                        if graph_map.has_node_by_key(dep) == false {
-                            graph_map.add_node(
-                                dep.clone(),
-                                HdlNode::black_box(HdlSymbol::BlackBox(
-                                    dep.get_suffix().to_string(),
-                                )),
-                            );
-                        }
-                        graph_map.add_edge_by_key(&dep, &node_name, ());
                     }
                 // the dependency has a prefix (a library) with it
                 } else {
