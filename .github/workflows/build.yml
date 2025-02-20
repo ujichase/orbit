@@ -67,6 +67,11 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: 3.x
+
+      - name: Setup mdbook
+        uses: peaceiris/actions-mdbook@v2
+        with:
+          mdbook-version: 'latest'
       
       - name: Install python packages
         run: |

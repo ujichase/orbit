@@ -24,6 +24,9 @@ if [ $TARGET == armv7-unknown-linux-musleabihf ] || [ $TARGET == arm-unknown-lin
     export TARGET_CC=musl-gcc
 fi
 
+echo "Building orbit docs..."
+mdbook build docs
+
 echo "Building orbit installer..."
 RUSTFLAGS="--deny warnings --codegen target-feature=+crt-static $TARGET_RUSTFLAGS" \
   cargo build --bin install --target $TARGET --release
@@ -40,7 +43,9 @@ if [[ $OS == windows-latest ]]; then
 fi
 
 echo "Copying release files..."
-mkdir dist
+
+# Copy supportive/miscellaneous files
+mkdir $DIST
 cp -r \
   $INSTALLER \
   Cargo.lock \
@@ -49,7 +54,14 @@ cp -r \
   docs/pack/README.txt \
   $DIST
 
-mkdir dist/bin
+# Copy the generated docs
+mkdir $DIST/docs
+cp -r \
+  docs/book \
+  $DIST/docs
+
+# Copy the binary
+mkdir $DIST/bin
 cp \
   $EXECUTABLE \
   $DIST/bin
