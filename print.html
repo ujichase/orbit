@@ -2287,11 +2287,11 @@ explicitly set.</p>
 command.</p>
 <h2 id="options"><a class="header" href="#options"><strong>OPTIONS</strong></a></h2>
 <p><code>&lt;path&gt;</code><br />
-      Directory to create for the ip</p>
+            Directory to create for the ip</p>
 <p><code>--name &lt;name&gt;</code><br />
-      Set the resulting ip's name</p>
+            Set the resulting ip's name</p>
 <p><code>--lib &lt;lib&gt;</code><br />
-      Set the resulting ip's library</p>
+            Set the resulting ip's library</p>
 <h2 id="examples-2"><a class="header" href="#examples-2"><strong>EXAMPLES</strong></a></h2>
 <pre><code>orbit new gates
 orbit new eecs/lab1 --name adder
@@ -2319,13 +2319,13 @@ is not intended to change over the course of its lifetime.</p>
 <p>To create a new ip from a non-existing directory, see the <code>new</code> command.</p>
 <h2 id="options-1"><a class="header" href="#options-1"><strong>OPTIONS</strong></a></h2>
 <p><code>&lt;path&gt;</code><br />
-      Directory to initialize</p>
+            Directory to initialize</p>
 <p><code>--name &lt;name&gt;</code><br />
-      Set the resulting ip's name</p>
+            Set the resulting ip's name</p>
 <p><code>--lib &lt;lib&gt;</code><br />
-      Set the resulting ip's library</p>
+            Set the resulting ip's library</p>
 <p><code>--uuid</code><br />
-      Print a new uuid and exit</p>
+            Print a new uuid and exit</p>
 <h2 id="examples-3"><a class="header" href="#examples-3"><strong>EXAMPLES</strong></a></h2>
 <pre><code>orbit init
 orbit init projects/gates
@@ -2349,13 +2349,13 @@ from the results. To display design elements of all visibility levels the
 <p>To display the known versions for an ip, use the <code>--versions</code> option.</p>
 <h2 id="options-2"><a class="header" href="#options-2"><strong>OPTIONS</strong></a></h2>
 <p><code>&lt;ip&gt;</code><br />
-      Ip specification</p>
+            Ip specification</p>
 <p><code>--versions, -v</code><br />
-      Display the list of known versions</p>
+            Display the list of known versions</p>
 <p><code>--units, -u</code><br />
-      Display the hdl design elements defined for this ip</p>
+            Display the hdl design elements defined for this ip</p>
 <p><code>--all, -a</code><br />
-      Include any private or hidden results</p>
+            Include any private or hidden results</p>
 <h2 id="examples-4"><a class="header" href="#examples-4"><strong>EXAMPLES</strong></a></h2>
 <pre><code>orbit info --units
 orbit info gates:1.0.0 -u --all
@@ -2393,23 +2393,23 @@ directory where it saves resulting files. To keep existing files on the next
 call of this command, use the <code>--no-clean</code> option.</p>
 <h2 id="options-3"><a class="header" href="#options-3"><strong>OPTIONS</strong></a></h2>
 <p><code>&lt;unit&gt;</code><br />
-      Read the file for this primary design unit</p>
+            Read the file for this primary design unit</p>
 <p><code>--ip &lt;spec&gt;</code><br />
-      Ip specification</p>
+            Ip specification</p>
 <p><code>--doc &lt;code&gt;</code><br />
-      Find the preceding comments to the code snippet</p>
+            Find the preceding comments to the code snippet</p>
 <p><code>--save</code><br />
-      Write the results to a temporary read-only file</p>
+            Write the results to a temporary read-only file</p>
 <p><code>--start &lt;code&gt;</code><br />
-      Start the lookup after jumping to this code snippet</p>
+            Start the lookup after jumping to this code snippet</p>
 <p><code>--end &lt;code&gt;</code><br />
-      Stop the lookup after finding this code snippet</p>
+            Stop the lookup after finding this code snippet</p>
 <p><code>--limit &lt;n&gt;</code><br />
-      Maximum number of source code lines to return</p>
+            Maximum number of source code lines to return</p>
 <p><code>--no-clean</code><br />
-      Do not clean the temporary directory of existing files</p>
+            Do not clean the temporary directory of existing files</p>
 <p><code>--locate</code><br />
-      Append the line and column number to the resulting file</p>
+            Append the line and column number to the resulting file</p>
 <h2 id="examples-5"><a class="header" href="#examples-5"><strong>EXAMPLES</strong></a></h2>
 <pre><code>orbit read and_gate --limit 25
 orbit read math_pkg --ip math --doc "function clog2" --start "package math_pkg"
@@ -2454,27 +2454,27 @@ ips.</p>
 encouragement to be processed by other programs.</p>
 <h2 id="options-4"><a class="header" href="#options-4"><strong>OPTIONS</strong></a></h2>
 <p><code>&lt;unit&gt;</code><br />
-      Primary design unit identifier</p>
+            Primary design unit identifier</p>
 <p><code>--ip &lt;spec&gt;</code><br />
-      Ip specification</p>
+            Ip specification</p>
 <p><code>--json</code><br />
-      Export the unit's information as valid json</p>
+            Export the unit's information as valid json</p>
 <p><code>--library, -l</code><br />
-      Display the unit's library declaration</p>
+            Display the unit's library declaration</p>
 <p><code>--component, -c</code><br />
-      Display the unit's declaration</p>
+            Display the unit's declaration</p>
 <p><code>--signals, -s</code><br />
-      Display the constant and signal declarations</p>
+            Display the constant and signal declarations</p>
 <p><code>--instance, -i</code><br />
-      Display the unit's instantiation</p>
+            Display the unit's instantiation</p>
 <p><code>--architecture, -a</code><br />
-      Display the unit's architectures</p>
+            Display the unit's architectures</p>
 <p><code>--name &lt;identifier&gt;</code><br />
-      Set the instance's identifier</p>
+            Set the instance's identifier</p>
 <p><code>--signal-prefix &lt;str&gt;</code><br />
-      Prepend information to the instance's signals</p>
+            Prepend information to the instance's signals</p>
 <p><code>--signal-suffix &lt;str&gt;</code><br />
-      Append information to the instance's signals</p>
+            Append information to the instance's signals</p>
 <h2 id="examples-6"><a class="header" href="#examples-6"><strong>EXAMPLES</strong></a></h2>
 <pre><code>orbit get and_gate --ip gates:1.0.0 --component
 orbit get ram --ip mem:2 -csi
@@ -2515,13 +2515,13 @@ be displayed using a set of standard ASCII characters with the <code>--ascii</co
 option.</p>
 <h2 id="options-5"><a class="header" href="#options-5"><strong>OPTIONS</strong></a></h2>
 <p><code>&lt;unit&gt;...</code><br />
-      Uppermost hdl unit of the dependency tree</p>
+            Uppermost hdl unit of the dependency tree</p>
 <p><code>--edges, -e &lt;kind&gt;</code><br />
-      The kind of dependencies to display (unit, ip, all)</p>
+            The kind of dependencies to display (unit, ip, all)</p>
 <p><code>--format &lt;fmt&gt;</code><br />
-      Determine how to display nodes (long, short)</p>
+            Determine how to display nodes (long, short)</p>
 <p><code>--ascii</code><br />
-      Limit the textual tree characters to the 128 ascii set</p>
+            Limit the textual tree characters to the 128 ascii set</p>
 <h2 id="examples-7"><a class="header" href="#examples-7"><strong>EXAMPLES</strong></a></h2>
 <pre><code>orbit tree
 orbit tree top --format long
@@ -2548,7 +2548,7 @@ does not match the checksum stored in the lock file, it assumes the
 installation is corrupt and will reinstall the dependency to the cache.</p>
 <h2 id="options-6"><a class="header" href="#options-6"><strong>OPTIONS</strong></a></h2>
 <p><code>--force</code><br />
-      Ignore reading the precomputed lock file</p>
+            Ignore reading the precomputed lock file</p>
 <h2 id="examples-8"><a class="header" href="#examples-8"><strong>EXAMPLES</strong></a></h2>
 <pre><code>orbit lock
 orbit lock --force
@@ -2586,31 +2586,31 @@ command-line will follow the previously defined arguments.</p>
 which is $ORBIT_TARGET_DIR/$ORBIT_TARGET.</p>
 <h2 id="options-7"><a class="header" href="#options-7"><strong>OPTIONS</strong></a></h2>
 <p><code>--target, -t &lt;name&gt;</code><br />
-      Target to execute</p>
+            Target to execute</p>
 <p><code>--dut &lt;unit&gt;</code><br />
-      Set the device under test</p>
+            Set the device under test</p>
 <p><code>--tb &lt;unit&gt;</code><br />
-      Set the top level testbench unit</p>
+            Set the top level testbench unit</p>
 <p><code>--plan &lt;format&gt;</code><br />
-      Set the blueprint file format</p>
+            Set the blueprint file format</p>
 <p><code>--target-dir &lt;dir&gt;</code><br />
-      The relative directory where the target starts</p>
+            The relative directory where the target starts</p>
 <p><code>--command &lt;path&gt;</code><br />
-      Overwrite the target's command</p>
+            Overwrite the target's command</p>
 <p><code>--list</code><br />
-      View available targets and exit</p>
+            View available targets and exit</p>
 <p><code>--all</code><br />
-      Include all hdl files of the working ip</p>
+            Include all hdl files of the working ip</p>
 <p><code>--fileset &lt;key=glob&gt;...</code><br />
-      A glob-style pattern identified by name to include in the blueprint</p>
+            A glob-style pattern identified by name to include in the blueprint</p>
 <p><code>--no-clean</code><br />
-      Do not clean the target folder before execution</p>
+            Do not clean the target folder before execution</p>
 <p><code>--force</code><br />
-      Force the target to execute</p>
+            Force the target to execute</p>
 <p><code>--verbose</code><br />
-      Display the command being executed</p>
+            Display the command being executed</p>
 <p><code>args</code><br />
-      Arguments to pass to the target</p>
+            Arguments to pass to the target</p>
 <h2 id="examples-9"><a class="header" href="#examples-9"><strong>EXAMPLES</strong></a></h2>
 <pre><code>orbit test --dut adder --tb adder_tb --target modelsim -- --lint
 </code></pre>
@@ -2647,29 +2647,29 @@ command-line will follow the previously defined arguments.</p>
 which is $ORBIT_TARGET_DIR/$ORBIT_TARGET.</p>
 <h2 id="options-8"><a class="header" href="#options-8"><strong>OPTIONS</strong></a></h2>
 <p><code>--target, -t &lt;name&gt;</code><br />
-      Target to execute</p>
+            Target to execute</p>
 <p><code>--top &lt;unit&gt;</code><br />
-      Set the top level design unit</p>
+            Set the top level design unit</p>
 <p><code>--plan &lt;format&gt;</code><br />
-      Set the blueprint file format</p>
+            Set the blueprint file format</p>
 <p><code>--target-dir &lt;dir&gt;</code><br />
-      The relative directory where the target starts</p>
+            The relative directory where the target starts</p>
 <p><code>--command &lt;path&gt;</code><br />
-      Overwrite the target's command</p>
+            Overwrite the target's command</p>
 <p><code>--list</code><br />
-      View available targets and exit</p>
+            View available targets and exit</p>
 <p><code>--all</code><br />
-      Include all hdl files of the working ip</p>
+            Include all hdl files of the working ip</p>
 <p><code>--fileset &lt;key=glob&gt;...</code><br />
-      A glob-style pattern identified by name to include in the blueprint</p>
+            A glob-style pattern identified by name to include in the blueprint</p>
 <p><code>--force</code><br />
-      Force the target to execute</p>
+            Force the target to execute</p>
 <p><code>--no-clean</code><br />
-      Do not clean the target folder before execution</p>
+            Do not clean the target folder before execution</p>
 <p><code>--verbose</code><br />
-      Display the command being executed</p>
+            Display the command being executed</p>
 <p><code>args</code><br />
-      Arguments to pass to the target</p>
+            Arguments to pass to the target</p>
 <h2 id="examples-10"><a class="header" href="#examples-10"><strong>EXAMPLES</strong></a></h2>
 <pre><code>orbit build --target xsim -- --elab
 orbit build --command python3 --target pysim
@@ -2701,11 +2701,11 @@ in the process except for actually posting the ip to its channel(s).
 To run the command to completion, use the <code>--ready</code> option.</p>
 <h2 id="options-9"><a class="header" href="#options-9"><strong>OPTIONS</strong></a></h2>
 <p><code>--ready, -y</code><br />
-      Run the operation to completion</p>
+            Run the operation to completion</p>
 <p><code>--no-install</code><br />
-      Do not install the ip for future use</p>
+            Do not install the ip for future use</p>
 <p><code>--list</code><br />
-      View available channels and exit</p>
+            View available channels and exit</p>
 <h2 id="examples-11"><a class="header" href="#examples-11"><strong>EXAMPLES</strong></a></h2>
 <pre><code>orbit publish
 orbit publish --ready
@@ -2738,19 +2738,19 @@ an asterisk character "*" will appear next the ip's version. To update the ip
 to the latest version, see the <code>install</code> command.</p>
 <h2 id="options-10"><a class="header" href="#options-10"><strong>OPTIONS</strong></a></h2>
 <p><code>&lt;ip&gt;</code><br />
-      Ip's name</p>
+            Ip's name</p>
 <p><code>--install, -i</code><br />
-      Filter ip installed to the cache</p>
+            Filter ip installed to the cache</p>
 <p><code>--download, -d</code><br />
-      Filter ip downloaded to the archive</p>
+            Filter ip downloaded to the archive</p>
 <p><code>--available, -a</code><br />
-      Filter ip available via channels</p>
+            Filter ip available via channels</p>
 <p><code>--keyword &lt;term&gt;...</code><br />
-      Include ip that have this keyword</p>
+            Include ip that have this keyword</p>
 <p><code>--limit &lt;n&gt;</code><br />
-      Maximum number of results to return</p>
+            Maximum number of results to return</p>
 <p><code>--match</code><br />
-      Return results that pass each filter</p>
+            Return results that pass each filter</p>
 <h2 id="examples-12"><a class="header" href="#examples-12"><strong>EXAMPLES</strong></a></h2>
 <pre><code>orbit search axi
 orbit search --keyword memory --keyword ecc
@@ -2779,23 +2779,23 @@ uncompressed, has the manifest file at the root directoy.</p>
 <p>To remove ip from the catalog, see the <code>remove</code> command.</p>
 <h2 id="options-11"><a class="header" href="#options-11"><strong>OPTIONS</strong></a></h2>
 <p><code>&lt;ip&gt;</code><br />
-      Ip specification</p>
+            Ip specification</p>
 <p><code>--url &lt;url&gt;</code><br />
-      Url to install the ip from the internet</p>
+            Url to install the ip from the internet</p>
 <p><code>--path &lt;path&gt;</code><br />
-      Path to install the ip from local file system</p>
+            Path to install the ip from local file system</p>
 <p><code>--protocol &lt;name&gt;</code><br />
-      Use a configured protocol to download ip</p>
+            Use a configured protocol to download ip</p>
 <p><code>--tag &lt;tag&gt;</code><br />
-      Unique tag to provide to the protocol</p>
+            Unique tag to provide to the protocol</p>
 <p><code>--force</code><br />
-      Install the ip regardless of the cache slot occupancy</p>
+            Install the ip regardless of the cache slot occupancy</p>
 <p><code>--offline</code><br />
-      Skip checking coherency with source</p>
+            Skip checking coherency with source</p>
 <p><code>--list</code><br />
-      View available protocols and exit</p>
+            View available protocols and exit</p>
 <p><code>--all</code><br />
-      Install all dependencies (including development)</p>
+            Install all dependencies (including development)</p>
 <h2 id="examples-13"><a class="header" href="#examples-13"><strong>EXAMPLES</strong></a></h2>
 <pre><code>orbit install
 orbit install lcd_driver:2.0
@@ -2818,11 +2818,11 @@ it is correct without confirmation, use the <code>--force</code> option.</p>
 <p>To add ip to the catalog, see the <code>install</code> command.</p>
 <h2 id="options-12"><a class="header" href="#options-12"><strong>OPTIONS</strong></a></h2>
 <p><code>&lt;ip&gt;</code><br />
-      Ip specification</p>
+            Ip specification</p>
 <p><code>--force</code><br />
-      Skip interactive prompts</p>
+            Skip interactive prompts</p>
 <p><code>--verbose</code><br />
-      Display where the removal occurs</p>
+            Display where the removal occurs</p>
 <h2 id="examples-14"><a class="header" href="#examples-14"><strong>EXAMPLES</strong></a></h2>
 <pre><code>orbit remove gates
 orbit remove gates:1.0.1 --force
@@ -2844,7 +2844,7 @@ sure to review the documentation for a list of all environment variables set
 by Orbit.</p>
 <h2 id="options-13"><a class="header" href="#options-13"><strong>OPTIONS</strong></a></h2>
 <p><code>&lt;key&gt;...</code><br />
-      Display this variable's value</p>
+            Display this variable's value</p>
 <h2 id="examples-15"><a class="header" href="#examples-15"><strong>EXAMPLES</strong></a></h2>
 <pre><code>orbit env
 orbit env ORBIT_HOME
@@ -2884,17 +2884,17 @@ the command-line. More complex fields may require manual edits by opening its
 respective file.</p>
 <h2 id="options-14"><a class="header" href="#options-14"><strong>OPTIONS</strong></a></h2>
 <p><code>&lt;path&gt;</code><br />
-      The destination to read/write configuration data</p>
+            The destination to read/write configuration data</p>
 <p><code>--push &lt;key=value&gt;...</code><br />
-      Add a new value to a key's list</p>
+            Add a new value to a key's list</p>
 <p><code>--pop &lt;key&gt;...</code><br />
-      Remove the last value from a key's list</p>
+            Remove the last value from a key's list</p>
 <p><code>--set &lt;key=value&gt;...</code><br />
-      Store the value as the key's entry</p>
+            Store the value as the key's entry</p>
 <p><code>--unset &lt;key&gt;...</code><br />
-      Delete the key's entry</p>
+            Delete the key's entry</p>
 <p><code>--list</code><br />
-      Print the list of configuration files and exit</p>
+            Print the list of configuration files and exit</p>
 <h2 id="examples-16"><a class="header" href="#examples-16"><strong>EXAMPLES</strong></a></h2>
 <pre><code>orbit config --push include="profiles/hyperspacelab"
 orbit config ~/.orbit/config.toml --unset env.vivado_path

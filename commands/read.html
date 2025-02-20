@@ -186,23 +186,23 @@ directory where it saves resulting files. To keep existing files on the next
 call of this command, use the <code>--no-clean</code> option.</p>
 <h2 id="options"><a class="header" href="#options"><strong>OPTIONS</strong></a></h2>
 <p><code>&lt;unit&gt;</code><br />
-      Read the file for this primary design unit</p>
+            Read the file for this primary design unit</p>
 <p><code>--ip &lt;spec&gt;</code><br />
-      Ip specification</p>
+            Ip specification</p>
 <p><code>--doc &lt;code&gt;</code><br />
-      Find the preceding comments to the code snippet</p>
+            Find the preceding comments to the code snippet</p>
 <p><code>--save</code><br />
-      Write the results to a temporary read-only file</p>
+            Write the results to a temporary read-only file</p>
 <p><code>--start &lt;code&gt;</code><br />
-      Start the lookup after jumping to this code snippet</p>
+            Start the lookup after jumping to this code snippet</p>
 <p><code>--end &lt;code&gt;</code><br />
-      Stop the lookup after finding this code snippet</p>
+            Stop the lookup after finding this code snippet</p>
 <p><code>--limit &lt;n&gt;</code><br />
-      Maximum number of source code lines to return</p>
+            Maximum number of source code lines to return</p>
 <p><code>--no-clean</code><br />
-      Do not clean the temporary directory of existing files</p>
+            Do not clean the temporary directory of existing files</p>
 <p><code>--locate</code><br />
-      Append the line and column number to the resulting file</p>
+            Append the line and column number to the resulting file</p>
 <h2 id="examples"><a class="header" href="#examples"><strong>EXAMPLES</strong></a></h2>
 <pre><code>orbit read and_gate --limit 25
 orbit read math_pkg --ip math --doc "function clog2" --start "package math_pkg"
