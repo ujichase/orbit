@@ -111,6 +111,7 @@ half_add (final-project)
 │  └─ and_g (lab2)*
 |     └─ nand_g_fbe4720d0 (lab1)*
 └─ xor_g (lab2)*
+   └─ nand_g_fbe4720d0 (lab1)*
 ```
 
 The `*` indicates the modules that had their source code modified to either rename the namespace collision or update its references to the new renamed identifier.
