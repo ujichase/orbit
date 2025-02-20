@@ -57,7 +57,7 @@ cp -r \
 # Copy the generated docs
 mkdir $DIST/docs
 cp -r \
-  docs/book \
+  docs/book/ \
   $DIST/docs
 
 # Copy the binary
