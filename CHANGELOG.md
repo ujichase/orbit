@@ -15,6 +15,11 @@ Add `- unreleased` along the next future version to prevent CI/CD from triggerin
 
 # Changelog
 
+## 0.23.2
+
+### Features
+- includes compiled documentation with packaged binaries in docs/ folder for new releases
+
 ## 0.23.1
 
 ### Features
