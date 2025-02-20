@@ -31,7 +31,7 @@ installation is corrupt and will reinstall the dependency to the cache.
 ## __OPTIONS__
 
 `--force`  
-      Ignore reading the precomputed lock file
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Ignore reading the precomputed lock file
 
 ## __EXAMPLES__
 

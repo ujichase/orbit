@@ -53,37 +53,37 @@ encouragement to be processed by other programs.
 ## __OPTIONS__
 
 `<unit>`  
-      Primary design unit identifier
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Primary design unit identifier
 
 `--ip <spec>`  
-      Ip specification
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Ip specification
 
 `--json`  
-      Export the unit's information as valid json
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Export the unit's information as valid json
 
 `--library, -l`  
-      Display the unit's library declaration
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Display the unit's library declaration
 
 `--component, -c`  
-      Display the unit's declaration
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Display the unit's declaration
 
 `--signals, -s`  
-      Display the constant and signal declarations
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Display the constant and signal declarations
 
 `--instance, -i`  
-      Display the unit's instantiation
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Display the unit's instantiation
 
 `--architecture, -a`  
-      Display the unit's architectures
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Display the unit's architectures
 
 `--name <identifier>`  
-      Set the instance's identifier
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Set the instance's identifier
 
 `--signal-prefix <str>`  
-      Prepend information to the instance's signals
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Prepend information to the instance's signals
 
 `--signal-suffix <str>`  
-      Append information to the instance's signals
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Append information to the instance's signals
 
 ## __EXAMPLES__
 

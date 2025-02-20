@@ -44,40 +44,40 @@ which is $ORBIT_TARGET_DIR/$ORBIT_TARGET.
 ## __OPTIONS__
 
 `--target, -t <name>`  
-      Target to execute
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Target to execute
 
 `--top <unit>`  
-      Set the top level design unit
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Set the top level design unit
 
 `--plan <format>`  
-      Set the blueprint file format
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Set the blueprint file format
 
 `--target-dir <dir>`  
-      The relative directory where the target starts
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; The relative directory where the target starts
 
 `--command <path>`  
-      Overwrite the target's command
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Overwrite the target's command
 
 `--list`  
-      View available targets and exit
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; View available targets and exit
 
 `--all`  
-      Include all hdl files of the working ip
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Include all hdl files of the working ip
 
 `--fileset <key=glob>...`  
-      A glob-style pattern identified by name to include in the blueprint
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; A glob-style pattern identified by name to include in the blueprint
 
 `--force`  
-      Force the target to execute 
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Force the target to execute 
 
 `--no-clean`  
-      Do not clean the target folder before execution
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Do not clean the target folder before execution
 
 `--verbose`  
-      Display the command being executed
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Display the command being executed
 
 `args`  
-      Arguments to pass to the target
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Arguments to pass to the target
 
 ## __EXAMPLES__
 

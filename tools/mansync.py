@@ -167,16 +167,18 @@ def write_md_manual(table, dest: str, command: str) -> int:
             md.write(SECT_END)
             pass
 
+        indent = '&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; '
+
         if is_populated(table, ARGS) == True:
             for opt in table[ARGS]:
                 md.write('`'+opt+'`'+'  \n')
-                md.write('      '+ucap(table[ARGS][opt]))
+                md.write(indent+ucap(table[ARGS][opt]))
                 md.write(SECT_END)
             pass
         if is_populated(table, OPTS) == True:
             for opt in table[OPTS]:
                 md.write('`'+opt+'`'+'  \n')
-                md.write('      '+ucap(table[OPTS][opt]))
+                md.write(indent+ucap(table[OPTS][opt]))
                 md.write(SECT_END)
             pass
 

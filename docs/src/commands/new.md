@@ -31,13 +31,13 @@ command.
 ## __OPTIONS__
 
 `<path>`  
-      Directory to create for the ip
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Directory to create for the ip
 
 `--name <name>`  
-      Set the resulting ip's name
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Set the resulting ip's name
 
 `--lib <lib>`  
-      Set the resulting ip's library
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Set the resulting ip's library
 
 ## __EXAMPLES__
 

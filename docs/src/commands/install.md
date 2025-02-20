@@ -35,31 +35,31 @@ To remove ip from the catalog, see the `remove` command.
 ## __OPTIONS__
 
 `<ip>`  
-      Ip specification
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Ip specification
 
 `--url <url>`  
-      Url to install the ip from the internet
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Url to install the ip from the internet
 
 `--path <path>`  
-      Path to install the ip from local file system
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Path to install the ip from local file system
 
 `--protocol <name>`  
-      Use a configured protocol to download ip
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Use a configured protocol to download ip
 
 `--tag <tag>`  
-      Unique tag to provide to the protocol
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Unique tag to provide to the protocol
 
 `--force`  
-      Install the ip regardless of the cache slot occupancy
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Install the ip regardless of the cache slot occupancy
 
 `--offline`  
-      Skip checking coherency with source
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Skip checking coherency with source
 
 `--list`  
-      View available protocols and exit
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; View available protocols and exit
 
 `--all`  
-      Install all dependencies (including development)
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Install all dependencies (including development)
 
 ## __EXAMPLES__
 

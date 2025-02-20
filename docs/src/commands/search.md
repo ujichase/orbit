@@ -40,25 +40,25 @@ to the latest version, see the `install` command.
 ## __OPTIONS__
 
 `<ip>`  
-      Ip's name
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Ip's name
 
 `--install, -i`  
-      Filter ip installed to the cache
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Filter ip installed to the cache
 
 `--download, -d`  
-      Filter ip downloaded to the archive
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Filter ip downloaded to the archive
 
 `--available, -a`  
-      Filter ip available via channels
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Filter ip available via channels
 
 `--keyword <term>...`  
-      Include ip that have this keyword
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Include ip that have this keyword
 
 `--limit <n>`  
-      Maximum number of results to return
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Maximum number of results to return
 
 `--match`  
-      Return results that pass each filter
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Return results that pass each filter
 
 ## __EXAMPLES__
 

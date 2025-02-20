@@ -46,16 +46,16 @@ option.
 ## __OPTIONS__
 
 `<unit>...`  
-      Uppermost hdl unit of the dependency tree
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Uppermost hdl unit of the dependency tree
 
 `--edges, -e <kind>`  
-      The kind of dependencies to display (unit, ip, all)
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; The kind of dependencies to display (unit, ip, all)
 
 `--format <fmt>`  
-      Determine how to display nodes (long, short)
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Determine how to display nodes (long, short)
 
 `--ascii`  
-      Limit the textual tree characters to the 128 ascii set
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Limit the textual tree characters to the 128 ascii set
 
 ## __EXAMPLES__
 

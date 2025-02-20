@@ -35,16 +35,16 @@ To create a new ip from a non-existing directory, see the `new` command.
 ## __OPTIONS__
 
 `<path>`  
-      Directory to initialize
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Directory to initialize
 
 `--name <name>`  
-      Set the resulting ip's name
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Set the resulting ip's name
 
 `--lib <lib>`  
-      Set the resulting ip's library
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Set the resulting ip's library
 
 `--uuid`  
-      Print a new uuid and exit
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Print a new uuid and exit
 
 ## __EXAMPLES__
 

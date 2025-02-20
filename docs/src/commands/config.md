@@ -46,22 +46,22 @@ respective file.
 ## __OPTIONS__
 
 `<path>`  
-      The destination to read/write configuration data
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; The destination to read/write configuration data
 
 `--push <key=value>...`  
-      Add a new value to a key's list
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Add a new value to a key's list
 
 `--pop <key>...`  
-      Remove the last value from a key's list
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Remove the last value from a key's list
 
 `--set <key=value>...`  
-      Store the value as the key's entry
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Store the value as the key's entry
 
 `--unset <key>...`  
-      Delete the key's entry
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Delete the key's entry
 
 `--list`  
-      Print the list of configuration files and exit
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Print the list of configuration files and exit
 
 ## __EXAMPLES__
 

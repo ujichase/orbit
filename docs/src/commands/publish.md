@@ -35,13 +35,13 @@ To run the command to completion, use the `--ready` option.
 ## __OPTIONS__
 
 `--ready, -y`  
-      Run the operation to completion
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Run the operation to completion
 
 `--no-install`  
-      Do not install the ip for future use
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Do not install the ip for future use
 
 `--list`  
-      View available channels and exit
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; View available channels and exit
 
 ## __EXAMPLES__
 

@@ -29,12 +29,28 @@ Follow the instructions at:
 https://chaseruskin.github.io/orbit/starting/installing.html.
 
 -----------------------------
+:: DOCUMENTATION           ::
+-----------------------------
+
+The documentation is available online at:
+
+https://chaseruskin.github.io/orbit
+
+as well as bundled together with this package (see ./docs).
+The documentation website can be self-hosted for your convenience.
+Any localhost command should work, such as:
+
+$ php -t docs -S localhost:8080
+
+$ python -m http.server 8080 -d docs
+
+-----------------------------
 :: RESOURCES               ::
 -----------------------------
 
 Repository: https://github.com/chaseruskin/orbit
 
-Manual: https://chaseruskin.github.io/orbit/
+Documentation: https://chaseruskin.github.io/orbit/
 
 -----------------------------
 :: LICENSE                 ::

@@ -25,13 +25,13 @@ To add ip to the catalog, see the `install` command.
 ## __OPTIONS__
 
 `<ip>`  
-      Ip specification
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Ip specification
 
 `--force`  
-      Skip interactive prompts
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Skip interactive prompts
 
 `--verbose`  
-      Display where the removal occurs
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Display where the removal occurs
 
 ## __EXAMPLES__
 

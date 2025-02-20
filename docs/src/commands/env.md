@@ -27,7 +27,7 @@ by Orbit.
 ## __OPTIONS__
 
 `<key>...`  
-      Display this variable's value
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Display this variable's value
 
 ## __EXAMPLES__
 

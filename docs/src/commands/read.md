@@ -44,31 +44,31 @@ call of this command, use the `--no-clean` option.
 ## __OPTIONS__
 
 `<unit>`  
-      Read the file for this primary design unit
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Read the file for this primary design unit
 
 `--ip <spec>`  
-      Ip specification
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Ip specification
 
 `--doc <code>`  
-      Find the preceding comments to the code snippet
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Find the preceding comments to the code snippet
 
 `--save`  
-      Write the results to a temporary read-only file
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Write the results to a temporary read-only file
 
 `--start <code>`  
-      Start the lookup after jumping to this code snippet
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Start the lookup after jumping to this code snippet
 
 `--end <code>`  
-      Stop the lookup after finding this code snippet
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Stop the lookup after finding this code snippet
 
 `--limit <n>`  
-      Maximum number of source code lines to return
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Maximum number of source code lines to return
 
 `--no-clean`  
-      Do not clean the temporary directory of existing files
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Do not clean the temporary directory of existing files
 
 `--locate`  
-      Append the line and column number to the resulting file
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Append the line and column number to the resulting file
 
 ## __EXAMPLES__
 

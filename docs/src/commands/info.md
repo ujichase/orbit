@@ -27,16 +27,16 @@ To display the known versions for an ip, use the `--versions` option.
 ## __OPTIONS__
 
 `<ip>`  
-      Ip specification
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Ip specification
 
 `--versions, -v`  
-      Display the list of known versions
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Display the list of known versions
 
 `--units, -u`  
-      Display the hdl design elements defined for this ip
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Display the hdl design elements defined for this ip
 
 `--all, -a`  
-      Include any private or hidden results
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Include any private or hidden results
 
 ## __EXAMPLES__
 
