@@ -158,6 +158,8 @@
                         <h1 id="json-output"><a class="header" href="#json-output">JSON Output</a></h1>
 <p>The <code>orbit get</code> command allows a user to receive various pieces of information related to a design unit, such its component declaration, defined architectures, or entity instantiation.</p>
 <p>It also allows users to export the unit's interface with the <code>--json</code> flag. This is convenient when you wish to pass this information in a more machine-readable format to another tool/program.</p>
+<p>The serialized JSON data is also available during the execution phase of a build process through the appropriate environment variables. To know which variables contain this data, see <a href="./environment_variables.html">Environment Variables</a>.</p>
+<p>The serialized JSON string data is unformatted.</p>
 <h2 id="schema"><a class="header" href="#schema">Schema</a></h2>
 <p>The following schema is implemented for the json output:</p>
 <pre><code class="language-json">{
