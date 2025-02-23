@@ -56,6 +56,10 @@ pub enum VerilogError {
     ExpectingOperator(Operator),
     #[error("incomplete module declaration")]
     ModDecIncomplete,
+    #[error("incomplete bind statement")]
+    BindIncomplete,
+    #[error("invalid bind statement")]
+    BindInvalid,
     #[error("unhandled dot operator in module declaration")]
     UnhandledDotInDecl,
     #[error("unhandled assignment operator in module declaration")]

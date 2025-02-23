@@ -583,7 +583,7 @@ impl VerilogSymbol {
             return Ok(());
         }
 
-        // update references that may appear in the statement
+        // update references (inline imports using scope resolution) that may appear in the statement
         if let Some(s_refs) = SystemVerilogSymbol::extract_refs_from_statement(&stmt) {
             refs.extend(s_refs);
         }
@@ -597,6 +597,45 @@ impl VerilogSymbol {
                 }
             }
             refs.insert(CompoundIdentifier::new_minimal_verilog(dep.clone()));
+            return Ok(());
+        }
+
+        // try as bind statement
+        if stmt
+            .first()
+            .unwrap()
+            .as_type()
+            .check_keyword(&Keyword::Bind)
+        {
+            let mut tokens = stmt.into_iter().skip(1).peekable();
+            // take the next token as the "target" module
+            let target = if let Some(target) = tokens.next() {
+                if let Some(dep) = target.as_ref().as_identifier() {
+                    dep.clone()
+                } else {
+                    return Err(VerilogError::BindInvalid);
+                }
+            } else {
+                return Err(VerilogError::BindIncomplete);
+            };
+
+            // take the next token as the "what to bind" module
+            if let Some(binding) = tokens.next() {
+                if let Some(dep) = binding.as_ref().as_identifier() {
+                    // add both the target and the binding identifiers to the list of dependencies for this module
+                    if let Some(deps) = deps {
+                        deps.insert(CompoundIdentifier::new_minimal_verilog(target.clone()));
+                        deps.insert(CompoundIdentifier::new_minimal_verilog(dep.clone()));
+                    }
+                    refs.insert(CompoundIdentifier::new_minimal_verilog(target.clone()));
+                    refs.insert(CompoundIdentifier::new_minimal_verilog(dep.clone()));
+                } else {
+                    return Err(VerilogError::BindInvalid);
+                }
+            } else {
+                return Err(VerilogError::BindIncomplete);
+            }
+
             return Ok(());
         }
 
