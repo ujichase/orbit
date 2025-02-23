@@ -292,12 +292,18 @@ pub const ORBIT_IP_LIBRARY: &str = "ORBIT_IP_LIBRARY";
 pub const ORBIT_IP_CHECKSUM: &str = "ORBIT_IP_CHECKSUM";
 
 pub const ORBIT_TARGET: &str = "ORBIT_TARGET";
+
 pub const ORBIT_TOP_NAME: &str = "ORBIT_TOP_NAME";
 pub const ORBIT_TOP_FILE: &str = "ORBIT_TOP_FILE";
+pub const ORBIT_TOP_JSON: &str = "ORBIT_TOP_JSON";
+
 pub const ORBIT_TB_NAME: &str = "ORBIT_TB_NAME";
 pub const ORBIT_TB_FILE: &str = "ORBIT_TB_FILE";
+pub const ORBIT_TB_JSON: &str = "ORBIT_TB_JSON";
+
 pub const ORBIT_DUT_NAME: &str = "ORBIT_DUT_NAME";
 pub const ORBIT_DUT_FILE: &str = "ORBIT_DUT_FILE";
+pub const ORBIT_DUT_JSON: &str = "ORBIT_DUT_JSON";
 
 pub const ORBIT_BLUEPRINT: &str = "ORBIT_BLUEPRINT";
 pub const ORBIT_TARGET_DIR: &str = "ORBIT_TARGET_DIR";

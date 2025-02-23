@@ -121,6 +121,8 @@ impl Plan {
                         &String::new(),
                         &String::new(),
                         &String::new(),
+                        &String::new(),
+                        &String::new(),
                         target,
                         require_bench,
                     )?;
@@ -323,7 +325,7 @@ impl Plan {
             None => String::new(),
         };
 
-        // grab the files that contain the top-level/dut node
+        // grab the files that contain the top-level/dut design unit
         let top_file = match top {
             Some(i) => {
                 let n = global_graph.get_node_by_index(i).unwrap();
@@ -336,7 +338,23 @@ impl Plan {
             None => "",
         };
 
-        // grab the file that contains the tb node
+        // grab the json representation of the top level unit
+        let top_json = match top {
+            Some(i) => {
+                let n = global_graph.get_node_by_index(i).unwrap();
+                let sym = n.as_ref().get_symbol();
+                if let Some(m) = sym.as_module() {
+                    serde_json::to_string(m)?
+                } else if let Some(e) = sym.as_entity() {
+                    serde_json::to_string(e)?
+                } else {
+                    String::new()
+                }
+            }
+            None => String::new(),
+        };
+
+        // grab the file that contains the testbench unit
         let bench_file = match bench {
             Some(i) => {
                 let n = global_graph.get_node_by_index(i).unwrap();
@@ -347,6 +365,22 @@ impl Plan {
                     .get_file()
             }
             None => "",
+        };
+
+        // grab the json representation of the testbench unit
+        let bench_json = match bench {
+            Some(i) => {
+                let n = global_graph.get_node_by_index(i).unwrap();
+                let sym = n.as_ref().get_symbol();
+                if let Some(m) = sym.as_module() {
+                    serde_json::to_string(m)?
+                } else if let Some(e) = sym.as_entity() {
+                    serde_json::to_string(e)?
+                } else {
+                    String::new()
+                }
+            }
+            None => String::new(),
         };
 
         // print information (maybe also print the plugin saved to .env too?)
@@ -458,8 +492,10 @@ impl Plan {
             &target_path,
             &top_name,
             &top_file,
+            &top_json,
             &bench_name,
             &bench_file,
+            &bench_json,
             target,
             require_bench,
         )?;
@@ -1605,8 +1641,10 @@ impl Plan {
         target_path: &PathBuf,
         top_name: &str,
         top_file: &str,
+        top_json: &str,
         bench_name: &str,
         bench_file: &str,
+        bench_json: &str,
         target: &Target,
         require_bench: bool,
     ) -> Result<PathBuf, Fault> {
@@ -1644,6 +1682,14 @@ impl Plan {
                 },
             ))
             .add(EnvVar::with(
+                environment::ORBIT_TOP_JSON,
+                if require_bench == false {
+                    &top_json
+                } else {
+                    ""
+                },
+            ))
+            .add(EnvVar::with(
                 environment::ORBIT_DUT_NAME,
                 if require_bench == true { &top_name } else { "" },
             ))
@@ -1651,8 +1697,13 @@ impl Plan {
                 environment::ORBIT_DUT_FILE,
                 if require_bench == true { &top_file } else { "" },
             ))
+            .add(EnvVar::with(
+                environment::ORBIT_DUT_JSON,
+                if require_bench == true { &top_json } else { "" },
+            ))
             .add(EnvVar::with(environment::ORBIT_TB_NAME, &bench_name))
             .add(EnvVar::with(environment::ORBIT_TB_FILE, &bench_file))
+            .add(EnvVar::with(environment::ORBIT_TB_JSON, &bench_json))
             .add(EnvVar::with(
                 environment::ORBIT_BLUEPRINT,
                 &blueprint.get_filename(),

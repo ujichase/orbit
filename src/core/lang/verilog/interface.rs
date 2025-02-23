@@ -62,6 +62,7 @@ fn tokens_to_string(tokens: &Vec<SystemVerilogToken>) -> String {
         | Operator::Plus
         | Operator::Mult
         | Operator::Colon
+        | Operator::ScopeResolution
         | Operator::Div => false,
         _ => true,
     };

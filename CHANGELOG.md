@@ -19,6 +19,7 @@ Add `- unreleased` along the next future version to prevent CI/CD from triggerin
 
 ### Features
 - writes all known environment variables set by Orbit to the target's `.env` file during the planning phase for a build process (which then gets loaded before performing the execution phase)
+- adds `ORBIT_TOP_JSON`, `ORBIT_TB_JSON`, and `ORBIT_DUT_JSON` environment variables to be set before a target's exeuction phase
 
 ### Fixes
 - adds `ORBIT_MANIFEST_DIR` as an environment variable set for the execution phase of a target

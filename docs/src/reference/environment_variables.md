@@ -30,13 +30,19 @@ Orbit also sets environment variables during runtime such that any subprocesses 
 
 - `ORBIT_TOP_FILE` - The file system path that contains the top level design for the latest build process, only if the build process was a build.
 
+- `ORBIT_TOP_JSON` - The serialized json data for the top level design unit for the latest build process, only if the build process was a build (see [JSON Output](json.md)).
+
 - `ORBIT_TB_NAME` - The testbench's identifier for the latest build process, only if the build process was a test.
 
 - `ORBIT_TB_FILE` - The file system path that contains the testbench for the latest build process, only if the build process was a test.
 
+- `ORBIT_TB_JSON` - The serialized json data for the testbench for the latest build process, only if the build process was a test (see [JSON Output](json.md)).
+
 - `ORBIT_DUT_NAME` - The design under test's identifier for the latest build process, only if the build process was a test.
 
 - `ORBIT_DUT_FILE` - The file system path that contains the design under test for the latest build process, only if the build process was a test.
+
+- `ORBIT_DUT_JSON` - The serialized json data for the design under test for the latest build process, only if the build process was a test (see [JSON Output](json.md)).
 
 - `ORBIT_BLUEPRINT` - The file name for the blueprint created from the planning stage of the latest build process. The file name includes the file's extension.
 

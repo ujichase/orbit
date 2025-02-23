@@ -4,6 +4,10 @@ The `orbit get` command allows a user to receive various pieces of information r
 
 It also allows users to export the unit's interface with the `--json` flag. This is convenient when you wish to pass this information in a more machine-readable format to another tool/program.
 
+The serialized JSON data is also available during the execution phase of a build process through the appropriate environment variables. To know which variables contain this data, see [Environment Variables](./environment_variables.md).
+
+The serialized JSON string data is unformatted.
+
 ## Schema
 
 The following schema is implemented for the json output:

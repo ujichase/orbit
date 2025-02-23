@@ -26,6 +26,7 @@ use super::sv::symbols::SystemVerilogSymbol;
 use super::verilog::symbols::module::Module;
 use super::verilog::symbols::VerilogSymbol;
 use super::{Lang, LangIdentifier, VhdlIdentifier};
+use crate::core::lang::vhdl::symbols::entity::Entity;
 
 #[derive(Debug, PartialEq)]
 pub enum HdlSymbol {
@@ -74,10 +75,23 @@ impl HdlSymbol {
         }
     }
 
+    /// Return the symbol as its [Module], if it is one.
+    ///
+    /// Works only on Verilog and SystemVerilog symbols.
     pub fn as_module(&self) -> Option<&Module> {
         match &self {
             Self::Verilog(v) => v.as_module(),
             Self::SystemVerilog(v) => v.as_module(),
+            _ => None,
+        }
+    }
+
+    /// Return the symbol as its [Entity], if it is one.
+    ///
+    /// Works only on VHDL symbols.
+    pub fn as_entity(&self) -> Option<&Entity> {
+        match &self {
+            Self::Vhdl(v) => v.as_entity(),
             _ => None,
         }
     }
