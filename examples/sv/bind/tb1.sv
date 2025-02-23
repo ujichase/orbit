@@ -8,3 +8,7 @@ module  tb1;
   ( .da(da), .db(db),.dclk(dclk), .a(a), .b(b), .count(count));
  
 endmodule
+
+
+// TODO: There is more to bind... see https://vlsi.pro/sva-basics-bind/ for
+// more ways bind can be used. Only the above example (`tb1`) is currently supported.
