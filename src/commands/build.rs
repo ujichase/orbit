@@ -31,9 +31,7 @@ use crate::error::Error;
 use crate::error::LastError;
 use crate::util::environment::EnvVar;
 use crate::util::environment::Environment;
-use crate::util::environment::ORBIT_BLUEPRINT;
 use crate::util::environment::ORBIT_OUT_DIR;
-use crate::util::environment::ORBIT_TARGET;
 use crate::util::environment::ORBIT_TARGET_DIR;
 use colored::Colorize;
 
@@ -126,8 +124,16 @@ impl Subcommand<Context> for Build {
             .downloads(c.get_downloads_path())?;
         let catalog = plan::resolve_missing_deps(c, &working_ip, catalog, self.force)?;
 
+        let envs = Environment::new()
+            // read config.toml for setting any env variables
+            .from_config(c.get_config())?
+            // read ip manifest for env variables
+            .from_ip(&working_ip)?
+            .add(EnvVar::with(ORBIT_TARGET_DIR, target_dir))
+            .add(EnvVar::with(ORBIT_OUT_DIR, out_dir));
+
         // plan for the provided target
-        let blueprint_name = Plan::run(
+        Plan::run(
             &working_ip,
             target_dir,
             target,
@@ -142,19 +148,10 @@ impl Subcommand<Context> for Build {
             &plan,
             false,
             false,
-        )?
-        .unwrap_or_default();
+            envs,
+        )?;
 
-        let envs = Environment::new()
-            // read config.toml for setting any env variables
-            .from_config(c.get_config())?
-            // read ip manifest for env variables
-            .from_ip(&working_ip)?
-            .add(EnvVar::with(ORBIT_TARGET, target.get_name()))
-            .add(EnvVar::with(ORBIT_BLUEPRINT, &blueprint_name))
-            .add(EnvVar::with(ORBIT_TARGET_DIR, target_dir))
-            .add(EnvVar::with(ORBIT_OUT_DIR, out_dir))
-            .from_env_file(&output_path)?;
+        let envs = Environment::new().from_env_file(&output_path)?;
 
         // modify the target to update with the available
         let swap_table = StrSwapTable::new().load_environment(&envs)?;

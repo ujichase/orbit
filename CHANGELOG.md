@@ -15,6 +15,14 @@ Add `- unreleased` along the next future version to prevent CI/CD from triggerin
 
 # Changelog
 
+## 0.23.3 - unreleased
+
+### Features
+- writes all known environment variables set by Orbit to the target's `.env` file during the planning phase for a build process (which then gets loaded before performing the execution phase)
+
+### Fixes
+- adds `ORBIT_MANIFEST_DIR` as an environment variable set for the execution phase of a target
+
 ## 0.23.2
 
 ### Features

@@ -32,8 +32,7 @@ use crate::error::Error;
 use crate::error::LastError;
 use crate::util::anyerror::Fault;
 use crate::util::environment::ORBIT_OUT_DIR;
-use crate::util::environment::ORBIT_TARGET;
-use crate::util::environment::{EnvVar, Environment, ORBIT_BLUEPRINT, ORBIT_TARGET_DIR};
+use crate::util::environment::{EnvVar, Environment, ORBIT_TARGET_DIR};
 
 use super::plan::{self, Plan};
 
@@ -155,8 +154,16 @@ impl Test {
         c: &Context,
         scheme: &Scheme,
     ) -> Result<(), Fault> {
+        let envs = Environment::new()
+            // read config.toml for setting any env variables
+            .from_config(c.get_config())?
+            // read ip manifest for env variables
+            .from_ip(&working_ip)?
+            .add(EnvVar::new().key(ORBIT_TARGET_DIR).value(target_dir))
+            .add(EnvVar::new().key(ORBIT_OUT_DIR).value(out_dir));
+
         // plan the target
-        let blueprint_name = Plan::run(
+        Plan::run(
             &working_ip,
             target_dir,
             target,
@@ -171,22 +178,13 @@ impl Test {
             &scheme,
             true,
             true,
-        )?
-        .unwrap_or_default();
+            envs,
+        )?;
 
         let output_path = working_ip.get_root().join(target_dir).join(out_dir);
 
         // prepare for build
-        let envs = Environment::new()
-            // read config.toml for setting any env variables
-            .from_config(c.get_config())?
-            // read ip manifest for env variables
-            .from_ip(&working_ip)?
-            .add(EnvVar::with(ORBIT_TARGET, target.get_name()))
-            .add(EnvVar::new().key(ORBIT_BLUEPRINT).value(&blueprint_name))
-            .add(EnvVar::new().key(ORBIT_TARGET_DIR).value(target_dir))
-            .add(EnvVar::new().key(ORBIT_OUT_DIR).value(out_dir))
-            .from_env_file(&output_path)?;
+        let envs = Environment::new().from_env_file(&output_path)?;
 
         let swap_table = StrSwapTable::new().load_environment(&envs)?;
         let target = target.clone().replace_vars_in_args(&swap_table);

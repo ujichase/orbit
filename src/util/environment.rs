@@ -23,8 +23,10 @@ use std::io::Read;
 use std::io::Write;
 
 use crate::core::ip::Ip;
+use crate::util::filesystem::Standardize;
 use std::collections::btree_set::IntoIter;
 use std::collections::btree_set::Iter;
+use std::path::PathBuf;
 
 use std::collections::btree_set::BTreeSet;
 
@@ -166,6 +168,11 @@ impl Environment {
             EnvVar::new()
                 .key(ORBIT_IP_LIBRARY)
                 .value(&ip.get_hdl_library().to_string()),
+        );
+        self.insert(
+            EnvVar::new()
+                .key(ORBIT_MANIFEST_DIR)
+                .value(PathBuf::standardize(&ip.get_root()).to_str().unwrap()),
         );
         if let Some(sum) = ip.get_checksum() {
             self.insert(

@@ -91,6 +91,7 @@ impl Plan {
         scheme: &Scheme,
         require_bench: bool,
         allow_bench: bool,
+        envs: Environment,
     ) -> Result<Option<String>, Fault> {
         // create the output path to know where to begin storing files
         let working_ip_path = working_ip.get_root().clone();
@@ -114,6 +115,7 @@ impl Plan {
                     let blueprint_name = blueprint.get_filename();
                     let blueprint_path = Self::create_outputs(
                         &blueprint,
+                        envs,
                         &target_path,
                         &String::new(),
                         &String::new(),
@@ -452,6 +454,7 @@ impl Plan {
 
         let blueprint_path = Self::create_outputs(
             &blueprint,
+            envs,
             &target_path,
             &top_name,
             &top_file,
@@ -1598,6 +1601,7 @@ impl Plan {
     /// Writes the blueprint and env file to the build directory.
     fn create_outputs(
         blueprint: &Blueprint,
+        mut envs: Environment,
         target_path: &PathBuf,
         top_name: &str,
         top_file: &str,
@@ -1621,136 +1625,43 @@ impl Plan {
         // create the blueprint file
         let (blueprint_path, _) = blueprint.write(&output_path)?;
 
-        // create environment variables to .env file
-        let mut envs: Environment = Environment::from_vec(vec![
-            EnvVar::new()
-                .key(environment::ORBIT_TOP_NAME)
-                .value(if require_bench == false {
+        // build upon existing environment variables to save in .env file
+        envs = envs
+            .add(EnvVar::with(
+                environment::ORBIT_TOP_NAME,
+                if require_bench == false {
                     &top_name
                 } else {
                     ""
-                }),
-            EnvVar::new()
-                .key(environment::ORBIT_TOP_FILE)
-                .value(if require_bench == false {
+                },
+            ))
+            .add(EnvVar::with(
+                environment::ORBIT_TOP_FILE,
+                if require_bench == false {
                     &top_file
                 } else {
                     ""
-                }),
-            EnvVar::new()
-                .key(environment::ORBIT_DUT_NAME)
-                .value(if require_bench == true { &top_name } else { "" }),
-            EnvVar::new()
-                .key(environment::ORBIT_DUT_FILE)
-                .value(if require_bench == true { &top_file } else { "" }),
-            EnvVar::new()
-                .key(environment::ORBIT_TB_NAME)
-                .value(&bench_name),
-            EnvVar::new()
-                .key(environment::ORBIT_TB_FILE)
-                .value(&bench_file),
-        ]);
-        // conditionally set the plugin used to plan
-        envs.insert(
-            EnvVar::new()
-                .key(environment::ORBIT_TARGET)
-                .value(&target.get_name()),
-        );
+                },
+            ))
+            .add(EnvVar::with(
+                environment::ORBIT_DUT_NAME,
+                if require_bench == true { &top_name } else { "" },
+            ))
+            .add(EnvVar::with(
+                environment::ORBIT_DUT_FILE,
+                if require_bench == true { &top_file } else { "" },
+            ))
+            .add(EnvVar::with(environment::ORBIT_TB_NAME, &bench_name))
+            .add(EnvVar::with(environment::ORBIT_TB_FILE, &bench_file))
+            .add(EnvVar::with(
+                environment::ORBIT_BLUEPRINT,
+                &blueprint.get_filename(),
+            ))
+            .add(EnvVar::with(environment::ORBIT_TARGET, target.get_name()));
+
         environment::save_environment(&envs, &output_path)?;
+
         Ok(blueprint_path)
-    }
-}
-
-impl Plan {
-    // DEPRECATED: This function may be outdated- was used when `plan` used to be a
-    // dedicated subcommand.
-
-    fn execute(self, c: &Context) -> Result<(), Fault> {
-        // locate the target provided from the command-line
-        let target = c.select_target(&self.target, self.list == false, true)?;
-
-        // display targets list and exit
-        if self.list == true {
-            match target {
-                // display entire contents about the particular plugin
-                Some(tg) => println!("{}", tg),
-                // display quick overview of all plugins
-                None => print!(
-                    "{}",
-                    Target::list_targets(
-                        &mut c
-                            .get_config()
-                            .get_targets()
-                            .values()
-                            .into_iter()
-                            .collect::<Vec<&&Target>>(),
-                        None,
-                    )
-                ),
-            }
-            return Ok(());
-        }
-
-        // unwrap because at this point the target must exist
-        let target = target.unwrap();
-
-        // check that user is in an IP directory
-        c.jump_to_working_ip()?;
-
-        // store the working ip struct
-        let working_ip = Ip::load(c.get_ip_path().unwrap().clone(), true, false)?;
-
-        // assemble the catalog
-        let mut catalog = Catalog::new()
-            .installations(c.get_cache_path())?
-            .downloads(c.get_downloads_path())?;
-
-        // @todo: recreate the ip graph from the lockfile, then read each installation
-        // see Install::install_from_lock_file
-
-        // this code is only ran if the lock file matches the manifest and we aren't force to recompute
-        if working_ip.can_use_lock(&catalog) == true && self.force == false {
-            let le: LockEntry = LockEntry::from((&working_ip, true));
-            let lf = working_ip.get_lock();
-
-            let env = Environment::new()
-                // read config.toml for setting any env variables
-                .from_config(c.get_config())?;
-            let vtable = StrSwapTable::new().load_environment(&env)?;
-
-            download_missing_deps(vtable, &lf, &le, &catalog, &c.get_config().get_protocols())?;
-            // recollect the downloaded items to update the catalog for installations
-            catalog = catalog.downloads(c.get_downloads_path())?;
-
-            install_missing_deps(&lf, &le, &catalog)?;
-            // recollect the installations to update the catalog for dependency graphing
-            catalog = catalog.installations(c.get_cache_path())?;
-        }
-
-        // determine the build directory (command-line arg overrides configuration setting)
-        let default_target_dir = c.get_target_dir();
-        let target_dir = match &self.target_dir {
-            Some(t_dir) => t_dir,
-            None => &default_target_dir,
-        };
-
-        let _ = Self::run(
-            &working_ip,
-            target_dir,
-            target,
-            catalog,
-            self.clean,
-            self.force,
-            self.only_lock,
-            self.all,
-            &self.bench,
-            &self.top,
-            &self.filesets,
-            &Scheme::default(),
-            false,
-            true,
-        );
-        Ok(())
     }
 }
 
@@ -1839,3 +1750,96 @@ mod test {
         );
     }
 }
+
+// impl Plan {
+//     // DEPRECATED: This function may be outdated- was used when `plan` used to be a
+//     // dedicated subcommand.
+
+//     fn execute(self, c: &Context) -> Result<(), Fault> {
+//         // locate the target provided from the command-line
+//         let target = c.select_target(&self.target, self.list == false, true)?;
+
+//         // display targets list and exit
+//         if self.list == true {
+//             match target {
+//                 // display entire contents about the particular plugin
+//                 Some(tg) => println!("{}", tg),
+//                 // display quick overview of all plugins
+//                 None => print!(
+//                     "{}",
+//                     Target::list_targets(
+//                         &mut c
+//                             .get_config()
+//                             .get_targets()
+//                             .values()
+//                             .into_iter()
+//                             .collect::<Vec<&&Target>>(),
+//                         None,
+//                     )
+//                 ),
+//             }
+//             return Ok(());
+//         }
+
+//         // unwrap because at this point the target must exist
+//         let target = target.unwrap();
+
+//         // check that user is in an IP directory
+//         c.jump_to_working_ip()?;
+
+//         // store the working ip struct
+//         let working_ip = Ip::load(c.get_ip_path().unwrap().clone(), true, false)?;
+
+//         // assemble the catalog
+//         let mut catalog = Catalog::new()
+//             .installations(c.get_cache_path())?
+//             .downloads(c.get_downloads_path())?;
+
+//         // @todo: recreate the ip graph from the lockfile, then read each installation
+//         // see Install::install_from_lock_file
+
+//         // this code is only ran if the lock file matches the manifest and we aren't force to recompute
+//         if working_ip.can_use_lock(&catalog) == true && self.force == false {
+//             let le: LockEntry = LockEntry::from((&working_ip, true));
+//             let lf = working_ip.get_lock();
+
+//             let env = Environment::new()
+//                 // read config.toml for setting any env variables
+//                 .from_config(c.get_config())?;
+//             let vtable = StrSwapTable::new().load_environment(&env)?;
+
+//             download_missing_deps(vtable, &lf, &le, &catalog, &c.get_config().get_protocols())?;
+//             // recollect the downloaded items to update the catalog for installations
+//             catalog = catalog.downloads(c.get_downloads_path())?;
+
+//             install_missing_deps(&lf, &le, &catalog)?;
+//             // recollect the installations to update the catalog for dependency graphing
+//             catalog = catalog.installations(c.get_cache_path())?;
+//         }
+
+//         // determine the build directory (command-line arg overrides configuration setting)
+//         let default_target_dir = c.get_target_dir();
+//         let target_dir = match &self.target_dir {
+//             Some(t_dir) => t_dir,
+//             None => &default_target_dir,
+//         };
+
+//         let _ = Self::run(
+//             &working_ip,
+//             target_dir,
+//             target,
+//             catalog,
+//             self.clean,
+//             self.force,
+//             self.only_lock,
+//             self.all,
+//             &self.bench,
+//             &self.top,
+//             &self.filesets,
+//             &Scheme::default(),
+//             false,
+//             true,
+//         );
+//         Ok(())
+//     }
+// }
