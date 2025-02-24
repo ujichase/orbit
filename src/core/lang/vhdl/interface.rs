@@ -91,7 +91,7 @@ impl ColorVec {
         self
     }
 
-    fn into_all_bland(self) -> String {
+    pub fn into_all_bland(self) -> String {
         self.0
             .into_iter()
             .map(|f| match f {
@@ -156,7 +156,7 @@ impl IdentifierList {
 }
 
 #[derive(Debug, PartialEq)]
-struct SubtypeIndication(Vec<VhdlToken>);
+pub struct SubtypeIndication(Vec<VhdlToken>);
 
 impl SubtypeIndication {
     fn from_tokens<I>(tokens: &mut Peekable<I>) -> Self
@@ -175,6 +175,82 @@ impl SubtypeIndication {
             }
         }
         Self(inner)
+    }
+
+    /// Returns the first token (assuming its the datatype) from the series of tokens
+    /// that describe the subtype.
+    pub fn get_type(&self) -> &VhdlToken {
+        self.0.first().unwrap()
+    }
+
+    /// Return any ranges extracted from the subtype indication.
+    ///
+    /// If the list is empty, then there are no ranges (it is a scalar datatype)
+    /// and the function will return `None`.
+    pub fn get_ranges(&self) -> Option<Vec<(Vec<VhdlToken>, Vec<VhdlToken>)>> {
+        let mut result = Vec::new();
+        let mut paren_count = 0;
+        let mut in_range = false;
+        let mut on_rhs = false;
+        let mut lhs = Vec::new();
+        let mut rhs = Vec::new();
+
+        // travel through the list of tokens
+        for t in &self.0 {
+            // track how many parentheses we have consumed
+            match t {
+                VhdlToken::Delimiter(d) => {
+                    match d {
+                        Delimiter::ParenL => {
+                            paren_count += 1;
+                        }
+                        // allow rest of this iteration to process such that we can add the current range
+                        Delimiter::ParenR => {
+                            paren_count -= 1;
+                        }
+                        _ => (),
+                    }
+                }
+                VhdlToken::Keyword(k) => {
+                    match k {
+                        Keyword::Downto | Keyword::To => {
+                            on_rhs = true;
+                            continue;
+                        }
+                        // do not support actual range restrictions/refinements
+                        Keyword::Range => break,
+                        _ => (),
+                    }
+                }
+                _ => (),
+            }
+
+            // we have finished a range if previously in a range and now count is at 0
+            if in_range && paren_count == 0 {
+                result.push((lhs.clone(), rhs.clone()));
+                // reset for another possible range
+                lhs.clear();
+                rhs.clear();
+                on_rhs = false;
+            }
+
+            // collect the tokens for the left or right side of the range
+            if in_range == true {
+                if on_rhs == true {
+                    rhs.push(t.clone());
+                } else {
+                    lhs.push(t.clone());
+                }
+            }
+
+            // we are in a range
+            in_range = paren_count > 0;
+        }
+
+        match result.len() {
+            0 => None,
+            _ => Some(result),
+        }
     }
 }
 
@@ -243,6 +319,12 @@ impl std::fmt::Display for StaticExpression {
 #[derive(Debug, PartialEq)]
 pub struct Mode(Option<Keyword>);
 
+impl Mode {
+    pub fn as_keyword(&self) -> &Option<Keyword> {
+        &self.0
+    }
+}
+
 impl Serialize for Mode {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -273,6 +355,15 @@ impl Serialize for Expr {
     }
 }
 
+impl Expr {
+    pub fn as_static_expr(&self) -> Option<&Vec<VhdlToken>> {
+        match &self.0 {
+            Some(e) => Some(&e.0),
+            None => None,
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Serialize)]
 pub struct InterfaceDeclaration {
     #[serde(rename = "identifier")]
@@ -289,7 +380,7 @@ pub struct InterfaceDeclaration {
     bus_present: bool,
 }
 
-fn tokens_to_string(tokens: &Vec<VhdlToken>) -> ColorVec {
+pub fn tokens_to_string(tokens: &Vec<VhdlToken>) -> ColorVec {
     let mut result = ColorVec::new();
     // determine which delimiters to not add trailing spaces to
     let is_spaced_token = |d: &Delimiter| match d {
@@ -342,6 +433,22 @@ fn tokens_to_string(tokens: &Vec<VhdlToken>) -> ColorVec {
 }
 
 impl InterfaceDeclaration {
+    pub fn get_name(&self) -> &Identifier {
+        &self.identifier
+    }
+
+    pub fn get_mode(&self) -> &Mode {
+        &self.mode
+    }
+
+    pub fn get_type(&self) -> &SubtypeIndication {
+        &self.datatype
+    }
+
+    pub fn get_default(&self) -> &Expr {
+        &self.expr
+    }
+
     fn into_interface_string(&self, offset: usize) -> ColorVec {
         let mut result = ColorVec::new();
         // identifier
@@ -441,7 +548,7 @@ impl InterfaceDeclaration {
 }
 
 #[derive(Debug, PartialEq, Serialize)]
-pub struct InterfaceDeclarations(Vec<InterfaceDeclaration>);
+pub struct InterfaceDeclarations(pub Vec<InterfaceDeclaration>);
 
 impl InterfaceDeclarations {
     pub fn new() -> Self {

@@ -21,7 +21,6 @@ use crate::core::context::Context;
 use crate::core::ip::Ip;
 use crate::core::ip::IpSpec;
 use crate::core::ip::PartialIpSpec;
-use crate::core::lang::ir::HdlIr;
 use crate::core::lang::sv::format::SystemVerilogFormat;
 use crate::core::lang::verilog::symbols::module::Module;
 use crate::core::lang::vhdl::format::VhdlFormat;
@@ -210,7 +209,7 @@ impl Get {
                 match self.language {
                     LangConversion::Sv => {
                         // convert the entity to a SV module
-                        let module = HdlIr::from_vhdl_entity(entity).into_sv_module()?;
+                        let module = entity.to_sv_module()?;
                         self.display_verilog_module(&ip, &module, &c.get_sv_format())
                     }
                     _ => self.display_vhdl_entity(&ip, entity, is_local, &c.get_vhdl_format()),
@@ -222,7 +221,7 @@ impl Get {
                 match self.language {
                     LangConversion::Vhdl => {
                         // convert the entity to a SV module
-                        let entity = HdlIr::from_vlog_module(module).into_vhdl_entity()?;
+                        let entity = module.to_vhdl_entity()?;
                         self.display_vhdl_entity(&ip, &entity, is_local, &c.get_vhdl_format())
                     }
                     _ => self.display_verilog_module(&ip, module, &c.get_sv_format()),
@@ -238,7 +237,7 @@ impl Get {
                 match self.language {
                     LangConversion::Vhdl => {
                         // convert the entity to a SV module
-                        let entity = HdlIr::from_sv_module(module).into_vhdl_entity()?;
+                        let entity = module.to_vhdl_entity()?;
                         self.display_vhdl_entity(&ip, &entity, is_local, &c.get_vhdl_format())
                     }
                     _ => self.display_verilog_module(&ip, module, &c.get_sv_format()),

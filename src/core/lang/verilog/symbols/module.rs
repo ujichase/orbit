@@ -256,10 +256,6 @@ impl Module {
                 refs.insert(CompoundIdentifier::new_minimal_verilog(intf.clone()));
             });
 
-        // println!("{}", mod_name);
-        // println!("{:?}", ports);
-        // println!("{:?}", refs);
-        // println!("{:?}", params);
         Ok(Module {
             name: mod_name,
             parameters: params,
@@ -270,5 +266,14 @@ impl Module {
             pos: pos,
             language: String::from(language),
         })
+    }
+}
+
+use crate::core::lang::vhdl::error::VhdlError;
+use crate::core::lang::vhdl::symbols::entity::Entity;
+
+impl Module {
+    pub fn to_vhdl_entity(&self) -> Result<Entity, VhdlError> {
+        todo!()
     }
 }

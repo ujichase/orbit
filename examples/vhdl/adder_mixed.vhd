@@ -14,8 +14,9 @@ use ieee.std_logic_1164.all;
 library work;
 use work.const_pkg.all;
 
-entity adder is
+entity adder_mixed is
     generic (
+        MY_WORD : string(1 to 3) := "FOO";
         WORD_WIDTH : positive := 6
     );
     port (

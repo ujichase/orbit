@@ -325,3 +325,240 @@ impl Entity {
         &mut self.refs
     }
 }
+
+use crate::core::lang::vhdl::symbols::tokens_to_string;
+
+use crate::core::lang::lexer::Tokenize;
+use crate::core::lang::sv::token::token::SystemVerilogToken as Svt;
+use crate::core::lang::sv::token::token::SystemVerilogToken;
+use crate::core::lang::sv::token::tokenizer::SystemVerilogTokenizer;
+
+use crate::core::lang::sv::symbols::module::Module;
+use crate::core::lang::sv::token::identifier::Identifier as SvIdentifier;
+use crate::core::lang::sv::token::keyword::Keyword as SvKeyword;
+use crate::core::lang::sv::token::operator::Operator as SvOp;
+use crate::core::lang::verilog::error::VerilogError;
+
+impl Entity {
+    /// Builds a [Module] from the structured HDL data.
+    pub fn to_sv_module(&self) -> Result<Module, VerilogError> {
+        // start with blank slate of SystemVerilog tokens to build from
+        let mut tokens: Vec<Token<Svt>> = Vec::new();
+
+        // assemble module name
+        let name = match &self.name {
+            Identifier::Basic(s) => SvIdentifier::Basic(s.clone()),
+            Identifier::Extended(s) => SvIdentifier::Escaped(s.clone()),
+        };
+        tokens.push(Self::sv(Svt::Identifier(name)));
+
+        // add generics
+        if self.generics.0.len() > 0 {
+            tokens.push(Self::sv(Svt::Operator(SvOp::Pound)));
+            tokens.push(Self::sv(Svt::Operator(SvOp::ParenL)));
+
+            self.generics.0 .0.iter().for_each(|g| {
+                tokens.push(Self::sv(Svt::Keyword(SvKeyword::Parameter)));
+
+                // datatype
+                tokens.push(Self::sv(Self::convert_datatype_to_sv(
+                    g.get_type().get_type(),
+                )));
+
+                // ignore any ranges used for a VHDL string datatype since SV does not have explicit range for it
+                if tokens
+                    .last()
+                    .unwrap()
+                    .as_type()
+                    .check_keyword(&SvKeyword::String)
+                    == false
+                {
+                    // any ranges for that dataype?
+                    if let Some(ranges) = g.get_type().get_ranges() {
+                        ranges.into_iter().for_each(|r| {
+                            tokens.append(&mut Self::convert_range_to_sv(r.0, r.1));
+                        });
+                    }
+                }
+
+                // name of the port
+                let name = match &g.get_name() {
+                    Identifier::Basic(s) => SvIdentifier::Basic(s.clone()),
+                    Identifier::Extended(s) => SvIdentifier::Escaped(s.clone()),
+                };
+                tokens.push(Self::sv(Svt::Identifier(name)));
+
+                // default value (if exists)
+                if let Some(expr) = g.get_default().as_static_expr() {
+                    tokens.append(&mut Self::convert_default_to_sv(expr));
+                }
+
+                // closing delimiter
+                tokens.push(Self::sv(Svt::Operator(SvOp::Comma)));
+            });
+            // remove the final trailing comma
+            tokens.pop();
+
+            tokens.push(Self::sv(Svt::Operator(SvOp::ParenR)));
+        }
+
+        // add ports
+        if self.ports.0.len() > 0 {
+            tokens.push(Self::sv(Svt::Operator(SvOp::ParenL)));
+
+            // iterate through all ports
+            self.ports.0 .0.iter().for_each(|p| {
+                // port direction
+                let dir = match p.get_mode().as_keyword() {
+                    Some(Keyword::Out) => SvKeyword::Output,
+                    Some(Keyword::Inout) => SvKeyword::Inout,
+                    Some(Keyword::In) => SvKeyword::Input,
+                    None => SvKeyword::Input,
+                    _ => panic!(),
+                };
+                tokens.push(Self::sv(Svt::Keyword(dir)));
+
+                // datatype
+                tokens.push(Self::sv(Self::convert_datatype_to_sv(
+                    p.get_type().get_type(),
+                )));
+
+                // ignore any ranges used for a VHDL string datatype since SV does not have explicit range for it
+                if tokens
+                    .last()
+                    .unwrap()
+                    .as_type()
+                    .check_keyword(&SvKeyword::String)
+                    == false
+                {
+                    // any ranges for that dataype?
+                    if let Some(ranges) = p.get_type().get_ranges() {
+                        ranges.into_iter().for_each(|r| {
+                            tokens.append(&mut Self::convert_range_to_sv(r.0, r.1));
+                        });
+                    }
+                }
+
+                // name of the port
+                let name = match &p.get_name() {
+                    Identifier::Basic(s) => SvIdentifier::Basic(s.clone()),
+                    Identifier::Extended(s) => SvIdentifier::Escaped(s.clone()),
+                };
+                tokens.push(Self::sv(Svt::Identifier(name)));
+
+                // default value (if exists)
+                if let Some(expr) = p.get_default().as_static_expr() {
+                    tokens.append(&mut Self::convert_default_to_sv(expr));
+                }
+
+                // closing delimiter
+                tokens.push(Self::sv(Svt::Operator(SvOp::Comma)));
+            });
+            // remove the final comma
+            tokens.pop();
+
+            tokens.push(Self::sv(Svt::Operator(SvOp::ParenR)));
+        }
+
+        // Add proper closing before parsing
+        tokens.push(Self::sv(Svt::Operator(SvOp::Terminator)));
+
+        // parse the assembled token list to create the module
+        let mut tokens = tokens.into_iter().peekable();
+        Module::from_tokens(&mut tokens, Position::new(), "systemverilog")
+    }
+
+    /// Helps build SystemVerilog tokens from a VHDL context.
+    fn sv(token: Svt) -> Token<Svt> {
+        Token::new(token, Position::new())
+    }
+
+    /// Helps convert a VHDL token into its SystemVerilog equivalent when dealing with
+    /// datatypes.
+    fn convert_datatype_to_sv(token: &VhdlToken) -> SystemVerilogToken {
+        match token {
+            VhdlToken::Identifier(i) => match i {
+                Identifier::Basic(s) => match s.to_lowercase().as_str() {
+                    "bit" | "boolean" => Svt::Keyword(SvKeyword::Bit),
+                    "std_logic" | "std_ulogic" | "logic" | "rlogic" | "ulogic" => {
+                        Svt::Keyword(SvKeyword::Logic)
+                    }
+                    "std_logic_vector" | "std_ulogic_vector" | "logics" | "rlogics" | "ulogics" => {
+                        Svt::Keyword(SvKeyword::Logic)
+                    }
+                    "character" | "char" => Svt::Keyword(SvKeyword::Byte),
+                    "integer" | "natural" | "positive" => Svt::Keyword(SvKeyword::Integer),
+                    "string" | "str" => Svt::Keyword(SvKeyword::String),
+                    _ => Svt::Identifier(SvIdentifier::Basic(s.clone())),
+                },
+                Identifier::Extended(s) => Svt::Identifier(SvIdentifier::Escaped(s.clone())),
+            },
+            _ => panic!(),
+        }
+    }
+
+    /// Helps convert a VHDL range (set of tokens) into a SystemVerilog equivalent set of tokens
+    /// for specifying a range for a particular datatype.
+    fn convert_range_to_sv(
+        lhs: Vec<VhdlToken>,
+        rhs: Vec<VhdlToken>,
+    ) -> Vec<Token<SystemVerilogToken>> {
+        let mut tokens = Vec::new();
+        // opening bracket
+        tokens.push(Self::sv(Svt::Operator(SvOp::BrackL)));
+
+        // left side of range
+        SystemVerilogTokenizer::tokenize(&tokens_to_string(&lhs).into_all_bland())
+            .into_iter()
+            .filter_map(|r| match r {
+                Ok(r) => Some(r),
+                Err(_) => None,
+            })
+            .filter(|r| r.as_type().is_eof() == false)
+            .for_each(|t| {
+                tokens.push(t);
+            });
+
+        // delimiter between range endpoints
+        tokens.push(Self::sv(Svt::Operator(SvOp::Colon)));
+
+        // right side of range
+        SystemVerilogTokenizer::tokenize(&tokens_to_string(&rhs).into_all_bland())
+            .into_iter()
+            .filter_map(|r| match r {
+                Ok(r) => Some(r),
+                Err(_) => None,
+            })
+            .filter(|r| r.as_type().is_eof() == false)
+            .for_each(|t| {
+                tokens.push(t);
+            });
+        // closing bracket
+        tokens.push(Self::sv(Svt::Operator(SvOp::BrackR)));
+
+        tokens
+    }
+
+    /// Helps convert a VHDL default value into a SystemVerilog equivalent set of tokens.
+    fn convert_default_to_sv(expr: &Vec<VhdlToken>) -> Vec<Token<SystemVerilogToken>> {
+        let mut tokens = Vec::new();
+
+        SystemVerilogTokenizer::tokenize(&tokens_to_string(&expr).into_all_bland())
+            .into_iter()
+            .filter_map(|r| match r {
+                Ok(r) => Some(r),
+                Err(_) => None,
+            })
+            .filter(|r| r.as_type().is_eof() == false)
+            .for_each(|t| {
+                tokens.push(t);
+            });
+
+        // only introduce the '=' token if we successfully transfered the VHDL to SV
+        if tokens.len() > 0 {
+            tokens.insert(0, Self::sv(Svt::Operator(SvOp::BlockAssign)));
+        }
+
+        tokens
+    }
+}

@@ -608,8 +608,6 @@ impl VerilogToken {
                     return Err(VerilogError::InvalidBaseSpecifier(*c));
                 }
             }
-        } else {
-            return Err(VerilogError::MissingBaseSpecifier);
         }
 
         if let Some(mut d) = train.peek() {
@@ -623,8 +621,6 @@ impl VerilogToken {
                     return Err(VerilogError::EmptyBaseConstNumber);
                 }
             }
-        } else {
-            return Err(VerilogError::EmptyBaseConstNumber);
         }
 
         // take the remaining series of characters as the digits
@@ -633,14 +629,15 @@ impl VerilogToken {
             None,
             char_set::is_digit_or_underscore_or_signal_char,
         )?;
-        // make sure we have values
-        match value.len() {
-            0 => Err(VerilogError::EmptyBaseConstNumber),
-            _ => {
-                number.push_str(&value);
-                Ok(Self::Number(Number::Based(number.to_string())))
-            }
+
+        if value.len() == 0 && train.peek().is_some() {
+            return Err(VerilogError::InvalidBaseSpecifier(train.consume().unwrap()));
         }
+
+        if value.len() > 0 {
+            number.push_str(&value);
+        }
+        Ok(Self::Number(Number::Based(number.to_string())))
     }
 }
 
