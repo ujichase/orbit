@@ -29,4 +29,10 @@ pub enum VhdlError {
     MissingClosingAndGot(char, char),
     #[error("invalid syntax")]
     Vague,
+    #[error("empty identifier")]
+    IdEmpty,
+    #[error("characters \'{0}\' found following closing extended backslash")]
+    IdCharsAfterDelim(String),
+    #[error("first character must be a letter but found \'{0}\'")]
+    IdInvalidFirstChar(char),
 }

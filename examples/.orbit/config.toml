@@ -11,3 +11,4 @@ default-target = "foo"
 default-target = "foo"
 
 [vhdl-format]
+highlight-syntax = true

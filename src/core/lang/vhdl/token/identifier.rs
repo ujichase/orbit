@@ -16,6 +16,7 @@
 //
 
 use super::super::super::lexer::TrainCar;
+use super::VhdlError;
 use crate::core::lang::vhdl::token::ToColor;
 use crate::core::lang::LangIdentifier;
 use crate::core::pkgid::PkgPart;
@@ -105,33 +106,8 @@ impl From<&PkgPart> for Identifier {
     }
 }
 
-#[derive(Debug, PartialEq)]
-pub enum IdentifierError {
-    Empty,
-    InvalidFirstChar(char),
-    CharsAfterDelimiter(String),
-}
-
-impl std::error::Error for IdentifierError {}
-
-impl std::fmt::Display for IdentifierError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::Empty => write!(f, "empty identifier"),
-            Self::CharsAfterDelimiter(s) => write!(
-                f,
-                "characters \'{}\' found following closing extended backslash, ",
-                s
-            ),
-            Self::InvalidFirstChar(c) => {
-                write!(f, "first character must be letter but found \'{}\'", c)
-            }
-        }
-    }
-}
-
 impl FromStr for Identifier {
-    type Err = IdentifierError;
+    type Err = VhdlError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut chars = TrainCar::new(s.chars());
@@ -149,7 +125,7 @@ impl FromStr for Identifier {
                     }
                     match rem.is_empty() {
                         true => result,
-                        false => return Err(Self::Err::CharsAfterDelimiter(rem)),
+                        false => return Err(Self::Err::IdCharsAfterDelim(rem)),
                     }
                 }
                 _ => {
@@ -163,11 +139,11 @@ impl FromStr for Identifier {
                             )
                             .unwrap(),
                         ),
-                        false => return Err(Self::Err::InvalidFirstChar(c)),
+                        false => return Err(Self::Err::IdInvalidFirstChar(c)),
                     }
                 }
             }),
-            None => Err(Self::Err::Empty),
+            None => Err(Self::Err::IdEmpty),
         }
     }
 }

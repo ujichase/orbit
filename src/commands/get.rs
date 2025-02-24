@@ -21,6 +21,7 @@ use crate::core::context::Context;
 use crate::core::ip::Ip;
 use crate::core::ip::IpSpec;
 use crate::core::ip::PartialIpSpec;
+use crate::core::lang::ir::HdlIr;
 use crate::core::lang::sv::format::SystemVerilogFormat;
 use crate::core::lang::verilog::symbols::module::Module;
 use crate::core::lang::vhdl::format::VhdlFormat;
@@ -36,9 +37,37 @@ use crate::error::Hint;
 use crate::util::anyerror::{AnyError, Fault};
 use colored::Colorize;
 use std::env;
+use std::str::FromStr;
 
 use cliproc::{cli, proc, stage::*};
 use cliproc::{Arg, Cli, Help, Subcommand};
+
+/// The availale options to specify what language to return the code snippets
+/// for the `get` command.
+#[derive(Debug, PartialEq)]
+enum LangConversion {
+    Vhdl,
+    Sv,
+    Native,
+}
+
+impl Default for LangConversion {
+    fn default() -> Self {
+        Self::Native
+    }
+}
+
+impl FromStr for LangConversion {
+    type Err = AnyError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "vhdl" => Ok(Self::Vhdl),
+            "sv" => Ok(Self::Sv),
+            "native" => Ok(Self::Native),
+            _ => Err(AnyError(format!("value must be 'native', 'vhdl', or 'sv'"))),
+        }
+    }
+}
 
 #[derive(Debug, PartialEq)]
 pub struct Get {
@@ -48,6 +77,7 @@ pub struct Get {
     component: bool,
     instance: bool,
     library: bool,
+    language: LangConversion,
     architectures: bool,
     json: bool,
     signal_prefix: String,
@@ -68,6 +98,9 @@ impl Subcommand<Context> for Get {
             library: cli.check(Arg::flag("library").switch('l'))?,
             architectures: cli.check(Arg::flag("architecture").switch('a'))?,
             json: cli.check(Arg::flag("json"))?,
+            language: cli
+                .get(Arg::option("language").value("hdl"))?
+                .unwrap_or_default(),
             signal_prefix: cli
                 .get(Arg::option("signal-prefix").value("str"))?
                 .unwrap_or_default(),
@@ -168,27 +201,49 @@ impl Get {
                 return Err(Error::GetUnitNotFound(self.unit.to_string(), hint))?;
             }
         };
+
         // determine how to handle unit display
         match unit.get_lang() {
-            Lang::Vhdl => self.display_vhdl_entity(
-                &ip,
-                unit.get_vhdl_symbol().unwrap().as_entity().unwrap(),
-                is_local,
-                &c.get_vhdl_format(),
-            ),
-            Lang::Verilog => self.display_verilog_module(
-                &ip,
-                unit.get_verilog_symbol().unwrap().as_module().unwrap(),
-                &c.get_sv_format(),
-            ),
-            Lang::SystemVerilog => self.display_verilog_module(
-                &ip,
-                unit.get_systemverilog_symbol()
+            Lang::Vhdl => {
+                let entity = unit.get_vhdl_symbol().unwrap().as_entity().unwrap();
+
+                match self.language {
+                    LangConversion::Sv => {
+                        // convert the entity to a SV module
+                        let module = HdlIr::from_vhdl_entity(entity).into_sv_module()?;
+                        self.display_verilog_module(&ip, &module, &c.get_sv_format())
+                    }
+                    _ => self.display_vhdl_entity(&ip, entity, is_local, &c.get_vhdl_format()),
+                }
+            }
+            Lang::Verilog => {
+                let module = unit.get_verilog_symbol().unwrap().as_module().unwrap();
+
+                match self.language {
+                    LangConversion::Vhdl => {
+                        // convert the entity to a SV module
+                        let entity = HdlIr::from_vlog_module(module).into_vhdl_entity()?;
+                        self.display_vhdl_entity(&ip, &entity, is_local, &c.get_vhdl_format())
+                    }
+                    _ => self.display_verilog_module(&ip, module, &c.get_sv_format()),
+                }
+            }
+            Lang::SystemVerilog => {
+                let module = unit
+                    .get_systemverilog_symbol()
                     .unwrap()
                     .as_module()
-                    .unwrap(),
-                &c.get_sv_format(),
-            ),
+                    .unwrap();
+
+                match self.language {
+                    LangConversion::Vhdl => {
+                        // convert the entity to a SV module
+                        let entity = HdlIr::from_sv_module(module).into_vhdl_entity()?;
+                        self.display_vhdl_entity(&ip, &entity, is_local, &c.get_vhdl_format())
+                    }
+                    _ => self.display_verilog_module(&ip, module, &c.get_sv_format()),
+                }
+            }
         }?;
 
         Ok(())

@@ -31,6 +31,7 @@ Options:
     --component, -c       display the unit's declaration
     --signals, -s         display the constant and signal declarations
     --instance, -i        display the unit's instantiation
+    --language <hdl>      display in the specified language (vhdl, sv, native)
     --architecture, -a    display the unit's architectures
     --name <identifier>   set the instance's identifier
     --signal-prefix <str>

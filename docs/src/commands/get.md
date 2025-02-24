@@ -47,8 +47,12 @@ local ip, its visibility must be "public". Design units that are set to
 ips.
 
 Exporting the unit's declaration information can be accomplished by using the
-`--json` option. The valid json is produced with minimal formatting for
-encouragement to be processed by other programs.
+`--json` option. The valid json is unformatted for encouragement to be 
+processed by other programs.
+
+By default, the code snippets will be displayed in the design unit's native
+hardware description language. To return the code snippets in a particular
+language, use the `--lang` option. Valid values are "vhdl", "sv", or "native".
 
 ## __OPTIONS__
 
@@ -72,6 +76,9 @@ encouragement to be processed by other programs.
 
 `--instance, -i`  
 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Display the unit's instantiation
+
+`--language <hdl>`  
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Display in the specified language (vhdl, sv, native)
 
 `--architecture, -a`  
 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Display the unit's architectures

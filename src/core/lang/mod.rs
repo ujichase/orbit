@@ -26,6 +26,8 @@ pub mod node;
 
 pub mod reference;
 
+pub mod ir;
+
 use crate::error::Error;
 use crate::error::Hint;
 use crate::util::anyerror::AnyError;
@@ -43,6 +45,7 @@ use sv::symbols::SystemVerilogSymbol;
 use toml_edit::InlineTable;
 use verilog::symbols::VerilogSymbol;
 use vhdl::symbols::VhdlSymbol;
+use vhdl::token::VhdlError;
 
 type VhdlIdentifier = vhdl::token::identifier::Identifier;
 type SystemVerilogIdentifier = sv::token::identifier::Identifier;
@@ -380,7 +383,7 @@ impl LangUnit {
 }
 
 impl FromStr for LangIdentifier {
-    type Err = vhdl::token::identifier::IdentifierError;
+    type Err = VhdlError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Ok(Self::Vhdl(VhdlIdentifier::from_str(&s)?))
