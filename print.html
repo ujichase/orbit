@@ -2514,8 +2514,12 @@ local ip, its visibility must be "public". Design units that are set to
 "protected" or "private" visibility are not allowed to be referenced across
 ips.</p>
 <p>Exporting the unit's declaration information can be accomplished by using the
-<code>--json</code> option. The valid json is produced with minimal formatting for
-encouragement to be processed by other programs.</p>
+<code>--json</code> option. The valid json is unformatted for encouragement to be
+processed by other programs.</p>
+<p>By default, the code snippets will be displayed in the design unit's native
+hardware description language. To return the code snippets in a particular
+language, use the <code>--language</code> option. Valid values are "vhdl", "sv", or
+"native".</p>
 <h2 id="options-4"><a class="header" href="#options-4"><strong>OPTIONS</strong></a></h2>
 <p><code>&lt;unit&gt;</code><br />
             Primary design unit identifier</p>
@@ -2531,6 +2535,8 @@ encouragement to be processed by other programs.</p>
             Display the constant and signal declarations</p>
 <p><code>--instance, -i</code><br />
             Display the unit's instantiation</p>
+<p><code>--language &lt;hdl&gt;</code><br />
+            Display in the specified language (vhdl, sv, native)</p>
 <p><code>--architecture, -a</code><br />
             Display the unit's architectures</p>
 <p><code>--name &lt;identifier&gt;</code><br />
