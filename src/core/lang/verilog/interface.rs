@@ -20,6 +20,8 @@ use crate::core::lang::sv::format::SystemVerilogFormat;
 use super::super::sv::token::{
     identifier::Identifier, keyword::Keyword, operator::Operator, token::SystemVerilogToken,
 };
+use crate::core::lang::highlight::ColorVec;
+use crate::core::lang::highlight::ToColor;
 use serde_derive::Serialize;
 
 #[derive(Debug, PartialEq)]
@@ -46,7 +48,7 @@ impl serde::Serialize for Expr {
         S: serde::Serializer,
     {
         match &self.0 {
-            Some(expr) => serializer.serialize_str(&tokens_to_string(&expr)),
+            Some(expr) => serializer.serialize_str(&tokens_to_string(&expr).into_all_bland()),
             None => serializer.serialize_none(),
         }
     }
@@ -63,8 +65,8 @@ pub fn does_exist(ports: &Vec<Port>, name: &Identifier) -> bool {
         .is_some()
 }
 
-pub fn tokens_to_string(tokens: &Vec<SystemVerilogToken>) -> String {
-    let mut result = String::new();
+pub fn tokens_to_string(tokens: &Vec<SystemVerilogToken>) -> ColorVec {
+    let mut result = ColorVec::new();
     // determine which delimiters to not add trailing spaces to
     let is_spaced_token = |d: &Operator| match d {
         Operator::ParenL
@@ -119,7 +121,7 @@ pub fn tokens_to_string(tokens: &Vec<SystemVerilogToken>) -> String {
         };
 
         // push the token to the string
-        result.push_str(&t.to_string());
+        result.push_color(t.to_color());
         // handle adding whitespace after the token
         if trailing_space == true && iter.peek().is_some() {
             if force_space == false {
@@ -143,11 +145,12 @@ pub fn tokens_to_string(tokens: &Vec<SystemVerilogToken>) -> String {
 pub fn longest_port_decl(use_mode: bool, ports: &Vec<Port>, fmt: &SystemVerilogFormat) -> usize {
     let longest = ports.iter().max_by(|x, y| {
         x.into_decl_no_name(use_mode, &fmt)
+            .into_all_bland()
             .len()
-            .cmp(&y.into_decl_no_name(use_mode, &fmt).len())
+            .cmp(&y.into_decl_no_name(use_mode, &fmt).into_all_bland().len())
     });
     match longest {
-        Some(l) => l.into_decl_no_name(use_mode, &fmt).len(),
+        Some(l) => l.into_decl_no_name(use_mode, &fmt).into_all_bland().len(),
         None => 0,
     }
 }
@@ -245,14 +248,14 @@ pub fn display_interface(
     port_list: &Vec<Port>,
     is_params: bool,
     fmt: &SystemVerilogFormat,
-) -> String {
-    let mut result = String::new();
+) -> ColorVec {
+    let mut result = ColorVec::new();
     if port_list.is_empty() == false {
-        result.push(' ');
+        result.push_str(" ");
         if is_params == true {
-            result.push('#');
+            result.push_color(Operator::Pound.to_color());
         }
-        result.push('(');
+        result.push_color(Operator::ParenL.to_color());
     }
 
     // compute the longest word
@@ -262,19 +265,19 @@ pub fn display_interface(
     };
 
     port_list.iter().enumerate().for_each(|(i, p)| {
-        result.push('\n');
+        result.push_str("\n");
         for _ in 0..fmt.get_tab_size() as usize {
-            result.push(' ');
+            result.push_str(" ");
         }
-        result.push_str(&&&p.into_declaration(true, &spacer, "", "", fmt));
+        result.append(p.into_declaration(true, &spacer, "", "", fmt));
         if i != port_list.len() - 1 {
-            result.push_str(",")
+            result.push_color(Operator::Comma.to_color());
         };
     });
 
     if port_list.is_empty() == false {
-        result.push('\n');
-        result.push(')');
+        result.push_str("\n");
+        result.push_color(Operator::ParenR.to_color());
     }
     result
 }
@@ -414,7 +417,7 @@ impl serde::Serialize for DataType {
             result.push_str(&dt.to_string());
         }
         if let Some(rg) = &self.range.0 {
-            result.push_str(&tokens_to_string(rg));
+            result.push_str(&tokens_to_string(rg).into_all_bland());
         }
         match result.len() {
             0 => serializer.serialize_none(),
@@ -496,59 +499,55 @@ impl Port {
         result
     }
 
-    fn into_decl_no_name(&self, use_mode: bool, fmt: &SystemVerilogFormat) -> String {
-        let mut result = String::new();
+    fn into_decl_no_name(&self, use_mode: bool, fmt: &SystemVerilogFormat) -> ColorVec {
+        let mut result = ColorVec::new();
 
         if use_mode == true && self.is_param == false && self.data_type.modport.is_none() {
-            result.push_str(&self.mode.as_ref().unwrap_or(&Keyword::Input).to_string());
-            result.push(' ');
+            result.push_color(self.mode.as_ref().unwrap_or(&Keyword::Input).to_color());
+            result.push_str(" ");
         }
 
         if self.is_param == true {
             match use_mode {
-                false => result.push_str(&Keyword::Localparam.to_string()),
-                true => result.push_str(
-                    &self
-                        .mode
-                        .as_ref()
-                        .unwrap_or(&Keyword::Parameter)
-                        .to_string(),
-                ),
+                false => result.push_color(Keyword::Localparam.to_color()),
+                true => {
+                    result.push_color(self.mode.as_ref().unwrap_or(&Keyword::Parameter).to_color())
+                }
             }
-            result.push(' ');
+            result.push_str(" ");
         }
 
         // force the port to have a wire net
         if use_mode == false && self.is_param == false {
             if self.data_type.data.is_none() {
-                result.push_str(&Keyword::Wire.to_string());
-                result.push(' ');
+                result.push_color(Keyword::Wire.to_color());
+                result.push_str(" ");
             }
         } else if let Some(n) = &self.data_type.net {
-            result.push_str(&n.to_string());
-            result.push(' ');
+            result.push_color(n.to_color());
+            result.push_str(" ");
         }
 
         // display the datatype
         if let Some(d) = &self.data_type.data {
-            result.push_str(&d.to_string());
+            result.push_color(d.to_color());
             // display the modport
             if let Some(m) = &self.data_type.modport {
-                result.push_str(&Operator::Dot.to_string());
-                result.push_str(&m.to_string());
+                result.push_color(Operator::Dot.to_color());
+                result.push_color(m.to_color());
             }
             // display the real type
             if let Some(t) = &self.data_type.nested_type {
-                result.push_str(&Operator::ScopeResolution.to_string());
-                result.push_str(&t.to_string());
+                result.push_color(Operator::ScopeResolution.to_color());
+                result.push_color(t.to_color());
             }
-            result.push(' ');
+            result.push_str(" ");
         }
 
         // display if signed
         if self.data_type.is_signed == true {
-            result.push_str(&Keyword::Signed.to_string());
-            result.push(' ');
+            result.push_color(Keyword::Signed.to_color());
+            result.push_str(" ");
         }
 
         // display the range
@@ -559,10 +558,10 @@ impl Port {
             }
             // add this many number of spaces before the range modifier
             for _ in 0..fmt.get_range_offset() as usize {
-                result.push(' ');
+                result.push_str(" ");
             }
-            result.push_str(&tokens_to_string(r));
-            result.push(' ');
+            result.append(tokens_to_string(r));
+            result.push_str(" ");
         }
         result
     }
@@ -574,12 +573,12 @@ impl Port {
         prefix: &str,
         suffix: &str,
         fmt: &SystemVerilogFormat,
-    ) -> String {
+    ) -> ColorVec {
         let mut result = self.into_decl_no_name(use_mode, fmt);
 
         if let Some(sp) = spacing {
             while result.len() < *sp + fmt.get_name_offset() as usize {
-                result.push(' ');
+                result.push_str(" ");
             }
         }
 
@@ -596,14 +595,17 @@ impl Port {
         if let Some(up) = &self.unpacked_range.0 {
             // add this many number of spaces before the range modifier
             for _ in 0..fmt.get_range_offset() as usize {
-                result.push(' ');
+                result.push_str(" ");
             }
-            result.push_str(&tokens_to_string(up));
+            result.append(tokens_to_string(up));
         }
 
         // display the default value
         if let Some(v) = &self.value.0 {
-            result.push_str(&format!(" = {}", tokens_to_string(v)));
+            result.push_str(" ");
+            result.push_color(Operator::BlockAssign.to_color());
+            result.push_str(" ");
+            result.append(tokens_to_string(v));
         }
 
         result

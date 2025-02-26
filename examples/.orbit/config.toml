@@ -12,3 +12,6 @@ default-target = "foo"
 
 [vhdl-format]
 highlight-syntax = true
+
+[verilog-format]
+highlight-syntax = true

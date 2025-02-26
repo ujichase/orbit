@@ -29,7 +29,7 @@ pub mod identifier;
 pub mod keyword;
 pub mod literal;
 pub mod tokenizer;
-use super::highlight::*;
+use super::super::highlight;
 
 use literal::{based_integer, AbstLiteral, BaseSpec, BitStrLiteral, Character};
 use tokenizer::*;
@@ -40,10 +40,7 @@ pub type Keyword = keyword::Keyword;
 pub type Delimiter = delimiter::Delimiter;
 pub type VhdlTokenizer = tokenizer::VhdlTokenizer;
 pub type VhdlError = super::error::VhdlError;
-
-pub trait ToColor: Display {
-    fn to_color(&self) -> ColoredString;
-}
+use crate::core::lang::highlight::ToColor;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum VhdlToken {
@@ -65,7 +62,9 @@ impl ToColor for VhdlToken {
             Self::Identifier(i) => i.to_color(),
             Self::AbstLiteral(a) => a.to_color(),
             Self::CharLiteral(c) => c.to_color(),
-            Self::StrLiteral(s) => color(&format!("\"{}\"", s.to_string()), STRINGS),
+            Self::StrLiteral(s) => {
+                highlight::color(&format!("\"{}\"", s.to_string()), highlight::STRINGS)
+            }
             Self::BitStrLiteral(b) => b.to_color(),
             Self::Keyword(k) => k.to_color(),
             Self::Delimiter(d) => d.to_color(),

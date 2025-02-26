@@ -15,7 +15,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-use crate::core::lang::vhdl::token::ToColor;
+use crate::core::lang::highlight::ToColor;
 use colored::ColoredString;
 use colored::Colorize;
 use serde_derive::Serialize;

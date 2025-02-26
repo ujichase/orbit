@@ -17,6 +17,10 @@
 
 use std::fmt::Display;
 
+use crate::core::lang::highlight::ToColor;
+use colored::ColoredString;
+use colored::Colorize;
+
 #[derive(Debug, PartialEq, Clone)]
 pub enum Operator {
     ConcatL,
@@ -186,5 +190,11 @@ impl Operator {
 impl Display for Operator {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.as_str())
+    }
+}
+
+impl ToColor for Operator {
+    fn to_color(&self) -> ColoredString {
+        self.to_string().normal()
     }
 }

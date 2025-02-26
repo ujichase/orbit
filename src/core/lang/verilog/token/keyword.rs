@@ -15,6 +15,9 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+use crate::core::lang::highlight::ToColor;
+use colored::ColoredString;
+use colored::Colorize;
 use std::fmt::Display;
 
 // There are 124 keywords in the Verilog-2005 LRM, with 'unsigned' reserved for future use.
@@ -414,5 +417,11 @@ impl Keyword {
 impl Display for Keyword {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.as_str())
+    }
+}
+
+impl ToColor for Keyword {
+    fn to_color(&self) -> ColoredString {
+        self.to_string().blue()
     }
 }

@@ -26,6 +26,10 @@ use std::hash::Hash;
 use std::hash::Hasher;
 use std::str::FromStr;
 
+use crate::core::lang::highlight::ToColor;
+use colored::ColoredString;
+use colored::Colorize;
+
 #[derive(Debug, Clone, PartialOrd, Ord, Serialize)]
 #[serde(untagged)]
 pub enum Identifier {
@@ -157,5 +161,11 @@ impl Display for Identifier {
             Self::System(id) => write!(f, "{}", id),
             Self::Directive(id) => write!(f, "`{}", id),
         }
+    }
+}
+
+impl ToColor for Identifier {
+    fn to_color(&self) -> ColoredString {
+        self.to_string().normal()
     }
 }

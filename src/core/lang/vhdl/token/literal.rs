@@ -16,9 +16,9 @@
 //
 
 use super::super::error::VhdlError;
-use super::super::highlight;
 use super::super::token::char_set;
-use crate::core::lang::vhdl::token::ToColor;
+use crate::core::lang::highlight;
+use crate::core::lang::highlight::ToColor;
 use colored::ColoredString;
 use colored::Colorize;
 use std::fmt::Display;

@@ -180,7 +180,7 @@ fn analyze(source_file: &str) -> Result<HashMap<Identifier, PrimaryUnit>, CodeFa
                 VhdlSymbol::Entity(_) => Some(PrimaryShape::Entity),
                 VhdlSymbol::Package(_) => Some(PrimaryShape::Package),
                 VhdlSymbol::Configuration(_) => Some(PrimaryShape::Configuration),
-                VhdlSymbol::Context(_) => Some(PrimaryShape::Configuration),
+                VhdlSymbol::Context(_) => Some(PrimaryShape::Context),
                 VhdlSymbol::Architecture(_) => {
                     panic!("architectures cannot be here")
                 }

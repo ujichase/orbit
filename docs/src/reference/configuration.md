@@ -134,7 +134,7 @@ The currently supported entries are demonstrated in the following code snippet. 
 
 ``` toml
 [verilog-format]
-# enable colored output for code snippets (TODO)
+# enable colored output for code snippets
 highlight-syntax = false
 # number of whitespace characters per tab/indentation
 tab-size = 2

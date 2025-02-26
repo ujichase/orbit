@@ -17,7 +17,7 @@
 
 use super::super::super::lexer::TrainCar;
 use super::VhdlError;
-use crate::core::lang::vhdl::token::ToColor;
+use crate::core::lang::highlight::ToColor;
 use crate::core::lang::LangIdentifier;
 use crate::core::pkgid::PkgPart;
 use crate::util::strcmp;

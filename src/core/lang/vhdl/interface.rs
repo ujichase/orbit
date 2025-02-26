@@ -15,10 +15,12 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+use super::super::highlight;
+use super::super::highlight::ColorVec;
 use super::format::VhdlFormat;
-use super::highlight::*;
-use super::token::{identifier::Identifier, ToColor};
-use colored::ColoredString;
+use super::token::identifier::Identifier;
+use crate::core::lang::highlight::ToColor;
+
 use colored::Colorize;
 use serde::ser::{Serialize, SerializeStruct, Serializer};
 use serde_derive::Serialize;
@@ -27,79 +29,9 @@ pub fn library_statement(lib: &Identifier) -> String {
     format!(
         "{} {}{}\n",
         Keyword::Library.to_color(),
-        color(&lib.to_string(), ENTITY_NAME),
+        highlight::color(&lib.to_string(), highlight::ENTITY_NAME),
         Delimiter::Terminator.to_color()
     )
-}
-
-#[derive(Debug, PartialEq)]
-enum ColorTone {
-    Color(ColoredString),
-    Bland(String),
-}
-
-impl Display for ColorTone {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match &self {
-            Self::Color(c) => write!(f, "{}", c),
-            Self::Bland(s) => write!(f, "{}", s),
-        }
-    }
-}
-
-#[derive(Debug, PartialEq)]
-pub struct ColorVec(Vec<ColorTone>);
-
-impl Display for ColorVec {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for item in &self.0 {
-            write!(f, "{}", item)?
-        }
-        Ok(())
-    }
-}
-
-impl ColorVec {
-    fn new() -> Self {
-        Self(Vec::new())
-    }
-
-    fn push_str(&mut self, s: &str) -> () {
-        self.0.push(ColorTone::Bland(String::from(s)));
-    }
-
-    fn push_color(&mut self, c: ColoredString) -> () {
-        self.0.push(ColorTone::Color(c));
-    }
-
-    fn push(&mut self, ct: ColorTone) -> () {
-        self.0.push(ct);
-    }
-
-    fn append(&mut self, mut cv: ColorVec) -> () {
-        self.0.append(&mut cv.0);
-    }
-
-    fn push_whitespace(&mut self, count: usize) -> () {
-        self.0
-            .push(ColorTone::Bland(format!("{:<width$}", " ", width = count)));
-    }
-
-    fn swap(mut self, index: usize, hue: Rgb) -> Self {
-        let item = self.0.get_mut(index).unwrap();
-        *item = ColorTone::Color(color(&item.to_string(), hue));
-        self
-    }
-
-    pub fn into_all_bland(self) -> String {
-        self.0
-            .into_iter()
-            .map(|f| match f {
-                ColorTone::Bland(s) => s,
-                ColorTone::Color(s) => String::from_utf8_lossy(s.as_bytes()).to_string(),
-            })
-            .collect()
-    }
 }
 
 #[derive(Debug)]
@@ -125,7 +57,6 @@ impl<'a> std::fmt::Display for Architectures<'a> {
 
 use super::super::lexer;
 use crate::core::lang::vhdl::token::{delimiter::Delimiter, keyword::Keyword, VhdlToken};
-use std::fmt::Display;
 use std::iter::Peekable;
 
 #[derive(Debug, Clone)]
@@ -472,7 +403,7 @@ impl InterfaceDeclaration {
             result.push_str(" ");
         }
         // data type
-        result.append(tokens_to_string(&self.datatype.0).swap(0, DATA_TYPE));
+        result.append(tokens_to_string(&self.datatype.0).swap(0, highlight::DATA_TYPE));
         // optional bus keyword
         if self.bus_present == true {
             result.push_str(" ");
@@ -506,11 +437,20 @@ impl InterfaceDeclaration {
         );
         result.push_str(" ");
         // identifier prefix
-        result.push_color(color(&prefix.to_string(), SIGNAL_DEC_IDENTIFIER));
+        result.push_color(highlight::color(
+            &prefix.to_string(),
+            highlight::SIGNAL_DEC_IDENTIFIER,
+        ));
         // identifier
-        result.push_color(color(&self.identifier.to_string(), SIGNAL_DEC_IDENTIFIER));
+        result.push_color(highlight::color(
+            &self.identifier.to_string(),
+            highlight::SIGNAL_DEC_IDENTIFIER,
+        ));
         // identifier suffix
-        result.push_color(color(&suffix.to_string(), SIGNAL_DEC_IDENTIFIER));
+        result.push_color(highlight::color(
+            &suffix.to_string(),
+            highlight::SIGNAL_DEC_IDENTIFIER,
+        ));
         // whitespace
         if offset > 0 {
             result.push_whitespace(offset);
@@ -518,7 +458,7 @@ impl InterfaceDeclaration {
         result.push_color(Delimiter::Colon.to_color());
         result.push_str(" ");
         // data type
-        result.append(tokens_to_string(&self.datatype.0).swap(0, DATA_TYPE));
+        result.append(tokens_to_string(&self.datatype.0).swap(0, highlight::DATA_TYPE));
         // optional bus keyword
         if self.bus_present == true {
             result.push_str(" ");
@@ -536,7 +476,10 @@ impl InterfaceDeclaration {
     fn into_instance_string(&self, offset: usize, prefix: &str, suffix: &str) -> ColorVec {
         let mut result = ColorVec::new();
 
-        result.push_color(color(&self.identifier.to_string(), INSTANCE_LHS_IDENTIFIER));
+        result.push_color(highlight::color(
+            &self.identifier.to_string(),
+            highlight::INSTANCE_LHS_IDENTIFIER,
+        ));
         result.push_whitespace(offset);
         result.push_color(Delimiter::Arrow.to_color());
         result.push_str(" ");

@@ -15,6 +15,10 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+use crate::core::lang::highlight;
+use crate::core::lang::highlight::ToColor;
+use colored::ColoredString;
+use colored::Colorize;
 use std::fmt::Display;
 
 use crate::core::lang::{
@@ -40,6 +44,25 @@ pub enum SystemVerilogToken {
     Directive(String),
     StringLiteral(String),
     EOF,
+}
+
+impl ToColor for SystemVerilogToken {
+    fn to_color(&self) -> ColoredString {
+        match &self {
+            Self::Comment(c) => c.to_color(),
+            Self::Operator(o) => o.to_color(),
+            Self::Number(n) => n.to_color(),
+            Self::Identifier(i) => i.to_color(),
+            Self::Keyword(k) => k.to_color(),
+            Self::Directive(_) => {
+                highlight::color(&format!("{}", self.to_string()), highlight::STRINGS)
+            }
+            Self::StringLiteral(_) => {
+                highlight::color(&format!("{}", self.to_string()), highlight::STRINGS)
+            }
+            Self::EOF => String::new().normal(),
+        }
+    }
 }
 
 impl From<VerilogToken> for SystemVerilogToken {

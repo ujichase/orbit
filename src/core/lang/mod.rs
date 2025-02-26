@@ -15,6 +15,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+pub mod highlight;
 pub mod sv;
 pub mod verilog;
 pub mod vhdl;

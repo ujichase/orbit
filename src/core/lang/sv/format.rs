@@ -22,7 +22,7 @@ use serde_derive::Serialize;
 #[serde(deny_unknown_fields)]
 pub struct SystemVerilogFormat {
     #[serde(rename = "highlight-syntax")]
-    highlight_syntax: Option<bool>, // TODO
+    highlight_syntax: Option<bool>,
     #[serde(rename = "tab-size")]
     tab_size: Option<u8>,
     #[serde(rename = "name-auto-alignment")]

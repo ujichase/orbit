@@ -24,10 +24,12 @@ use crate::core::lang::{
     vhdl::{error::VhdlError, format::VhdlFormat},
 };
 
+use crate::core::lang::highlight;
+use crate::core::lang::highlight::ToColor;
+
 use super::{
-    architecture::Architecture, color, Architectures, Delimiter, Generics, Identifier,
-    InterfaceDeclarations, Keyword, Ports, Position, ToColor, Token, VhdlSymbol, VhdlToken,
-    ENTITY_NAME,
+    architecture::Architecture, Architectures, Delimiter, Generics, Identifier,
+    InterfaceDeclarations, Keyword, Ports, Position, Token, VhdlSymbol, VhdlToken,
 };
 
 #[derive(Debug, PartialEq, Serialize)]
@@ -114,7 +116,7 @@ impl Entity {
         let mut result = format!("{} ", Keyword::Component.to_color());
         result.push_str(&format!(
             "{}",
-            color(&self.get_name().to_string(), ENTITY_NAME)
+            highlight::color(&self.get_name().to_string(), highlight::ENTITY_NAME)
         ));
 
         let interface_depth = match fmt.is_indented_interfaces() {
@@ -198,7 +200,7 @@ impl Entity {
             Some(lib) => format!(
                 "{} {}{}",
                 Keyword::Entity.to_color(),
-                color(&lib.to_string(), ENTITY_NAME),
+                highlight::color(&lib.to_string(), highlight::ENTITY_NAME),
                 Delimiter::Dot.to_color()
             ),
             None => String::new(),
@@ -228,7 +230,7 @@ impl Entity {
             "{} {}{}",
             Delimiter::Colon.to_color(),
             prefix,
-            color(&self.get_name().to_string(), ENTITY_NAME)
+            highlight::color(&self.get_name().to_string(), highlight::ENTITY_NAME)
         ));
         if self.generics.0.len() > 0 {
             result.push('\n');

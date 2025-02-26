@@ -17,6 +17,11 @@
 
 use std::fmt::Display;
 
+use crate::core::lang::highlight;
+use crate::core::lang::highlight::ToColor;
+use colored::ColoredString;
+use colored::Colorize;
+
 #[derive(Debug, PartialEq, Clone)]
 pub enum Number {
     Decimal(String),
@@ -59,4 +64,11 @@ pub enum BaseSpec {
     Hexadecimal(char),
     Octal(char),
     Binary(char),
+}
+
+impl ToColor for Number {
+    fn to_color(&self) -> ColoredString {
+        let crayon = highlight::NUMBERS;
+        self.to_string().truecolor(crayon.0, crayon.1, crayon.2)
+    }
 }

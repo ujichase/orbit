@@ -411,8 +411,6 @@ impl VHDLParser {
 
 use std::iter::Peekable;
 
-use super::highlight::*;
-
 type TokenPair = (Statement, RefSet);
 
 /// A `Statement` is a vector of tokens, similiar to how a `String` is a vector

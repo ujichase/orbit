@@ -17,6 +17,10 @@
 
 use std::fmt::Display;
 
+use crate::core::lang::highlight::ToColor;
+use colored::ColoredString;
+use colored::Colorize;
+
 #[derive(Debug, PartialEq, Clone)]
 pub enum Keyword {
     AcceptOn,
@@ -793,5 +797,11 @@ impl serde::Serialize for Keyword {
         S: serde::Serializer,
     {
         serializer.serialize_str(self.as_str())
+    }
+}
+
+impl ToColor for Keyword {
+    fn to_color(&self) -> ColoredString {
+        self.to_string().blue()
     }
 }

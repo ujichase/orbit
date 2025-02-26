@@ -29,6 +29,11 @@ use super::operator::Operator;
 use super::tokenizer::char_set;
 use std::fmt::Display;
 
+use crate::core::lang::highlight;
+use crate::core::lang::highlight::ToColor;
+use colored::ColoredString;
+use colored::Colorize;
+
 #[derive(Debug, PartialEq, Clone)]
 pub enum VerilogToken {
     Comment(Comment),
@@ -39,6 +44,25 @@ pub enum VerilogToken {
     StringLiteral(String),
     Directive(String),
     EOF,
+}
+
+impl ToColor for VerilogToken {
+    fn to_color(&self) -> ColoredString {
+        match &self {
+            Self::Comment(c) => c.to_color(),
+            Self::Operator(o) => o.to_color(),
+            Self::Number(n) => n.to_color(),
+            Self::Identifier(i) => i.to_color(),
+            Self::Keyword(k) => k.to_color(),
+            Self::Directive(_) => {
+                highlight::color(&format!("{}", self.to_string()), highlight::STRINGS)
+            }
+            Self::StringLiteral(_) => {
+                highlight::color(&format!("{}", self.to_string()), highlight::STRINGS)
+            }
+            Self::EOF => String::new().normal(),
+        }
+    }
 }
 
 impl Display for VerilogToken {
@@ -647,6 +671,11 @@ pub enum Comment {
     Block(String),
 }
 
+impl ToColor for Comment {
+    fn to_color(&self) -> ColoredString {
+        self.to_string().green()
+    }
+}
 impl Comment {
     fn as_str(&self) -> &str {
         match self {

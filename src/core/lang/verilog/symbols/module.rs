@@ -32,6 +32,10 @@ use crate::core::lang::{
     },
     vhdl::token::VhdlTokenizer,
 };
+
+use crate::core::lang::highlight;
+use crate::core::lang::highlight::ToColor;
+
 use serde_derive::Serialize;
 use std::iter::Peekable;
 
@@ -76,11 +80,20 @@ impl Module {
     pub fn into_declaration(&self, fmt: &SystemVerilogFormat) -> String {
         let mut result = String::new();
 
-        result.push_str(&format!("module "));
-        result.push_str(&self.name.to_string());
-        result.push_str(&interface::display_interface(&self.parameters, true, fmt));
-        result.push_str(&interface::display_interface(&self.ports, false, fmt));
-        result.push(';');
+        result.push_str(&format!("{} ", Keyword::Module.to_color()));
+        result.push_str(&format!(
+            "{}",
+            highlight::color(&self.get_name().to_string(), highlight::ENTITY_NAME)
+        ));
+        result.push_str(&format!(
+            "{}",
+            interface::display_interface(&self.parameters, true, fmt)
+        ));
+        result.push_str(&format!(
+            "{}",
+            interface::display_interface(&self.ports, false, fmt)
+        ));
+        result.push_str(&format!("{}", Operator::Terminator.to_color()));
         result
     }
 
@@ -93,7 +106,10 @@ impl Module {
     ) -> String {
         let mut result = String::new();
         // module name
-        result.push_str(&self.name.to_string());
+        result.push_str(&format!(
+            "{}",
+            highlight::color(&self.get_name().to_string(), highlight::ENTITY_NAME)
+        ));
         // parameters
         result.push_str(&interface::display_connections(
             &self.parameters,
@@ -108,11 +124,11 @@ impl Module {
         }
 
         // instance name
-        if let Some(n) = name {
-            result.push_str(&n.to_string());
-        } else {
-            result.push_str(&fmt.get_instance_name());
-        }
+        let name = match &name {
+            Some(iden) => iden.clone(),
+            None => VhdlIdentifier::Basic(fmt.get_instance_name().to_string()),
+        };
+        result.push_str(&format!("{}", name.to_color()));
 
         // ports
         result.push_str(&interface::display_connections(
@@ -122,7 +138,7 @@ impl Module {
             signal_suffix,
             fmt,
         ));
-        result.push(';');
+        result.push_str(&format!("{}", Operator::Terminator.to_color()));
         result
     }
 
@@ -145,23 +161,21 @@ impl Module {
 
         let mut result = String::new();
         self.parameters.iter().for_each(|p| {
-            result.push_str(&&&p.into_declaration(false, &param_spacer, "", "", fmt));
-            result.push_str(&Operator::Terminator.to_string());
-            result.push('\n');
+            result.push_str(&format!(
+                "{}",
+                p.into_declaration(false, &param_spacer, "", "", fmt)
+            ));
+            result.push_str(&format!("{}\n", Operator::Terminator.to_color()));
         });
         if self.parameters.is_empty() == false {
             result.push('\n');
         }
         self.ports.iter().for_each(|p| {
-            result.push_str(&&&p.into_declaration(
-                false,
-                &port_spacer,
-                wire_prefix,
-                wire_suffix,
-                fmt,
+            result.push_str(&format!(
+                "{}",
+                p.into_declaration(false, &port_spacer, wire_prefix, wire_suffix, fmt,)
             ));
-            result.push_str(&Operator::Terminator.to_string());
-            result.push('\n');
+            result.push_str(&format!("{}\n", Operator::Terminator.to_color()));
         });
         result
     }
@@ -466,7 +480,7 @@ impl Module {
         tokens.push(Self::vh(Vvt::Delimiter(VhDelimiter::ParenL)));
 
         // left side of range
-        VhdlTokenizer::tokenize(&tokens_to_string(&lhs))
+        VhdlTokenizer::tokenize(&tokens_to_string(&lhs).into_all_bland())
             .into_iter()
             .filter_map(|r| match r {
                 Ok(r) => Some(r),
@@ -481,7 +495,7 @@ impl Module {
         tokens.push(Self::vh(Vvt::Keyword(VhKeyword::Downto)));
 
         // right side of range
-        VhdlTokenizer::tokenize(&tokens_to_string(&rhs))
+        VhdlTokenizer::tokenize(&tokens_to_string(&rhs).into_all_bland())
             .into_iter()
             .filter_map(|r| match r {
                 Ok(r) => Some(r),
@@ -502,7 +516,7 @@ impl Module {
     fn convert_default_to_vh(expr: &Vec<SystemVerilogToken>) -> Vec<Token<VhdlToken>> {
         let mut tokens = Vec::new();
 
-        VhdlTokenizer::tokenize(&tokens_to_string(&expr))
+        VhdlTokenizer::tokenize(&tokens_to_string(&expr).into_all_bland())
             .into_iter()
             .filter_map(|r| match r {
                 Ok(r) => Some(r),
