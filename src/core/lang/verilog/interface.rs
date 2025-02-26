@@ -25,6 +25,21 @@ use serde_derive::Serialize;
 #[derive(Debug, PartialEq)]
 pub struct Expr(Option<Vec<SystemVerilogToken>>);
 
+impl Expr {
+    /// Checks if there are tokens to evaluate for the expression.
+    pub fn exists(&self) -> bool {
+        if let Some(e) = &self.0 {
+            e.len() > 0
+        } else {
+            false
+        }
+    }
+
+    pub fn as_static_expr(&self) -> &Option<Vec<SystemVerilogToken>> {
+        &self.0
+    }
+}
+
 impl serde::Serialize for Expr {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -48,7 +63,7 @@ pub fn does_exist(ports: &Vec<Port>, name: &Identifier) -> bool {
         .is_some()
 }
 
-fn tokens_to_string(tokens: &Vec<SystemVerilogToken>) -> String {
+pub fn tokens_to_string(tokens: &Vec<SystemVerilogToken>) -> String {
     let mut result = String::new();
     // determine which delimiters to not add trailing spaces to
     let is_spaced_token = |d: &Operator| match d {
@@ -281,7 +296,9 @@ pub struct DataType {
     net: Option<Keyword>,
     is_signed: bool,
     modport: Option<SystemVerilogToken>,
+    // The "real" type if a scope resolution was used (::<nested>)
     nested_type: Option<SystemVerilogToken>,
+    // The normal type (or package if scope resolution was used <data>::)
     data: Option<SystemVerilogToken>,
     range: Expr,
 }
@@ -295,6 +312,81 @@ impl DataType {
             nested_type: None,
             range: Expr(None),
             modport: None,
+        }
+    }
+
+    pub fn get_type(&self) -> Option<&SystemVerilogToken> {
+        if let Some(t) = &self.nested_type {
+            Some(t)
+        } else if let Some(t) = &self.data {
+            Some(t)
+        } else {
+            None
+        }
+    }
+
+    pub fn get_ranges(&self) -> Option<Vec<(Vec<SystemVerilogToken>, Vec<SystemVerilogToken>)>> {
+        let mut result = Vec::new();
+        let mut brack_count = 0;
+        let mut in_range = false;
+        let mut on_rhs = false;
+        let mut lhs = Vec::new();
+        let mut rhs = Vec::new();
+
+        let expr = if let Some(e) = &self.range.0 {
+            e
+        } else {
+            return None;
+        };
+
+        // travel through the list of tokens
+        for t in expr {
+            // track how many parentheses we have consumed
+            match t {
+                SystemVerilogToken::Operator(d) => {
+                    match d {
+                        Operator::BrackL => {
+                            brack_count += 1;
+                        }
+                        // allow rest of this iteration to process such that we can add the current range
+                        Operator::BrackR => {
+                            brack_count -= 1;
+                        }
+                        Operator::Colon => {
+                            on_rhs = true;
+                            continue;
+                        }
+                        _ => (),
+                    }
+                }
+                _ => (),
+            }
+
+            // we have finished a range if previously in a range and now count is at 0
+            if in_range && brack_count == 0 {
+                result.push((lhs.clone(), rhs.clone()));
+                // reset for another possible range
+                lhs.clear();
+                rhs.clear();
+                on_rhs = false;
+            }
+
+            // collect the tokens for the left or right side of the range
+            if in_range == true && brack_count > 0 {
+                if on_rhs == true {
+                    rhs.push(t.clone());
+                } else {
+                    lhs.push(t.clone());
+                }
+            }
+
+            // we are in a range
+            in_range = brack_count > 0;
+        }
+
+        match result.len() {
+            0 => None,
+            _ => Some(result),
         }
     }
 }
@@ -676,6 +768,18 @@ impl Port {
 
     pub fn get_name(&self) -> &Identifier {
         &self.name
+    }
+
+    pub fn get_mode(&self) -> &Option<Keyword> {
+        &self.mode
+    }
+
+    pub fn get_datatype(&self) -> &DataType {
+        &self.data_type
+    }
+
+    pub fn get_default(&self) -> &Expr {
+        &self.value
     }
 
     pub fn as_user_defined_data_type(&self) -> Option<&Identifier> {

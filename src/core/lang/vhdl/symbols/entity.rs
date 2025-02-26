@@ -363,6 +363,7 @@ impl Entity {
                 // datatype
                 tokens.push(Self::sv(Self::convert_datatype_to_sv(
                     g.get_type().get_type(),
+                    true,
                 )));
 
                 // ignore any ranges used for a VHDL string datatype since SV does not have explicit range for it
@@ -421,6 +422,7 @@ impl Entity {
                 // datatype
                 tokens.push(Self::sv(Self::convert_datatype_to_sv(
                     p.get_type().get_type(),
+                    false,
                 )));
 
                 // ignore any ranges used for a VHDL string datatype since SV does not have explicit range for it
@@ -475,7 +477,9 @@ impl Entity {
 
     /// Helps convert a VHDL token into its SystemVerilog equivalent when dealing with
     /// datatypes.
-    fn convert_datatype_to_sv(token: &VhdlToken) -> SystemVerilogToken {
+    ///
+    /// If the dataype is in the parameter section, then we will choose `int` over `integer`.
+    fn convert_datatype_to_sv(token: &VhdlToken, is_param: bool) -> SystemVerilogToken {
         match token {
             VhdlToken::Identifier(i) => match i {
                 Identifier::Basic(s) => match s.to_lowercase().as_str() {
@@ -487,7 +491,13 @@ impl Entity {
                         Svt::Keyword(SvKeyword::Logic)
                     }
                     "character" | "char" => Svt::Keyword(SvKeyword::Byte),
-                    "integer" | "natural" | "positive" => Svt::Keyword(SvKeyword::Integer),
+                    "integer" | "natural" | "positive" => {
+                        if is_param {
+                            Svt::Keyword(SvKeyword::Int)
+                        } else {
+                            Svt::Keyword(SvKeyword::Integer)
+                        }
+                    }
                     "string" | "str" => Svt::Keyword(SvKeyword::String),
                     _ => Svt::Identifier(SvIdentifier::Basic(s.clone())),
                 },

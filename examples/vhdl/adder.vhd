@@ -19,7 +19,7 @@ entity adder is
         WORD_WIDTH : positive := 6
     );
     port (
-        INPUT1    : in  std_logic_vector(WORD_WIDTH-1 downto 0);
+        INPUT1    : in  std_logic_vector(WORD_WIDTH-1 downto 0)(3 downto 0);
         input2    : in  std_logic_vector(WORD_WIDTH-1 downto 0);
         carry_in  : in  std_logic;
         sum       : out std_logic_vector(WORD_WIDTH-1 downto 0);

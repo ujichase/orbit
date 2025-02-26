@@ -235,7 +235,7 @@ impl SubtypeIndication {
             }
 
             // collect the tokens for the left or right side of the range
-            if in_range == true {
+            if in_range == true && paren_count > 0 {
                 if on_rhs == true {
                     rhs.push(t.clone());
                 } else {
