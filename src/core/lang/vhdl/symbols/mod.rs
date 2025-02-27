@@ -321,7 +321,7 @@ impl Parse<VhdlToken> for VHDLParser {
                 symbols.push(
                     match VhdlSymbol::parse_entity(&mut tokens, t.into_position()) {
                         Ok(mut ent) => {
-                            // println!("info: detected {}", ent);
+                            // crate::info!("cted {}", ent);
                             // println!("global refs: {:?}", global_refs);
                             global_refs = ent.steal_refs(global_refs);
                             Ok(Symbol::new(ent))
@@ -335,7 +335,7 @@ impl Parse<VhdlToken> for VHDLParser {
                     match VhdlSymbol::parse_architecture(&mut tokens, t.into_position()) {
                         Ok(mut arch) => {
                             global_refs = arch.steal_refs(global_refs);
-                            // println!("info: detected {}", arch);
+                            // crate::info!("cted {}", arch);
                             Ok(Symbol::new(arch))
                         }
                         Err(e) => Err(e),
@@ -355,7 +355,7 @@ impl Parse<VhdlToken> for VHDLParser {
                     match VhdlSymbol::route_package_parse(&mut tokens, t.into_position()) {
                         Ok(mut pack) => {
                             global_refs = pack.steal_refs(global_refs);
-                            // println!("info: detected {}", pack);
+                            // crate::info!("detected {}", pack);
                             Ok(Symbol::new(pack))
                         }
                         Err(e) => Err(e),
@@ -366,7 +366,7 @@ impl Parse<VhdlToken> for VHDLParser {
                 match VhdlSymbol::parse_context(&mut tokens, t.into_position()) {
                     ContextUsage::ContextDeclaration(dec) => {
                         let mut context = VhdlSymbol::Context(dec);
-                        // println!("info: detected {}", context);
+                        // crate::info!("detected {}", context);
                         global_refs = context.steal_refs(global_refs);
                         symbols.push(Ok(Symbol::new(context)));
                     }
@@ -1736,7 +1736,7 @@ impl VhdlSymbol {
                 // check if statement is an instantiation
                 if is_subprogram == false {
                     if let Some(i_refs) = Self::parse_instantiation(clause.0) {
-                        // println!("info: detected dependency \"{:?}\"", i_refs);
+                        // crate::info!("detected dependency \"{:?}\"", i_refs);
                         deps.extend(i_refs);
                     }
                 }

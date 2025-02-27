@@ -385,8 +385,8 @@ impl Subcommand<Context> for Install {
                         Remove::remove_dynamics(c.get_cache_path(), &cached_ip, false)?;
                     // tell the user we already have it installed!
                     } else {
-                        println!(
-                            "info: ip {} is already installed",
+                        crate::info!(
+                            "ip {} is already installed",
                             target.get_man().get_ip().into_ip_spec()
                         );
                         return Ok(());
@@ -408,7 +408,7 @@ impl Subcommand<Context> for Install {
             && target.get_man().get_ip().get_source().is_some()
             && self.offline == false
         {
-            println!("info: {}", "verifying coherency with ip's source  ...");
+            crate::info!("{}", "verifying coherency with ip's source  ...");
             let changes = Publish::test_download_and_install(&target, c, false, false)?;
             // remove from install so that we can install again
             if let Some(chg) = changes {
@@ -420,7 +420,7 @@ impl Subcommand<Context> for Install {
 
         // this code is only ran if the lock file matches the manifest and we aren't force to recompute
         // if target.can_use_lock() == true && self.force == false {
-        //     println!("info: {}", "reading dependencies from lockfile ...");
+        //     crate::info!("{}", "reading dependencies from lockfile ...");
         //     let env = Environment::new()
         //         .from_config(c.get_config())?
         //         .from_ip(&target)?;
@@ -476,7 +476,7 @@ impl Install {
 
         // verify the lock file is generated and up to date
         if force == false {
-            println!("info: {}", "verifying lockfile is up to date ...");
+            crate::info!("{}", "verifying lockfile is up to date ...");
             // TODO: use catalog to find the uuids of all dependencies to fill in
             if local_ip.can_use_lock(&catalog) == false {
                 return Err(Box::new(Error::PublishMissingLockfile(Hint::MakeLock)));
@@ -487,7 +487,7 @@ impl Install {
             Plan::write_lockfile(&local_ip, &ip_graph, true, true, &catalog)?;
         }
 
-        println!("info: {}", "reading dependencies from lockfile ...");
+        crate::info!("{}", "reading dependencies from lockfile ...");
         let env = Environment::new()
             .from_config(c.get_config())?
             .from_ip(&local_ip)?;
@@ -508,7 +508,7 @@ impl Install {
         catalog = catalog.installations(c.get_cache_path())?;
 
         // verify the ip has zero relative dependencies
-        println!("info: {}", "verifying all dependencies are stable ...");
+        crate::info!("{}", "verifying all dependencies are stable ...");
         if let Some(dep) = local_ip.get_lock().inner().iter().find(|f| f.is_relative()) {
             return Err(Box::new(Error::PublishRelativeDepExists(
                 dep.get_name().clone(),
@@ -516,7 +516,7 @@ impl Install {
         }
 
         // verify the graph build with no errors
-        println!("info: {}", "verifying hardware graph construction ...");
+        crate::info!("verifying hardware graph construction ...");
         if let Err(e) = Publish::check_graph_builds_okay(&local_ip, &catalog) {
             return Err(Box::new(Error::PublishHdlGraphFailed(LastError(
                 e.to_string(),
@@ -645,7 +645,7 @@ impl Install {
         let ip_spec = src.get_man().get_ip().into_ip_spec();
 
         if verbose == true {
-            println!("info: installing ip {} ...", &ip_spec);
+            crate::info!("stalling ip {} ...", &ip_spec);
         }
 
         // perform sha256 on the temporary cloned directory
@@ -692,7 +692,7 @@ impl Install {
                     return Ok(None);
                 } else {
                     if verbose == true {
-                        println!("info: reinstalling ip {} due to bad checksum ...", ip_spec);
+                        crate::info!("reinstalling ip {} due to bad checksum ...", ip_spec);
                     }
                     // blow directory up for re-install
                     std::fs::remove_dir_all(&cache_slot)?;
@@ -719,8 +719,8 @@ impl Install {
         let result = Self::install(&target, &catalog.get_cache_path(), self.force, true)?;
         match result {
             Some(_) => (),
-            None => println!(
-                "info: ip {} is already installed",
+            None => crate::info!(
+                "ip {} is already installed",
                 target.get_man().get_ip().into_ip_spec()
             ),
         }

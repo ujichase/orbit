@@ -63,7 +63,8 @@ DESCRIPTION
     
     By default, the code snippets will be displayed in the design unit's native
     hardware description language. To return the code snippets in a particular
-    language, use the '--lang' option. Valid values are "vhdl", "sv", or "native".
+    language, use the '--language' option. Valid values are "vhdl", "sv", or 
+    "native".
 
 OPTIONS
     <unit>

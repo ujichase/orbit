@@ -109,9 +109,10 @@ impl Download {
                 Some(&entry) => {
                     if let Some(ip_spec) = spec {
                         if verbose == true {
-                            println!(
-                                "info: downloading ip {} over \"{}\" protocol ...",
-                                ip_spec, &proto
+                            crate::info!(
+                                "downloading ip {} over \"{}\" protocol ...",
+                                ip_spec,
+                                &proto
                             );
                         }
                         // update variable table for this lock entry

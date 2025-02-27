@@ -124,8 +124,7 @@ impl Subcommand<Context> for Info {
                 );
             } else {
                 // a 'virtual' ip, so try to extract units from
-                println!(
-                    "info: {}",
+                crate::info!(
                     "unable to display HDL units from a downloaded ip; try again after installing"
                 );
             }

@@ -33,7 +33,6 @@ use crate::util::environment::EnvVar;
 use crate::util::environment::Environment;
 use crate::util::environment::ORBIT_OUT_DIR;
 use crate::util::environment::ORBIT_TARGET_DIR;
-use colored::Colorize;
 
 use cliproc::{cli, proc, stage::*};
 use cliproc::{Arg, Cli, Help, Subcommand};

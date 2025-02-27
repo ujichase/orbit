@@ -15,8 +15,6 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-use colored::Colorize;
-
 use crate::commands::download::Download;
 use crate::core::blueprint::{Blueprint, Instruction, Scheme};
 use crate::core::context::{self, Context};
@@ -127,9 +125,8 @@ impl Plan {
                         require_bench,
                     )?;
                     // create a blueprint file
-                    println!(
-                        "{}: erroneous blueprint created at: {:?}",
-                        "warning".yellow(),
+                    crate::warn!(
+                        "erroneous blueprint created at {:?}",
                         filesystem::into_std_str(blueprint_path)
                     );
                     return Ok(Some(blueprint_name));
@@ -386,18 +383,18 @@ impl Plan {
         // print information (maybe also print the plugin saved to .env too?)
         match top_name.is_empty() {
             false => match require_bench {
-                true => println!("info: dut set to {}", top_name.blue()),
-                false => println!("info: top-level set to {}", top_name.blue()),
+                true => crate::info!("dut set to {}", top_name.blue()),
+                false => crate::info!("p-level set to {}", top_name.blue()),
             },
             true => match require_bench {
-                true => println!("{} no dut set", "warning:".yellow()),
-                false => println!("{} no top-level set", "warning:".yellow()),
+                true => crate::warn!("no dut set"),
+                false => crate::warn!("no top-level set"),
             },
         }
         if require_bench == true {
             match bench_name.is_empty() {
-                false => println!("info: testbench set to {}", bench_name.blue()),
-                true => println!("{} no testbench set", "warning:".yellow()),
+                false => crate::info!("testbench set to {}", bench_name.blue()),
+                true => crate::warn!("no testbench set"),
             }
         }
 
@@ -500,8 +497,8 @@ impl Plan {
             require_bench,
         )?;
         // create a blueprint file
-        println!(
-            "info: blueprint created at: {:?}",
+        crate::info!(
+            "blueprint created at: {:?}",
             filesystem::into_std_str(blueprint_path)
         );
         Ok(Some(blueprint_name))
@@ -564,8 +561,8 @@ pub fn download_missing_deps(
                     Some(dep) => {
                         // verify the checksum
                         if Install::is_checksum_good(&dep.get_root()) == false {
-                            println!(
-                                "info: redownloading ip {} due to bad checksum ...",
+                            crate::info!(
+                                "redownloading ip {} due to bad checksum ...",
                                 dep.get_man().get_ip().into_ip_spec()
                             );
                             require_download = true;
@@ -637,8 +634,8 @@ pub fn install_missing_deps(lf: &LockFile, le: &LockEntry, catalog: &Catalog) ->
                         if Install::is_checksum_good(&dep.get_root()) == false {
                             match status.get_download(&ver) {
                                 Some(dep) => {
-                                    println!(
-                                        "info: reinstalling ip {} due to bad checksum ...",
+                                    crate::info!(
+                                        "reinstalling ip {} due to bad checksum ...",
                                         dep.get_man().get_ip().into_ip_spec()
                                     );
                                     // perform extra work if the Ip is virtual (from downloads)
@@ -1190,16 +1187,16 @@ impl Plan {
 
             if target.get_lock() != &lock {
                 if verbose == true {
-                    println!("info: lockfile updated");
+                    crate::info!("lockfile updated");
                 }
             } else {
                 if verbose == true {
-                    println!("info: lockfile experienced no changes");
+                    crate::info!("lockfile experienced no changes");
                 }
             }
         } else {
             if verbose == true {
-                println!("info: lockfile experienced no changes");
+                crate::info!("lockfile experienced no changes");
             }
         }
         Ok(())

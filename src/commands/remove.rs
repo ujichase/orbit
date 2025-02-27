@@ -117,8 +117,8 @@ impl Subcommand<Context> for Remove {
 
         // confirm with user that it is the correct ip
         if self.force == false {
-            if prompt::prompt(&format!("info: removing ip {}, proceed", ip_spec))? == false {
-                println!("info: {}", "removal cancelled");
+            if prompt::prompt(&format!("removing ip {}, proceed", ip_spec), true)? == false {
+                crate::info!("removal cancelled");
                 return Ok(());
             }
         }
@@ -130,13 +130,13 @@ impl Subcommand<Context> for Remove {
             Some(t) => {
                 Self::remove_install(t)?;
                 if self.verbose == true {
-                    println!("info: removed ip {} from the cache", ip_spec);
+                    crate::info!("removed ip {} from the cache", ip_spec);
                 }
                 Self::remove_dynamics(c.get_cache_path(), t, self.verbose)?;
             }
             None => {
                 if self.verbose == true {
-                    println!("info: ip {} is already removed from the cache", self.ip);
+                    crate::info!("ip {} is already removed from the cache", self.ip);
                 }
             }
         };
@@ -146,17 +146,17 @@ impl Subcommand<Context> for Remove {
             Some(t) => {
                 Self::remove_download(c.get_downloads_path(), t)?;
                 if self.verbose == true {
-                    println!("info: removed ip {} from the archive", ip_spec);
+                    crate::info!("removed ip {} from the archive", ip_spec);
                 }
             }
             None => {
                 if self.verbose == true {
-                    println!("info: ip {} is already removed from the archive", self.ip);
+                    crate::info!("ip {} is already removed from the archive", self.ip);
                 }
             }
         };
 
-        println!("info: removed ip {}", ip_spec);
+        crate::info!("removed ip {}", ip_spec);
         self.run()
     }
 }
@@ -217,8 +217,8 @@ impl Remove {
                     if cached_ip.is_dynamic() == true {
                         fs::remove_dir_all(entry.path())?;
                         if verbose == true {
-                            println!(
-                                "info: removed dynamic variant of ip {} from the cache",
+                            crate::info!(
+                                "removed dynamic variant of ip {} from the cache",
                                 ip_spec
                             );
                         }

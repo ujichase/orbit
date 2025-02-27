@@ -87,7 +87,7 @@ impl Subcommand<Context> for Publish {
 
         let ip_spec = local_ip.get_man().get_ip().into_ip_spec();
 
-        println!("info: {}", "finding channels to publish to ...");
+        crate::info!("finding channels to publish to ...");
         let mut channels = HashMap::new();
 
         // check the channel(s) we wish to publish to
@@ -95,7 +95,7 @@ impl Subcommand<Context> for Publish {
             for name in ip_channels {
                 match c.get_config().get_channels().get(name) {
                     Some(&chan) => {
-                        println!("info: using specified channel {:?}", name);
+                        crate::info!("using specified channel {:?}", name);
                         channels.insert(name, chan)
                     }
                     None => return Err(Box::new(Error::ChanNotFound(name.clone())))?,
@@ -107,7 +107,7 @@ impl Subcommand<Context> for Publish {
             match c.get_config().get_default_channel() {
                 Some(name) => match c.get_config().get_channels().get(name) {
                     Some(&chan) => {
-                        println!("info: using default channel {:?}", name);
+                        crate::info!("using default channel {:?}", name);
                         channels.insert(name, chan)
                     }
                     None => return Err(Box::new(Error::DefChanNotFound(name.clone())))?,
@@ -155,7 +155,7 @@ impl Subcommand<Context> for Publish {
         }
 
         // verify the package is available to be downloaded
-        println!("info: {}", "verifying coherency with ip's source  ...");
+        crate::info!("verifying coherency with ip's source  ...");
         let remove = self.ready == false || self.no_install == true;
         let changes = match Self::test_download_and_install(&local_ip, &c, remove, true) {
             Ok(c) => c,
@@ -180,13 +180,13 @@ impl Subcommand<Context> for Publish {
 impl Publish {
     pub fn run_ip_checkpoints(local_ip: &Ip, catalog: &Catalog) -> Result<(), Fault> {
         // verify the lock file is generated and up to date
-        println!("info: {}", "verifying lockfile is up to date ...");
+        crate::info!("verifying lockfile is up to date ...");
         if local_ip.can_use_lock(&catalog) == false {
             return Err(Box::new(Error::PublishMissingLockfile(Hint::MakeLock)));
         }
 
         // verify the ip has zero relative dependencies
-        println!("info: {}", "verifying all dependencies are stable ...");
+        crate::info!("verifying all dependencies are stable ...");
         if let Some(dep) = local_ip.get_lock().inner().iter().find(|f| f.is_relative()) {
             return Err(Box::new(Error::PublishRelativeDepExists(
                 dep.get_name().clone(),
@@ -194,16 +194,13 @@ impl Publish {
         }
 
         // verify the ip has a source
-        println!(
-            "info: {}",
-            "verifying ip manifest's source field is defined ..."
-        );
+        crate::info!("verifying ip manifest's source field is defined ...");
         if local_ip.get_man().get_ip().get_source().is_none() {
             return Err(Box::new(Error::PublishMissingSource));
         }
 
         // verify the graph build with no errors
-        println!("info: {}", "verifying hardware graph construction ...");
+        crate::info!("verifying hardware graph construction ...");
         if let Err(e) = Self::check_graph_builds_okay(&local_ip, &catalog) {
             return Err(Box::new(Error::PublishHdlGraphFailed(LastError(
                 e.to_string(),
@@ -313,7 +310,7 @@ impl Publish {
     ) -> Result<(), Fault> {
         // publish to each channel
         for (name, chan) in &channels {
-            println!("info: publishing to {:?} channel ...", name);
+            crate::info!("publishing to {:?} channel ...", name);
             // update the index path
             let index_dir = Self::create_pointer_directory(&local_ip);
             let index_path = filesystem::into_std_str(chan.get_root().join(index_dir));

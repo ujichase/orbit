@@ -16,7 +16,6 @@
 //
 
 use cliproc::{cli, proc, stage::Memory, Arg, Cli, Help, Subcommand};
-use colored::Colorize;
 
 use crate::commands::helps::test;
 use crate::core::blueprint::Scheme;
@@ -190,7 +189,7 @@ impl Test {
         let target = target.clone().replace_vars_in_args(&swap_table);
 
         // run the command from the output path
-        println!("info: executing target {}", target.get_name().green());
+        crate::info!("executing target {}", target.get_name().green());
         match target.execute(
             &self.command,
             &self.args,

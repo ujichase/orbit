@@ -159,7 +159,7 @@ impl Channel {
     }
 
     pub fn sync(context: &Context) -> Result<(), Fault> {
-        println!("info: {}", "synchronizing channels ...");
+        crate::info!("{}", "synchronizing channels ...");
         let channels: Vec<&Channel> = context.get_config().get_channels().into_values().collect();
         // initialize environment
         let mut env = Environment::new()

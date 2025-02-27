@@ -117,15 +117,17 @@ tab-size = 2
 # insert a tab before 'generic' and 'port' interface declarations
 indent-interface = true
 # automatically align a signal or constant's subtype with its other identifiers
-type-auto-alignment = false
+type-auto-alignment = true
 # number of whitespace characters after alignment (before the `:` character)
-type-offset = 0
+type-offset = 1
 # automatically align an instantiation's mapping along its port connections
-mapping-auto-alignment = false
+mapping-auto-alignment = true
 # number of whitespace characters before port connection (before the `=>` character)
 mapping-offset = 1
+# place a space between generic/port keyword and its opening parenthesis
+space-interface-parenthesis = true
 # the default instance name
-instance-name = "uX"
+instance-name = "ux"
 ```
 
 ### The `[verilog-format]` section
@@ -135,21 +137,21 @@ The currently supported entries are demonstrated in the following code snippet. 
 ``` toml
 [verilog-format]
 # enable colored output for code snippets
-highlight-syntax = false
+highlight-syntax = true
 # number of whitespace characters per tab/indentation
 tab-size = 2
 # automatically align a port or parameter's name with the module's other names
-name-auto-alignment = false
+name-auto-alignment = true
 # number of additional whitespace characters after alignment
-name-alignmnet = 0
+name-offset = 0
 # number of whitespaces before a range specifier
-range-offset = 0
+range-offset = 1
 # automatically align an instantiation's mapping along its port connections
-mapping-auto-alignment = false
+mapping-auto-alignment = true
 # number of whitespace characters before port connection (before the `(` character)
 mapping-offset = 0
 # the default instance name
-instance-name = "uX"
+instance-name = "ux"
 ```
 
 ### The `[env]` section

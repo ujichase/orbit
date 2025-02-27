@@ -28,7 +28,6 @@ use crate::core::{
 use crate::util::anyerror::AnyError;
 use crate::util::anyerror::Fault;
 use crate::util::sha256::Sha256Hash;
-use colored::Colorize;
 use serde_derive::{Deserialize, Serialize};
 use std::error::Error;
 use std::fmt::Display;
@@ -74,12 +73,7 @@ impl LockFile {
                     Ok(r) => r,
                     // enter a blank lock file if failed (do not exit)
                     Err(e) => {
-                        println!(
-                            "{}: failed to parse {} file: {}",
-                            "warning".yellow().bold(),
-                            IP_LOCK_FILE,
-                            e
-                        );
+                        crate::warn!("failed to parse {} file: {}", IP_LOCK_FILE, e);
                         v1::LockFile::new()
                     }
                 },

@@ -54,7 +54,7 @@ impl SystemVerilogFormat {
     }
 
     pub fn is_syntax_highlighted(&self) -> bool {
-        self.highlight_syntax.unwrap_or(false)
+        self.highlight_syntax.unwrap_or(true)
     }
 
     pub fn get_tab_size(&self) -> u8 {
@@ -62,7 +62,7 @@ impl SystemVerilogFormat {
     }
 
     pub fn is_auto_name_aligned(&self) -> bool {
-        self.name_auto_alignment.unwrap_or(false)
+        self.name_auto_alignment.unwrap_or(true)
     }
 
     pub fn get_name_offset(&self) -> u8 {
@@ -70,11 +70,11 @@ impl SystemVerilogFormat {
     }
 
     pub fn get_range_offset(&self) -> u8 {
-        self.range_offset.unwrap_or(0)
+        self.range_offset.unwrap_or(1)
     }
 
     pub fn is_auto_mapping_aligned(&self) -> bool {
-        self.mapping_auto_alignment.unwrap_or(false)
+        self.mapping_auto_alignment.unwrap_or(true)
     }
 
     pub fn get_mapping_offset(&self) -> u8 {
@@ -84,7 +84,7 @@ impl SystemVerilogFormat {
     pub fn get_instance_name(&self) -> String {
         self.instance_name
             .as_ref()
-            .unwrap_or(&String::from("uX"))
+            .unwrap_or(&String::from("ux"))
             .clone()
     }
 

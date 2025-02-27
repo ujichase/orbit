@@ -44,7 +44,6 @@ use crate::core::uuid::Uuid;
 use crate::error::Error;
 use crate::error::Hint;
 use crate::util::sha256::Sha256Hash;
-use colored::Colorize;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::str::FromStr;
@@ -293,9 +292,8 @@ impl Ip {
         let lock = match LockFile::from_file(&lock_path) {
             Ok(l) => l,
             Err(e) => {
-                println!(
-                    "{}: failed to parse lockfile \"{}\": {}",
-                    "warning".yellow().bold(),
+                crate::warn!(
+                    "failed to parse lockfile \"{}\": {}",
                     filesystem::into_std_str(lock_path),
                     e
                 );

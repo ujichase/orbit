@@ -115,9 +115,9 @@ impl Command for Orbit {
             Ok(())
         // prioritize upgrade information
         } else if self.upgrade == true {
-            println!("info: checking for latest orbit binary...");
+            crate::info!("checking for latest orbit binary...");
             let info = self.upgrade()?;
-            println!("info: {}", info);
+            crate::info!("{}", info);
             Ok(())
         // run the specified command
         } else if let Some(sub) = self.command {
@@ -385,10 +385,13 @@ impl Orbit {
         if latest > current {
             // await user input
             if self.force == false {
-                if prompt::prompt(&format!(
-                    "info: a new version is available ({}), would you like to upgrade",
-                    latest
-                ))? == false
+                if prompt::prompt(
+                    &format!(
+                        "a new version is available ({}), would you like to upgrade",
+                        latest
+                    ),
+                    true,
+                )? == false
                 {
                     return Ok(String::from("upgrade cancelled"));
                 }
@@ -403,7 +406,7 @@ impl Orbit {
         let base_url: String = Self::get_url(REPOSITORY) + "/releases";
 
         // download the list of checksums
-        println!("info: downloading checksums...");
+        crate::info!("downloading checksums...");
         let sum_url = format!("{0}/download/{1}/SHA256SUMS", &base_url, &latest);
 
         let mut dst = Vec::new();
@@ -486,7 +489,7 @@ impl Orbit {
             None => return Err(Box::new(UpgradeError::UnsupportedTarget(target.to_owned())))?,
         };
 
-        println!("info: found supported target: {}", target);
+        crate::info!("found supported target: {}", target);
 
         // download the zip pkg file
         let pkg_url = format!("{}/download/{}/{}", &base_url, &latest, &pkg);
@@ -496,7 +499,7 @@ impl Orbit {
         // }
         // let body_bytes = res.bytes().await?;
 
-        println!("info: downloading update...");
+        crate::info!("downloading update...");
         let mut body_bytes = Vec::new();
         {
             let mut easy = Easy::new();
@@ -523,12 +526,12 @@ impl Orbit {
         let sum = sha256::compute_sha256(&body_bytes);
         // verify the checksums match
         match sum == cert {
-            true => println!("info: verified download"),
+            true => crate::info!("verified download"),
             false => return Err(Box::new(UpgradeError::BadChecksum(sum, cert)))?,
         };
 
         // unzip the bytes and put file in temporary file
-        println!("info: installing update...");
+        crate::info!("installing update...");
 
         // assign the bytes to a temporary file
         let mut temp_file = tempfile::tempfile()?;

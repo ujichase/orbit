@@ -30,8 +30,12 @@ pub fn report_eval(status: bool) -> ColoredString {
 
 /// Outputs the text `s` with a ? mark and y/n option. Accepts '\n' or
 /// 'y' to return `true`, and `n` to return `false`.
-pub fn prompt(s: &str) -> Result<bool, Error> {
-    println!("{}? [y/n]", s);
+pub fn prompt(s: &str, use_info: bool) -> Result<bool, Error> {
+    if use_info == true {
+        crate::info!("{}? [y/n]", s);
+    } else {
+        println!("{}? [y/n]", s);
+    }
     check_for_response(&mut io::stdin().lock())
 }
 

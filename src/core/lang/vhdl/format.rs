@@ -44,28 +44,32 @@ pub struct VhdlFormat {
 impl VhdlFormat {
     pub fn new() -> Self {
         Self {
-            highlight_syntax: Some(false),
-            tab_size: Some(2),
-            type_auto_alignment: Some(true),
-            type_offset: Some(1),
-            mapping_auto_alignment: Some(true),
-            mapping_offset: Some(1),
-            indent_interfaces: Some(true),
-            space_interface_parenthesis: Some(false),
-            instance_name: Some(String::from("uX")),
+            highlight_syntax: None,
+            tab_size: None,
+            type_auto_alignment: None,
+            type_offset: None,
+            mapping_auto_alignment: None,
+            mapping_offset: None,
+            indent_interfaces: None,
+            space_interface_parenthesis: None,
+            instance_name: None,
         }
     }
 
     pub fn is_syntax_highlighted(&self) -> bool {
-        self.highlight_syntax.unwrap_or(false)
+        self.highlight_syntax.unwrap_or(true)
     }
 
     pub fn get_tab_size(&self) -> u8 {
         self.tab_size.unwrap_or(2)
     }
 
+    pub fn is_indented_interfaces(&self) -> bool {
+        self.indent_interfaces.unwrap_or(true)
+    }
+
     pub fn is_auto_type_aligned(&self) -> bool {
-        self.type_auto_alignment.unwrap_or(false)
+        self.type_auto_alignment.unwrap_or(true)
     }
 
     pub fn get_type_offset(&self) -> u8 {
@@ -80,18 +84,14 @@ impl VhdlFormat {
         self.mapping_offset.unwrap_or(1)
     }
 
-    pub fn is_indented_interfaces(&self) -> bool {
-        self.indent_interfaces.unwrap_or(true)
-    }
-
     pub fn is_interface_parenthesis_spaced(&self) -> bool {
-        self.space_interface_parenthesis.unwrap_or(false)
+        self.space_interface_parenthesis.unwrap_or(true)
     }
 
     pub fn get_instance_name(&self) -> String {
         self.instance_name
             .as_ref()
-            .unwrap_or(&String::from("uX"))
+            .unwrap_or(&String::from("ux"))
             .clone()
     }
 

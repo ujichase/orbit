@@ -297,7 +297,7 @@ impl Display for Hint {
         write!(
             f,
             "\n\n{}: {}",
-            "hint".green(),
+            "hint".green().bold(),
             Error::lowerize(message.to_string())
         )
     }

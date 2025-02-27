@@ -83,17 +83,20 @@ fn unix() -> Result<(), Box<dyn std::error::Error>> {
 
     // check if a file named "orbit" already exists
     if dest.exists() == true
-        && prompt::prompt(&format!(
-            "file {} already exists; is it okay to replace it",
-            dest.display()
-        ))? == false
+        && prompt::prompt(
+            &format!(
+                "file {} already exists; is it okay to replace it",
+                dest.display()
+            ),
+            false,
+        )? == false
     {
         println!("cancelled installation");
         return Ok(());
     }
 
     // 3. ask user for permission
-    match prompt::prompt("Install")? {
+    match prompt::prompt("install", false)? {
         true => {
             // 4a. copy the binary to the location
             std::fs::copy(contents, dest)?;
@@ -142,17 +145,20 @@ fn windows() -> Result<(), Box<dyn std::error::Error>> {
 
     // check if a folder named "orbit" already exists
     if dest.exists() == true
-        && prompt::prompt(&format!(
-            "directory {} already exists; is it okay to replace it",
-            dest.display()
-        ))? == false
+        && prompt::prompt(
+            &format!(
+                "directory {} already exists; is it okay to replace it",
+                dest.display()
+            ),
+            false,
+        )? == false
     {
         println!("cancelled installation");
         return Ok(());
     }
 
     // 3. ask user for permission
-    match prompt::prompt("Install")? {
+    match prompt::prompt("install", false)? {
         true => {
             // 4a. copy the binary to the location
             let options = {

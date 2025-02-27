@@ -113,7 +113,7 @@ impl Module {
         // parameters
         result.push_str(&format!(
             "{}",
-            interface::display_connections(&self.parameters, true, "", "", fmt,)
+            interface::display_connections(&self.parameters, true, "", "", fmt)
         ));
         // leave whitespace between module name and instance if no parameters are available
         if self.parameters.is_empty() == true {
@@ -133,7 +133,7 @@ impl Module {
         // ports
         result.push_str(&format!(
             "{}",
-            interface::display_connections(&self.ports, false, signal_prefix, signal_suffix, fmt,)
+            interface::display_connections(&self.ports, false, signal_prefix, signal_suffix, fmt)
         ));
         result.push_str(&format!("{}", Operator::Terminator.to_color()));
         result

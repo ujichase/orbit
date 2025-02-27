@@ -224,7 +224,7 @@ pub trait Process {
             let s = args
                 .iter()
                 .fold(String::new(), |x, y| x + "\"" + &y + "\" ");
-            println!("info: running: {} {}", command, s);
+            crate::info!("running: {} {}", command, s);
         }
         let mut proc = filesystem::invoke(
             cwd,

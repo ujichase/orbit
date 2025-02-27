@@ -27,7 +27,6 @@ use crate::util::anyerror::Fault;
 use crate::util::environment::Environment;
 use cliproc::{cli, proc, stage::*};
 use cliproc::{Arg, Cli, Help, Subcommand};
-use colored::Colorize;
 
 #[derive(Debug, PartialEq)]
 pub struct Lock {
@@ -112,7 +111,7 @@ impl Lock {
             Ok(g) => g,
             Err(e) => match warn {
                 true => {
-                    println!("{}: {}", "warning".yellow(), e.1);
+                    crate::warn!("{}", e.1);
                     algo::minimal_graph_map(local_ip)
                 }
                 false => return Err(e)?,
