@@ -17,9 +17,9 @@
 
 use std::fmt::Display;
 
+use crate::core::lang::highlight;
 use crate::core::lang::highlight::ToColor;
 use colored::ColoredString;
-use colored::Colorize;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Keyword {
@@ -802,6 +802,6 @@ impl serde::Serialize for Keyword {
 
 impl ToColor for Keyword {
     fn to_color(&self) -> ColoredString {
-        self.to_string().blue()
+        highlight::style::keyword(&self.to_string())
     }
 }

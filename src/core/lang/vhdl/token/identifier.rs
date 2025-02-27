@@ -17,12 +17,12 @@
 
 use super::super::super::lexer::TrainCar;
 use super::VhdlError;
+use crate::core::lang::highlight;
 use crate::core::lang::highlight::ToColor;
 use crate::core::lang::LangIdentifier;
 use crate::core::pkgid::PkgPart;
 use crate::util::strcmp;
 use colored::ColoredString;
-use colored::Colorize;
 use serde_derive::Serialize;
 use std::fmt::Debug;
 use std::fmt::Display;
@@ -179,6 +179,6 @@ impl Display for Identifier {
 
 impl ToColor for Identifier {
     fn to_color(&self) -> ColoredString {
-        self.to_string().normal()
+        highlight::style::identifier(&self.to_string())
     }
 }

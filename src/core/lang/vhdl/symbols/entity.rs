@@ -116,7 +116,7 @@ impl Entity {
         let mut result = format!("{} ", Keyword::Component.to_color());
         result.push_str(&format!(
             "{}",
-            highlight::color(&self.get_name().to_string(), highlight::ENTITY_NAME)
+            highlight::style::entity(&self.get_name().to_string())
         ));
 
         let interface_depth = match fmt.is_indented_interfaces() {
@@ -218,7 +218,11 @@ impl Entity {
 
         let mut result = String::new();
 
-        result.push_str(&format!("{}", name.to_color()));
+        result.push_str(&format!(
+            "{}",
+            highlight::style::instance(&name.to_string())
+        ));
+
         if fmt.get_type_offset() > 0 {
             result.push_str(&format!(
                 "{:<width$}",

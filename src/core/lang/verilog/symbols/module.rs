@@ -108,15 +108,12 @@ impl Module {
         // module name
         result.push_str(&format!(
             "{}",
-            highlight::color(&self.get_name().to_string(), highlight::ENTITY_NAME)
+            highlight::style::entity(&self.get_name().to_string())
         ));
         // parameters
-        result.push_str(&interface::display_connections(
-            &self.parameters,
-            true,
-            "",
-            "",
-            fmt,
+        result.push_str(&format!(
+            "{}",
+            interface::display_connections(&self.parameters, true, "", "", fmt,)
         ));
         // leave whitespace between module name and instance if no parameters are available
         if self.parameters.is_empty() == true {
@@ -128,15 +125,15 @@ impl Module {
             Some(iden) => iden.clone(),
             None => VhdlIdentifier::Basic(fmt.get_instance_name().to_string()),
         };
-        result.push_str(&format!("{}", name.to_color()));
+        result.push_str(&format!(
+            "{}",
+            highlight::style::instance(&name.to_string())
+        ));
 
         // ports
-        result.push_str(&interface::display_connections(
-            &self.ports,
-            false,
-            signal_prefix,
-            signal_suffix,
-            fmt,
+        result.push_str(&format!(
+            "{}",
+            interface::display_connections(&self.ports, false, signal_prefix, signal_suffix, fmt,)
         ));
         result.push_str(&format!("{}", Operator::Terminator.to_color()));
         result

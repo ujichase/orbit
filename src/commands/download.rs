@@ -119,7 +119,7 @@ impl Download {
                         vtable.add("orbit.ip.version", &ip_spec.get_version().to_string());
                     } else {
                         if verbose == true {
-                            println!("info: downloading ip over \"{}\" protocol ...", &proto);
+                            crate::info!("downloading ip over \"{}\" protocol ...", &proto);
                         }
                     }
 
@@ -158,11 +158,11 @@ impl Download {
                 vtable.add("orbit.ip.name", ip_spec.get_name().as_ref());
                 vtable.add("orbit.ip.version", &ip_spec.get_version().to_string());
                 if verbose == true {
-                    println!("info: downloading ip {} ...", ip_spec);
+                    crate::info!("downloading ip {} ...", ip_spec);
                 }
             } else {
                 if verbose == true {
-                    println!("info: downloading ip ...");
+                    crate::info!("downloading ip ...");
                 }
             }
 
@@ -261,7 +261,7 @@ impl Download {
                 let manifest_name = temp.get_man().get_ip().get_name();
                 let found_ip_spec = temp.get_man().get_ip().into_ip_spec();
                 if verbose == true {
-                    println!("info: found ip {}", found_ip_spec);
+                    crate::info!("found ip {}", found_ip_spec);
                 }
                 // verify the ip is okay
                 Ip::load(temp.get_root().to_path_buf(), false, false)?;
@@ -301,14 +301,14 @@ impl Download {
     ) -> Result<(), Fault> {
         match downloads.len() {
             0 => {
-                println!("info: no missing downloads");
+                crate::info!("no missing downloads");
                 return Ok(());
             }
             1 => {
-                println!("info: downloading 1 ip ...")
+                crate::info!("downloading 1 ip ...")
             }
             _ => {
-                println!("info: downloading {} ips ...", downloads.len())
+                crate::info!("downloading {} ips ...", downloads.len())
             }
         }
         let mut vtable = vtable;

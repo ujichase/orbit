@@ -17,9 +17,9 @@
 
 use super::super::super::lexer::Position;
 use super::super::token::char_set;
+use crate::core::lang::highlight;
 use crate::core::lang::highlight::ToColor;
 use colored::ColoredString;
-use colored::Colorize;
 use std::fmt::Display;
 
 #[derive(Debug, PartialEq, Clone)]
@@ -71,6 +71,6 @@ impl Display for Comment {
 
 impl ToColor for Comment {
     fn to_color(&self) -> ColoredString {
-        self.to_string().green()
+        highlight::style::comment(&self.to_string())
     }
 }

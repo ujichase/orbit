@@ -15,6 +15,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+use crate::core::lang::highlight;
 use crate::core::lang::sv::format::SystemVerilogFormat;
 
 use super::super::sv::token::{
@@ -203,15 +204,15 @@ pub fn display_connections(
     prefix: &str,
     suffix: &str,
     fmt: &SystemVerilogFormat,
-) -> String {
-    let mut result = String::new();
+) -> ColorVec {
+    let mut result = ColorVec::new();
 
     if port_list.is_empty() == false {
-        result.push(' ');
+        result.push_whitespace(1);
         if is_params == true {
-            result.push('#');
+            result.push_color(Operator::Pound.to_color());
         }
-        result.push('(');
+        result.push_color(Operator::ParenL.to_color());
     }
 
     // compute longest name
@@ -223,21 +224,21 @@ pub fn display_connections(
     let offset = fmt.get_mapping_offset() as usize;
 
     port_list.iter().enumerate().for_each(|(i, p)| {
-        result.push('\n');
+        result.push_str("\n");
         for _ in 0..fmt.get_tab_size() as usize {
-            result.push(' ');
+            result.push_whitespace(1);
         }
-        result.push_str(&&&p.into_connection(&spacer, &offset, prefix, suffix));
+        result.append(p.into_connection(&spacer, &offset, prefix, suffix));
         if i != port_list.len() - 1 {
-            result.push_str(",")
+            result.push_color(Operator::Comma.to_color());
         };
     });
 
     if port_list.is_empty() == false {
-        result.push('\n');
-        result.push(')');
+        result.push_str("\n");
+        result.push_color(Operator::ParenR.to_color());
         if is_params == true {
-            result.push(' ');
+            result.push_whitespace(1);
         }
     }
 
@@ -474,28 +475,29 @@ impl Port {
         mode_len + type_len
     }
 
+    /// Creates the verilog code for instance io connections: `.clk(clk)`.
     pub fn into_connection(
         &self,
         spacing: &Option<usize>,
         offset: &usize,
         prefix: &str,
         suffix: &str,
-    ) -> String {
-        let mut result = String::new();
+    ) -> ColorVec {
+        let mut result = ColorVec::new();
 
-        result.push_str(&Operator::Dot.to_string());
-        result.push_str(&self.name.to_string());
+        result.push_color(Operator::Dot.to_color());
+        result.push_color(highlight::style::instance_lhs_io(&self.name.to_string()));
         if let Some(sp) = spacing {
             // +1 for including the length of the DOT character
             while result.len() < sp + 1 + offset {
-                result.push(' ');
+                result.push_whitespace(1);
             }
         }
-        result.push_str(&Operator::ParenL.to_string());
-        result.push_str(prefix);
-        result.push_str(&self.name.to_string());
-        result.push_str(suffix);
-        result.push_str(&Operator::ParenR.to_string());
+        result.push_color(Operator::ParenL.to_color());
+        result.push_color(highlight::style::instance_rhs_io(&prefix.to_string()));
+        result.push_color(highlight::style::instance_rhs_io(&self.name.to_string()));
+        result.push_color(highlight::style::instance_rhs_io(&suffix.to_string()));
+        result.push_color(Operator::ParenR.to_color());
         result
     }
 
@@ -530,7 +532,7 @@ impl Port {
 
         // display the datatype
         if let Some(d) = &self.data_type.data {
-            result.push_color(d.to_color());
+            result.push_color(highlight::style::data_type(&d.to_string()));
             // display the modport
             if let Some(m) = &self.data_type.modport {
                 result.push_color(Operator::Dot.to_color());
@@ -539,7 +541,7 @@ impl Port {
             // display the real type
             if let Some(t) = &self.data_type.nested_type {
                 result.push_color(Operator::ScopeResolution.to_color());
-                result.push_color(t.to_color());
+                result.push_color(highlight::style::data_type(&t.to_string()));
             }
             result.push_str(" ");
         }
@@ -583,13 +585,19 @@ impl Port {
         }
 
         // prepend any prefix
-        result.push_str(&prefix);
-
-        // display the identifier
-        result.push_str(&self.name.to_string());
-
-        // append any suffix
-        result.push_str(&suffix);
+        if use_mode == true {
+            result.push_color(highlight::style::module_io(&prefix));
+            // display the identifier
+            result.push_color(highlight::style::module_io(&self.name.to_string()));
+            // append any suffix
+            result.push_color(highlight::style::module_io(&suffix));
+        } else {
+            result.push_color(highlight::style::signal_decl_io(&prefix));
+            // display the identifier
+            result.push_color(highlight::style::signal_decl_io(&self.name.to_string()));
+            // append any suffix
+            result.push_color(highlight::style::signal_decl_io(&suffix));
+        }
 
         // display any unpacked array range
         if let Some(up) = &self.unpacked_range.0 {

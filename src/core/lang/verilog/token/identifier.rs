@@ -26,9 +26,9 @@ use std::hash::Hash;
 use std::hash::Hasher;
 use std::str::FromStr;
 
+use crate::core::lang::highlight;
 use crate::core::lang::highlight::ToColor;
 use colored::ColoredString;
-use colored::Colorize;
 
 #[derive(Debug, Clone, PartialOrd, Ord, Serialize)]
 #[serde(untagged)]
@@ -70,9 +70,9 @@ impl Identifier {
     pub fn len(&self) -> usize {
         match self {
             Self::Basic(s) => s.len(),
-            Self::Escaped(s) => s.len(),
+            Self::Escaped(s) => s.len() + 2,
             Self::System(s) => s.len(),
-            Self::Directive(s) => s.len(),
+            Self::Directive(s) => s.len() + 1,
         }
     }
 
@@ -157,7 +157,7 @@ impl Display for Identifier {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Basic(id) => write!(f, "{}", id),
-            Self::Escaped(id) => write!(f, "\\{}", id),
+            Self::Escaped(id) => write!(f, "\\{} ", id),
             Self::System(id) => write!(f, "{}", id),
             Self::Directive(id) => write!(f, "`{}", id),
         }
@@ -166,6 +166,6 @@ impl Display for Identifier {
 
 impl ToColor for Identifier {
     fn to_color(&self) -> ColoredString {
-        self.to_string().normal()
+        highlight::style::identifier(&self.to_string())
     }
 }

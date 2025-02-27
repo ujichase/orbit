@@ -21,7 +21,6 @@ use super::format::VhdlFormat;
 use super::token::identifier::Identifier;
 use crate::core::lang::highlight::ToColor;
 
-use colored::Colorize;
 use serde::ser::{Serialize, SerializeStruct, Serializer};
 use serde_derive::Serialize;
 
@@ -29,7 +28,7 @@ pub fn library_statement(lib: &Identifier) -> String {
     format!(
         "{} {}{}\n",
         Keyword::Library.to_color(),
-        highlight::color(&lib.to_string(), highlight::ENTITY_NAME),
+        highlight::style::library(&lib.to_string()),
         Delimiter::Terminator.to_color()
     )
 }
@@ -383,7 +382,7 @@ impl InterfaceDeclaration {
     fn into_interface_string(&self, offset: usize) -> ColorVec {
         let mut result = ColorVec::new();
         // identifier
-        result.push_color(self.identifier.to_color());
+        result.push_color(highlight::style::module_io(&self.identifier.to_string()));
         // whitespace
         if offset > 0 {
             result.push_whitespace(offset);
@@ -437,20 +436,13 @@ impl InterfaceDeclaration {
         );
         result.push_str(" ");
         // identifier prefix
-        result.push_color(highlight::color(
-            &prefix.to_string(),
-            highlight::SIGNAL_DEC_IDENTIFIER,
-        ));
+        result.push_color(highlight::style::signal_decl_io(&prefix.to_string()));
         // identifier
-        result.push_color(highlight::color(
+        result.push_color(highlight::style::signal_decl_io(
             &self.identifier.to_string(),
-            highlight::SIGNAL_DEC_IDENTIFIER,
         ));
         // identifier suffix
-        result.push_color(highlight::color(
-            &suffix.to_string(),
-            highlight::SIGNAL_DEC_IDENTIFIER,
-        ));
+        result.push_color(highlight::style::signal_decl_io(&suffix.to_string()));
         // whitespace
         if offset > 0 {
             result.push_whitespace(offset);
@@ -476,16 +468,17 @@ impl InterfaceDeclaration {
     fn into_instance_string(&self, offset: usize, prefix: &str, suffix: &str) -> ColorVec {
         let mut result = ColorVec::new();
 
-        result.push_color(highlight::color(
+        result.push_color(highlight::style::instance_lhs_io(
             &self.identifier.to_string(),
-            highlight::INSTANCE_LHS_IDENTIFIER,
         ));
         result.push_whitespace(offset);
         result.push_color(Delimiter::Arrow.to_color());
         result.push_str(" ");
-        result.push_color(prefix.to_string().normal());
-        result.push_color(self.identifier.to_color());
-        result.push_color(suffix.to_string().normal());
+        result.push_color(highlight::style::instance_rhs_io(&prefix.to_string()));
+        result.push_color(highlight::style::instance_rhs_io(
+            &self.identifier.to_string(),
+        ));
+        result.push_color(highlight::style::instance_rhs_io(&suffix.to_string()));
         result
     }
 }

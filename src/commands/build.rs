@@ -158,7 +158,7 @@ impl Subcommand<Context> for Build {
         let target = target.clone().replace_vars_in_args(&swap_table);
 
         // run the command from the output path
-        println!("info: executing target {}", target.get_name().green());
+        crate::info!("executing target {}", target.get_name().green());
         match target.execute(
             &self.command,
             &self.args,

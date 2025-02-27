@@ -20,7 +20,6 @@ use super::super::token::char_set;
 use crate::core::lang::highlight;
 use crate::core::lang::highlight::ToColor;
 use colored::ColoredString;
-use colored::Colorize;
 use std::fmt::Display;
 use std::str::FromStr;
 
@@ -80,22 +79,19 @@ impl Display for AbstLiteral {
 
 impl ToColor for Character {
     fn to_color(&self) -> ColoredString {
-        let crayon = highlight::CHARS;
-        self.to_string().truecolor(crayon.0, crayon.1, crayon.2)
+        highlight::style::char_literal(&self.to_string())
     }
 }
 
 impl ToColor for BitStrLiteral {
     fn to_color(&self) -> ColoredString {
-        let crayon = highlight::NUMBERS;
-        self.to_string().truecolor(crayon.0, crayon.1, crayon.2)
+        highlight::style::bit_literal(&self.to_string())
     }
 }
 
 impl ToColor for AbstLiteral {
     fn to_color(&self) -> ColoredString {
-        let crayon = highlight::NUMBERS;
-        self.to_string().truecolor(crayon.0, crayon.1, crayon.2)
+        highlight::style::abst_literal(&self.to_string())
     }
 }
 

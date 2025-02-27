@@ -54,12 +54,8 @@ impl ToColor for SystemVerilogToken {
             Self::Number(n) => n.to_color(),
             Self::Identifier(i) => i.to_color(),
             Self::Keyword(k) => k.to_color(),
-            Self::Directive(_) => {
-                highlight::color(&format!("{}", self.to_string()), highlight::STRINGS)
-            }
-            Self::StringLiteral(_) => {
-                highlight::color(&format!("{}", self.to_string()), highlight::STRINGS)
-            }
+            Self::Directive(_) => highlight::style::string(&self.to_string()),
+            Self::StringLiteral(_) => highlight::style::string(&self.to_string()),
             Self::EOF => String::new().normal(),
         }
     }

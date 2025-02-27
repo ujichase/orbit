@@ -145,7 +145,7 @@ impl Subcommand<Context> for Info {
                 Some(vers) => {
                     match vers.len() {
                         0 => {
-                            println!("info: no versions in the cache")
+                            crate::info!("no versions in the cache")
                         }
                         _ => {
                             let mut data = String::new();

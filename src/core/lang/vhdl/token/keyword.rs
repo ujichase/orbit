@@ -15,9 +15,9 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+use crate::core::lang::highlight;
 use crate::core::lang::highlight::ToColor;
 use colored::ColoredString;
-use colored::Colorize;
 use serde_derive::Serialize;
 use std::fmt::Display;
 
@@ -399,6 +399,6 @@ impl Display for Keyword {
 
 impl ToColor for Keyword {
     fn to_color(&self) -> ColoredString {
-        self.to_string().blue()
+        highlight::style::keyword(&self.to_string())
     }
 }

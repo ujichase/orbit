@@ -32,7 +32,6 @@ use std::fmt::Display;
 use crate::core::lang::highlight;
 use crate::core::lang::highlight::ToColor;
 use colored::ColoredString;
-use colored::Colorize;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum VerilogToken {
@@ -54,13 +53,9 @@ impl ToColor for VerilogToken {
             Self::Number(n) => n.to_color(),
             Self::Identifier(i) => i.to_color(),
             Self::Keyword(k) => k.to_color(),
-            Self::Directive(_) => {
-                highlight::color(&format!("{}", self.to_string()), highlight::STRINGS)
-            }
-            Self::StringLiteral(_) => {
-                highlight::color(&format!("{}", self.to_string()), highlight::STRINGS)
-            }
-            Self::EOF => String::new().normal(),
+            Self::Directive(_) => highlight::style::string(&self.to_string()),
+            Self::StringLiteral(_) => highlight::style::string(&self.to_string()),
+            Self::EOF => ColoredString::from(String::new()),
         }
     }
 }
@@ -673,7 +668,7 @@ pub enum Comment {
 
 impl ToColor for Comment {
     fn to_color(&self) -> ColoredString {
-        self.to_string().green()
+        highlight::style::comment(&self.to_string())
     }
 }
 impl Comment {
