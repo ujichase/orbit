@@ -107,7 +107,14 @@ impl Command for Orbit {
             let disp_version = match option_env!("GIT_DESC_VERSION") {
                 Some(build) => match build.len() {
                     0 => format!("{} (unknown.build)", VERSION),
-                    _ => format!("{} ({})", VERSION, Self::format_build_tag(build)),
+                    _ => {
+                        let build = Self::format_build_tag(build);
+                        match build == VERSION {
+                            // drop redundant information if build is the same as version (official tagged release)
+                            true => format!("{}", VERSION),
+                            false => format!("{} ({})", VERSION, build),
+                        }
+                    }
                 },
                 None => VERSION.to_owned(),
             };

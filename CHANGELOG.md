@@ -15,23 +15,23 @@ Add `- unreleased` along the next future version to prevent CI/CD from triggerin
 
 # Changelog
 
-## 0.23.3 - unreleased
+## 0.23.3
 
 ### Features
-- adds improved colors to info, warn, and hint outputs
-- overhauls syntax highlighting for code snippets
-- adds syntax highlighting support for Verilog and SystemVerilog
-- adds support for mixed language Verilog, SystemVerilog to VHDL instantiations with `get` subcommand and the `--language vhdl` option
-- adds support for mixed language VHDL to SystemVerilog instantiations with `get` subcommand and the `--language sv` option
-- adds support for recognizing the modules instantiated within a SystemVerilog `bind` construct
-- writes all known environment variables set by Orbit to the target's `.env` file during the planning phase for a build process (which then gets loaded before performing the execution phase)
-- adds `ORBIT_TOP_JSON`, `ORBIT_TB_JSON`, and `ORBIT_DUT_JSON` environment variables to be set before a target's exeuction phase
+- Adds improved colors to info, warn, and hint outputs
+- Overhauls syntax highlighting for code snippets
+- Adds syntax highlighting support for Verilog and SystemVerilog
+- Adds support for mixed language Verilog, SystemVerilog to VHDL instantiations with `get` subcommand and the `--language vhdl` option
+- Adds support for mixed language VHDL to SystemVerilog instantiations with `get` subcommand and the `--language sv` option
+- Adds support for recognizing the modules instantiated within a SystemVerilog `bind` construct
+- Writes all known environment variables set by Orbit to the target's `.env` file during the planning phase for a build process (which then gets loaded before performing the execution phase)
+- Adds `ORBIT_TOP_JSON`, `ORBIT_TB_JSON`, and `ORBIT_DUT_JSON` environment variables to be set before a target's exeuction phase
 
 ### Changes
-- syntax highlighting for `orbit get` subcommand is now enabled by default for all languages
+- Syntax highlighting for `orbit get` subcommand is now enabled by default for all languages
 
 ### Fixes
-- adds `ORBIT_MANIFEST_DIR` as an environment variable set for the execution phase of a target
+- Adds `ORBIT_MANIFEST_DIR` as an environment variable set for the execution phase of a target
 
 ## 0.23.2
 

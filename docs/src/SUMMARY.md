@@ -15,8 +15,11 @@
 
 - [User Guide](./user/user.md)
     - [Overview](./user/overview.md)
-    - [Managing Ip](./user/managing_ip.md)
-    - [Targeting Builds](./user/targeting_builds.md)
+    <!-- - [Discovering Ip](./user/discovering.md) -->
+    <!-- - [Developing Ip](./user/developing.md) -->
+    <!-- - [Releasing Ip](./user/releasing.md) -->
+    <!-- - [Writing Targets](./user/writing_targets.md) -->
+    <!-- - [Creating Channels](./user/creating_channels.md) -->
 
 - [Topic Guide](./topic/topic.md)
     - [Overview](./topic/overview.md) <!-- good -->
